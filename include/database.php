@@ -135,7 +135,7 @@ private $numrows;
 		if($values != ""){
 			$insert .= " values (".$values.");";
 		}
-		//echo $insert;
+		// echo $insert;die();
 		$ins = mysqli_query($this->con,$insert);
 		$this->insertid = mysqli_insert_id($this->con);
 		if($ins){

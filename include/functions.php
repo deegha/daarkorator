@@ -9,7 +9,7 @@ function echoRespnse($status_code, $response) {
     $app->contentType('application/json');
     
     echo json_encode($response);
-        
+    die();       
 }
 
 

@@ -30,8 +30,14 @@ $app->post('/login', function() use ($app){
 
 			$logged_User = $db->getUserByEmail($email);
 			if ($logged_User != NULL) {
+				$access_token = $db->getAccessToken($logged_User['id']);
+				if(!$access_token) {
+					$response['error'] = true;
+					$response['message'] = "An error occurred. Please try again";
+					echoRespnse(200, $response);
+				} 
 				$response["error"] = false;
-				$response['accessToken'] = $logged_User['user_accessToken'];
+				$response['accessToken'] = $access_token;
 				$response['username'] = $logged_User['first_name'];
 				$response['message'] = "Successfully authenticated";
 				echoRespnse(200, $response);
