@@ -18,6 +18,5 @@
 	"type"	: 1
 	}`
 
--response with no errors
+- response with no errors
 	`{"error":false,"accessToken":"9f27c285e5cddd59abb8970102f25da6","username":"deegha","message":"Successfully authenticated"}`
-	  
