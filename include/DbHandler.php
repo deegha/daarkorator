@@ -125,6 +125,73 @@ class DbHandler {
         return $logged_User;
     }
 
+    public function createUser($params) {
+        try{
+            $db           = new database();
+            $user_table   = "user";
+            $user_rows    = [];
+            $user_values  = [];
+            $daarkorator_details = [];
+            $is_daarkorator = false; 
+
+            if(array_key_exists("daarkorator_details", $params) ){
+                $daarkorator_details = $params['daarkorator_details'];
+                
+                unset($params['daarkorator_details']);
+                $is_daarkorator = true;
+            }
+            $result = $this->getInsertSting($params);
+
+            $rows   = $result['rows'];
+            $values = '"'.$result['values'].'"';
+
+            $id = $db->insert($user_table,$values,$rows);
+            if(!$id) {
+                return false;
+            }
+
+            $daarkorator_details["user_id"] = $id;
+            if($is_daarkorator) {
+                $result_d = $this->getInsertSting($daarkorator_details );
+                $values_d = '"'.$result_d['values'].'"';
+                if(!$db->insert("daarkorator_details",$values_d,$result_d['rows'])) {
+                    return false;
+                }
+            }
+    
+            return $id;
+        
+        }catch(Exception $e) {
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    private function getInsertSting($request) {
+        $rows           = [];
+        $insert_values  = [];
+        $result         = [];
+        $inc            = 0;
+
+        try {
+            foreach ($request as $key => $value) {
+                $rows[$inc]          =  $key;
+                $insert_values[$inc] =  $value; 
+                $inc++;
+            }
+     
+            $result['rows']     =  implode(",", $rows);
+            $result['values']   =  implode('","', $insert_values);
+
+            return $result;
+
+        }catch(Exception $e) {
+            $this->callErrorLog($e);
+            return false;
+        }
+        
+    }
+
     private function callErrorLog($e){
          error_log($e->getMessage(). "\n", 3, "./error.log");
 

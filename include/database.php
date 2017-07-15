@@ -13,7 +13,7 @@ private $db_name = "daakor";
 
 //require_once 'Config.php';
 
-private $con ;
+public $con ;
 private $results = array();
 private $insertid ;
 private $json;
@@ -80,7 +80,7 @@ private $numrows;
 		$this->disconnect();
 	}
 	
-	function selectJson($table = null,$rows = null,$where = null,$order = null,$limit = null,$group = null){
+	function selectJson($table = null,$rows = null,$where = null,$order = null,$group = null,$limit = null){
 		$q = 'select '.$rows.' from '.$table;
 		if($where!=""){
 			$q .= ' where '.$where;
@@ -135,11 +135,11 @@ private $numrows;
 		if($values != ""){
 			$insert .= " values (".$values.");";
 		}
-		// echo $insert;die();
+		// echo $insert;
 		$ins = mysqli_query($this->con,$insert);
 		$this->insertid = mysqli_insert_id($this->con);
 		if($ins){
-			return true;
+			return $this->insertid;
 		}else{
 			return false;	
 		}

@@ -57,7 +57,7 @@ $app->post('/login', function() use ($app){
 
 	if($app->request()){
 		$params = $app->request()->getBody();
-		
+
 		$email= $params['email'];
 		$password = $params['password'];
 	
@@ -135,6 +135,26 @@ $app->get('/user/:id', 'authenticate', function($user_id) {
 		}
 	});	 
 
+
+$app->post('/user', function() use ($app){
+	$response 	= array();
+	if($app->request()){
+		$params 	=  $app->request()->getBody();
+
+		$DbHandler 	= new DbHandler();
+		$result = $DbHandler->createUser($params);
+
+		if($result) {
+			$response["error"] = false;
+			$response['user_id'] = $result;
+			echoRespnse(200	, $response);
+		}else{
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);
+		}
+	}
+});	
 
 
 /**
