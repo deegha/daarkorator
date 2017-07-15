@@ -6,12 +6,12 @@
  */
 class DbHandler {
 
-    public function checkLogin($email, $password, $type) {
+    public function checkLogin($email, $password) {
         try{
             $db = new database();
             $table = 'user';
             $rows = '*';
-            $where = 'email= "' . $email . '" AND status = 1 AND user_type = "' . $type . '" AND password="'.$password.'"';
+            $where = 'email= "' . $email . '" AND status = 1  AND password="'.$password.'"';
 
             $db->select($table, $rows, $where, '', '');
 
@@ -44,13 +44,73 @@ class DbHandler {
                 return false;
             }
 
-            
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
         }
     } 
 
+    private function updateAccesstokenExpiry($user_accessToken) {
+        try{
+            $db          = new database();
+            $table       = "authentication_table";
+            $rows        =  array("expiration" => date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day')));
+            $where       = 'access_token= "' . $user_accessToken .'"';
+            if(!$db->update($table,$rows,$where)) {
+                return false;
+            }
+
+            return true;
+        }catch(Exception $e) {
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function isValidAccessToken($user_accessToken) {
+        try{
+            $db          = new database();
+            $table       = "authentication_table";
+            $rows        = 'user_id,   expiration';
+            $where       = 'access_token= "' . $user_accessToken .'"';
+
+            $db->select($table, $rows, $where, '', '');
+            $access = $db->getResults();
+            if(!$access){
+                return false;
+            } 
+
+            $this->updateAccesstokenExpiry($user_accessToken);
+
+            return $access;
+
+        }catch(Exception $e) {
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function getUserFeatures($user_id) {
+        try{
+            $db          = new database();
+            $table       = "user u JOIN user_type t";
+            $rows        = 'u.id, t.features';
+            $where       = 'u.user_type = t.type AND u.id = "'.$user_id.'"';
+
+            $db->select($table, $rows, $where, '', '');
+            $features = $db->getResults();
+
+            if(!$features) {
+                return false;
+            }
+
+            return $features;
+        }catch(Exception $e) {
+            $this->callErrorLog($e);
+            return false;
+        }
+        
+    }
    
 
     public function getUserByEmail($email) {

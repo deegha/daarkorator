@@ -14,6 +14,43 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
 header('Content-Type: application/json');
 
+/**
+ * Adding Middle Layer to authenticate every request
+ * Checking if the request has valid api key in the 'Authorization' header
+ */
+function authenticate(\Slim\Route $route) {
+    $headers = apache_request_headers();
+    $response = array();
+    $app = \Slim\Slim::getInstance();
+    if (isset($headers['Authorization'])) {
+        $db = new DbHandler();
+
+        $user_accessToken = $headers['Authorization'];
+        $access = $db->isValidAccessToken($user_accessToken);
+        if (!$access) {
+            $response["error"] = true;
+            $response["message"] = "Access Denied. Invalid Access Token";
+            echoRespnse(401, $response);
+            $app->stop();
+        }else{
+            if($access['expiration'] < date('Y-m-d H:i:s')){
+                $response["error"] = true;
+	            $response["message"] = "Access token has expired"; 
+	            echoRespnse(200, $response);
+	            $app->stop();
+            }
+
+            global $user_id;
+			$user_id = $access['user_id'];
+        }        
+    } else {
+        $response["error"] = true;
+        $response["message"] = "invalid Request. Please login to the system";
+        echoRespnse(400, $response);
+        $app->stop();
+    }
+}
+
 $app->post('/login', function() use ($app){
 	$response = array();
 	$request = $app->request();
@@ -23,10 +60,9 @@ $app->post('/login', function() use ($app){
 		
 		$email= $params['email'];
 		$password = $params['password'];
-        $type = $params['type'];
 	
 		$db = new DbHandler();	
-		if ($db->checkLogin($email, $password, $type)) {
+		if ($db->checkLogin($email, $password)) {
 
 			$logged_User = $db->getUserByEmail($email);
 			if ($logged_User != NULL) {
@@ -37,8 +73,9 @@ $app->post('/login', function() use ($app){
 					echoRespnse(200, $response);
 				} 
 				$response["error"] = false;
-				$response['accessToken'] = $access_token;
-				$response['username'] = $logged_User['first_name'];
+				$response['accessToken'] 	= $access_token;
+				$response['username'] 		= $logged_User['first_name'];
+				$response['user_type']		= $logged_User['user_type'];
 				$response['message'] = "Successfully authenticated";
 				echoRespnse(200, $response);
 			} else {
@@ -53,6 +90,51 @@ $app->post('/login', function() use ($app){
 		}
 	}
 });	 
+
+/**
+ * Get user allowed features
+ * url 		- /userFeatures
+ * method 	- GET
+ * params 	- $user_id */	
+$app->get('/userFeatures', 'authenticate', function() {
+		$response = array();
+		$DbHandler = new DbHandler();
+		global $user_id;			
+		$result = $DbHandler->getUserFeatures($user_id);
+
+        if ($result != NULL) {
+        
+        	$response["error"] = false;
+			$response['features'] = $result;
+			echoRespnse(200	, $response);
+		} else {
+			$response["error"] = true;
+			$response["message"] = "The requested resource doesn't exists";
+			echoRespnse(404, $response);
+		}
+	});	
+
+
+/**
+ * Get user by user id
+ * url - /userlist
+ * method - GET
+ * params -user id*/		
+$app->get('/user/:id', 'authenticate', function($user_id) {
+		$response = array();
+		$DbHandler = new DbHandler();	
+		$result = $DbHandler->GetUserDetail($user_id);
+        if ($result != NULL) {
+        	$response["error"] = false;
+			$response['user'] = json_decode($result);
+			echoRespnse(200	, $response);
+		} else {
+			$response["error"] = true;
+			$response["message"] = "The requested resource doesn't exists";
+			echoRespnse(404, $response);
+		}
+	});	 
+
 
 
 /**
@@ -79,44 +161,9 @@ $app->post('/login', function() use ($app){
 // 		}
 // });
 	
-/**
- * Adding Middle Layer to authenticate every request
- * Checking if the request has valid api key in the 'Authorization' header
- */
-// function authenticate(\Slim\Route $route) {
-//     // Getting request headers
-//     $headers = apache_request_headers();
-//     $response = array();
-//     $app = \Slim\Slim::getInstance();
-// 	//echo $headers['Authorization'];
-//     // Verifying Authorization Header
-//     if (isset($headers['Authorization'])) {
-//         $db = new DbHandler();
 
-//         // get the access token
-//         $user_accessToken = $headers['Authorization'];
-//         // validating Access Token
-//         if (!$db->isValidAccessToken($user_accessToken)) {
-//             // acess token not present in users table
-//             $response["error"] = true;
-//             $response["message"] = "Access Denied. Invalid Access Token";
-//             echoRespnse(401, $response);
-//             $app->stop();
-//         }else{
-//             global $user_id;
-//             // get user primary key id
-//             $user = $db->getUserId($user_accessToken);
-// 			$user_id = $user['user_id'];
-// 			//$user_id = $user['user_id'];
-//         }        
-//     } else {
-//         // User Access Token is missing in header
-//         $response["error"] = true;
-//         $response["message"] = "invalid Request. Please login to the system";
-//         echoRespnse(400, $response);
-//         $app->stop();
-//     }
-// }
+
+
 
 
 /**
