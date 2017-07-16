@@ -133,7 +133,7 @@ class DbHandler {
             $user_values  = [];
             $daarkorator_details = [];
             $is_daarkorator = false; 
-
+            // print_r($params);die();
             if(array_key_exists("daarkorator_details", $params) ){
                 $daarkorator_details = $params['daarkorator_details'];
                 
@@ -158,7 +158,6 @@ class DbHandler {
                     return false;
                 }
             }
-    
             return $id;
         
         }catch(Exception $e) {
@@ -190,6 +189,24 @@ class DbHandler {
             return false;
         }
         
+    }
+
+    public function usersBytype($type_id) {
+        try {
+            $db = new database();
+            $table = 'user u left join daarkorator_details du on u.id = du.user_id';
+            $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website ';
+            $where = 'u.user_type= "' . $type_id . '"';
+
+            $db->selectJson($table, $rows, $where, '', '');
+            $users = $db->getJson();
+ 
+            return json_decode($users);
+        
+        }catch(Exception $e) {
+            $this->callErrorLog($e);
+            return false;
+        }
     }
 
     private function callErrorLog($e){

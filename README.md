@@ -67,3 +67,45 @@
 - response with no errors
 `{"error":false,"user_id":14}`
 
+#### List users
+
+- `http://localhost/daarkorator/user/:type_id/type`
+- method  : get 
+- headers : Authorization
+- response with no errors
+`{
+    "error": false,
+    "users": [
+        {
+            "id": "3",
+            "first_name": "jone",
+            "last_name": "smith",
+            "email": "shuboothi@gmail.com",
+            "user_image": "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
+            "contact_number": "0322222623",
+            "company_name": "jadopado",
+            "about": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+            "tranings": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
+            "tools": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
+            "instagrame": "https://www.instagram.com/?hl=en",
+            "website": "test.com"
+        },
+        {
+            "id": "1",
+            "first_name": "deegha",
+            "last_name": "galkissa",
+            "email": "shuboothi@gmail.com",
+            "user_image": "",
+            "contact_number": "0322222623",
+            "company_name": null,
+            "about": null,
+            "tranings": null,
+            "tools": null,
+            "instagrame": null,
+            "website": null
+        }
+    ]
+}`
+
+
+

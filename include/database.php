@@ -95,7 +95,7 @@ private $numrows;
 			$q .= ' limit '.$limit;
 		}
 		
-		//echo $q;
+		// echo $q;
 		$query = mysqli_query($this->con,$q);
 		$numRows = mysqli_num_rows($query);
 		$this->numrows = $numRows;
@@ -128,22 +128,28 @@ private $numrows;
 	
 	
 	function insert($table,$values,$rows){
-		$insert = "insert into ".$table;
-		if($rows != ""){
-			$insert .= " (".$rows.")";
+		try{
+			$insert = "insert into ".$table;
+			if($rows != ""){
+				$insert .= " (".$rows.")";
+			}
+			if($values != ""){
+				$insert .= " values (".$values.");";
+			}
+			// echo $insert;
+			$ins = mysqli_query($this->con,$insert);
+			$this->insertid = mysqli_insert_id($this->con);
+			if($ins){
+				return $this->insertid;
+			}else{
+				return false;	
+			}
+			$this->disconnect();
+		}catch (Exception $e) {
+			$this->callErrorLog($e);
+            return false;
 		}
-		if($values != ""){
-			$insert .= " values (".$values.");";
-		}
-		// echo $insert;
-		$ins = mysqli_query($this->con,$insert);
-		$this->insertid = mysqli_insert_id($this->con);
-		if($ins){
-			return $this->insertid;
-		}else{
-			return false;	
-		}
-		$this->disconnect();
+		
 	}
 	
 	

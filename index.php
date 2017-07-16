@@ -114,28 +114,12 @@ $app->get('/userFeatures', 'authenticate', function() {
 		}
 	});	
 
-
 /**
- * Get user by user id
- * url - /userlist
- * method - GET
- * params -user id*/		
-$app->get('/user/:id', 'authenticate', function($user_id) {
-		$response = array();
-		$DbHandler = new DbHandler();	
-		$result = $DbHandler->GetUserDetail($user_id);
-        if ($result != NULL) {
-        	$response["error"] = false;
-			$response['user'] = json_decode($result);
-			echoRespnse(200	, $response);
-		} else {
-			$response["error"] = true;
-			$response["message"] = "The requested resource doesn't exists";
-			echoRespnse(404, $response);
-		}
-	});	 
-
-
+ * Create user
+ * url - /user
+ * method - POST
+ * params -user object
+ */	
 $app->post('/user', function() use ($app){
 	$response 	= array();
 	if($app->request()){
@@ -156,84 +140,25 @@ $app->post('/user', function() use ($app){
 	}
 });	
 
-
 /**
- * Create user 
- * url - /userlist
- * method - POST
- * params -user object*/
-
-// $app->post('/user', 'authenticate', function() use ($app) {
-// 		$users  = array();
-// 		$response = array();
-// 		$request = $app->request();
-// 		$DbHandler = new DbHandler();
-
-// 		$users = $request->getBody();		
-// 		if($DbHandler->createUser($users)){
-// 			$response["error"] = false;
-// 			$response["message"] = "user created successfully";
-// 			echoRespnse(200, $response);				
-// 			}else{
-// 			$response["error"] = true;
-// 			$response["message"] = "user creation failed!";
-// 			echoRespnse(400, $response);
-// 		}
-// });
-	
-
-
-
-
-
-/**
- * Get user by checking the Accesstoken passed in header
- * url 		- /GetUserDetail
- * method 	- GET
- * params 	- '' */	
-// $app->get('/GetUserDetail', 'authenticate', function() {
-// 		$response = array();
-// 		$DbHandler = new DbHandler();
-// 		global $user_id;			
-// 		$result = $DbHandler->GetUserDetail($user_id);
-		
-//         if ($result != NULL) {
-//         	$response["error"] = false;
-// 			$response['user'] = json_decode($result);
-// 			echoRespnse(200	, $response);
-// 		} else {
-// 			$response["error"] = true;
-// 			$response["message"] = "The requested resource doesn't exists";
-// 			echoRespnse(404, $response);
-// 		}
-// 	});	 
-
-
-/**
- * Create user 
- * url - /userlist
- * method - POST
- * params -user object*/
-
-// $app->post('/user', 'authenticate', function() use ($app) {
-// 		$users  = array();
-// 		$response = array();
-// 		$request = $app->request();
-// 		$DbHandler = new DbHandler();
-
-// 		$users = $request->getBody();		
-// 		//verifyRequiredParams(array("user_email", "user_password"));
-// 		if($DbHandler->createUser($users)){
-// 			$response["error"] = false;
-// 			$response["message"] = "user created successfully";
-// 			echoRespnse(200, $response);				
-// 			}else{
-// 			$response["error"] = true;
-// 			$response["message"] = "user creation failed!";
-// 			echoRespnse(400, $response);
-// 		}
-// });
-
+ * Get user by user type
+ * url - /user/:type_id/type
+ * method - GET
+ * params -type_id*/		
+$app->get('/user/:type_id/type', 'authenticate', function($type_id) {
+	$response = array();
+	$DbHandler = new DbHandler();	
+	$result = $DbHandler->usersBytype($type_id);
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['users'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});	
 		
 $app->run();
 		

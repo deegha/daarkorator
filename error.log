@@ -1,1 +1,2 @@
-Undefined variable: mysqli
+array_key_exists() expects parameter 2 to be array, string given
+array_key_exists() expects parameter 2 to be array, string given
