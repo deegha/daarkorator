@@ -159,8 +159,32 @@ $app->get('/user/:type_id/type', 'authenticate', function($type_id) {
 		echoRespnse(404, $response);
 	}
 });	
+
+/**
+ * Create user
+ * url - /user/:user_id
+ * method - DELETE
+ * params -user object
+ */	
+$app->delete('/user/:user_id', function($user_id) use ($app){
+	$response 	= array();
+	if($app->request()){
+
+		$DbHandler 	= new DbHandler();
+		$result = $DbHandler->deleteUser($user_id);
+
+		if(!$result) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);	
+		}
+
+		$response["error"] = false;
+		$response["message"] = "User Successfully Deleted";
+		echoRespnse(200	, $response);
+	}
+});	
 		
 $app->run();
-		
 		
 ?>

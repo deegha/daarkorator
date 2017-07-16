@@ -69,7 +69,7 @@
 
 #### List users
 
-- `http://localhost/daarkorator/user/:type_id/type`
+- `/user/:type_id/type`
 - method  : get 
 - headers : Authorization
 - response with no errors
@@ -107,5 +107,14 @@
     ]
 }`
 
+#### Delete user
 
+- `/user/:user_id`
+- method  : delete 
+- headers : Authorization
+- response with no errors
+`{
+    "error": false,
+    "message": "User Successfully Deleted"
+}`
 

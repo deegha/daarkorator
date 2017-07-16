@@ -24,8 +24,11 @@ class DbHandler {
             }
         }catch (Exception $e) {
             return false;           
-        }
-      
+        } 
+    }
+
+    private function callErrorLog($e){
+        error_log($e->getMessage(). "\n", 3, "./error.log");
     }
 
     public function getAccessToken($user_id) {
@@ -196,7 +199,7 @@ class DbHandler {
             $db = new database();
             $table = 'user u left join daarkorator_details du on u.id = du.user_id';
             $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website ';
-            $where = 'u.user_type= "' . $type_id . '"';
+            $where = 'u.user_type= "' . $type_id . '" and u.status=1';
 
             $db->selectJson($table, $rows, $where, '', '');
             $users = $db->getJson();
@@ -209,11 +212,22 @@ class DbHandler {
         }
     }
 
-    private function callErrorLog($e){
-         error_log($e->getMessage(). "\n", 3, "./error.log");
-
+    public function deleteUser($user_id) {
+        try{
+            $db = new database();
+            $table  = 'user';
+            $rows   =  array('status' => 0);
+            $where  = 'id='.$user_id;
+            if($db->update($table,$rows,$where)) {
+                return true;
+            }else{
+                return false;
+            }
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
     }
-
 }
 
 ?>
