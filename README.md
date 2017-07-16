@@ -1,9 +1,8 @@
 # daarkorator
 
 ## Project setup
-	- Clone the repository
-	- Run composer install to install the dependancies
-	
+	- Clone the repository 
+	- Run database script
 
 ### API Endpoints
 
