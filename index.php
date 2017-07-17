@@ -54,42 +54,46 @@ function authenticate(\Slim\Route $route) {
 $app->post('/login', function() use ($app){
 	$response = array();
 	$request = $app->request();
-
-	if($app->request()){
-		$params = $app->request()->getBody();
-
-		$email= $params['email'];
-		$password = $params['password'];
-	
-		$db = new DbHandler();	
-		if ($db->checkLogin($email, $password)) {
-
-			$logged_User = $db->getUserByEmail($email);
+	$db = new DbHandler();	
+	try{
+		if($app->request()){
+			$params = $app->request()->getBody();
+			$email= $params['email'];
+			$password = $params['password'];
 		
-			if ($logged_User != NULL) {
-				$access_token = $db->getAccessToken($logged_User['id']);
-				if(!$access_token) {
+			
+			if ($db->checkLogin($email, $password)) {
+
+				$logged_User = $db->getUserByEmail($email);
+			
+				if ($logged_User != NULL) {
+					$access_token = $db->getAccessToken($logged_User['id']);
+					if(!$access_token) {
+						$response['error'] = true;
+						$response['message'] = "An error occurred. Please try again";
+						echoRespnse(200, $response);
+					} 
+					$response["error"] = false;
+					$response['accessToken'] 	= $access_token;
+					$response['username'] 		= $logged_User['first_name'];
+					$response['user_type']		= $logged_User['user_type'];
+					$response['message'] = "Successfully authenticated";
+					echoRespnse(200, $response);
+				} else {
 					$response['error'] = true;
 					$response['message'] = "An error occurred. Please try again";
 					echoRespnse(200, $response);
-				} 
-				$response["error"] = false;
-				$response['accessToken'] 	= $access_token;
-				$response['username'] 		= $logged_User['first_name'];
-				$response['user_type']		= $logged_User['user_type'];
-				$response['message'] = "Successfully authenticated";
-				echoRespnse(200, $response);
+				}
 			} else {
 				$response['error'] = true;
-				$response['message'] = "An error occurred. Please try again";
+				$response['message'] = 'Login failed. Incorrect credentials';
 				echoRespnse(200, $response);
 			}
-		} else {
-			$response['error'] = true;
-			$response['message'] = 'Login failed. Incorrect credentials';
-			echoRespnse(200, $response);
 		}
-	}
+	}catch(Exception $e) {
+        $db->callErrorLog($e);
+        return false;
+    }
 });	 
 
 /**

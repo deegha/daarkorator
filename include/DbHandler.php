@@ -27,7 +27,7 @@ class DbHandler {
         } 
     }
 
-    private function callErrorLog($e){
+    public function callErrorLog($e){
         error_log($e->getMessage(). "\n", 3, "./error.log");
     }
 

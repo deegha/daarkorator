@@ -1,3 +1,6 @@
 array_key_exists() expects parameter 2 to be array, string given
 array_key_exists() expects parameter 2 to be array, string given
 json_decode() expects parameter 1 to be string, array given
+Illegal string offset 'email'
+Illegal string offset 'email'
+Illegal string offset 'email'
