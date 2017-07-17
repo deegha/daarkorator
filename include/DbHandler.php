@@ -107,7 +107,7 @@ class DbHandler {
                 return false;
             }
 
-            return $features;
+            return json_decode($features[1]);
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
