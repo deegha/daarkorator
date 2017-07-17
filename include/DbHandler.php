@@ -125,7 +125,7 @@ class DbHandler {
         $db->select($table, $rows, $where, '', '');
         $logged_User = $db->getResults();
 
-        return $logged_User;
+        return $logged_User[0];
     }
 
     public function createUser($params) {

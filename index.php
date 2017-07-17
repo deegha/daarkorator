@@ -65,6 +65,7 @@ $app->post('/login', function() use ($app){
 		if ($db->checkLogin($email, $password)) {
 
 			$logged_User = $db->getUserByEmail($email);
+		
 			if ($logged_User != NULL) {
 				$access_token = $db->getAccessToken($logged_User['id']);
 				if(!$access_token) {
@@ -161,7 +162,7 @@ $app->get('/user/:type_id/type', 'authenticate', function($type_id) {
 });	
 
 /**
- * Create user
+ * Delete user
  * url - /user/:user_id
  * method - DELETE
  * params -user object
@@ -185,6 +186,7 @@ $app->delete('/user/:user_id', function($user_id) use ($app){
 	}
 });	
 		
+
 $app->run();
 		
 ?>
