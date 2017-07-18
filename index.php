@@ -41,7 +41,9 @@ function authenticate(\Slim\Route $route) {
             }
 
             global $user_id;
+			global $features;
 			$user_id = $access['user_id'];
+			$features = $access['features'];
         }        
     } else {
         $response["error"] = true;
@@ -189,6 +191,28 @@ $app->delete('/user/:user_id', function($user_id) use ($app){
 		echoRespnse(200	, $response);
 	}
 });	
+
+/**
+ * Update price 
+ * url - /package/:id
+ * method - PUT
+ * params - */
+$app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
+		global $features;
+		$capabilities = json_decode($features);
+
+		if(!$capabilities->manageProjects->priceSetup) {
+			return false;
+		}
+
+		$request = $app->request();
+		$DbHandler = new DbHandler();
+		$response = array();
+		$pkg =  $request->getBody();
+
+		echo $features;
+		
+});
 		
 
 $app->run();
