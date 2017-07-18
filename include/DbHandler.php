@@ -73,20 +73,19 @@ class DbHandler {
     public function isValidAccessToken($user_accessToken) {
         try{
             $db          = new database();
-            $table       = "authentication_table";
-            $rows        = 'user_id,   expiration';
-            $where       = 'access_token= "' . $user_accessToken .'"';
+            $table       = "authentication_table a JOIN user_type t JOIN user u";
+            $rows        = 'a.user_id, a.expiration, t.features';
+            $where       = 'a.access_token= "' . $user_accessToken .'" AND u.user_type = t.type AND a.user_id = u.id';
 
             $db->select($table, $rows, $where, '', '');
             $access = $db->getResults();
             if(!$access){
                 return false;
-            } 
+            }else{
+				$this->updateAccesstokenExpiry($user_accessToken);
 
-            $this->updateAccesstokenExpiry($user_accessToken);
-
-            return $access;
-
+            	return $access;	
+			}
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
