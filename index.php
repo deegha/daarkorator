@@ -30,7 +30,6 @@ function authenticate(\Slim\Route $route) {
         if (!$access) {
             $response["error"] = true;
             $response["message"] = "Access Denied. Invalid Access Token";
-			$response["test"] =  "dsfsdf";
             echoRespnse(401, $response);
             $app->stop();
         }else{
@@ -191,7 +190,7 @@ $app->delete('/user/:user_id', function($user_id) use ($app){
 
 /**
  * Update price 
- * url - /package
+ * url - /package/:id
  * method - PUT
  * params - */
 $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
