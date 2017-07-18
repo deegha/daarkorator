@@ -194,11 +194,18 @@ $app->delete('/user/:user_id', function($user_id) use ($app){
  * method - PUT
  * params - */
 $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
+		global $features;
+		$capabilities = json_decode($features);
+
+		if(!$capabilities->manageProjects->priceSetup) {
+			return false;
+		}
+
 		$request = $app->request();
 		$DbHandler = new DbHandler();
 		$response = array();
 		$pkg =  $request->getBody();
-		global $features;
+
 		echo $features;
 		
 });
