@@ -30,6 +30,7 @@ function authenticate(\Slim\Route $route) {
         if (!$access) {
             $response["error"] = true;
             $response["message"] = "Access Denied. Invalid Access Token";
+			$response["test"] =  "dsfsdf";
             echoRespnse(401, $response);
             $app->stop();
         }else{
