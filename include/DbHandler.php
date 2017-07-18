@@ -83,7 +83,6 @@ class DbHandler {
                 return false;
             }else{
 				$this->updateAccesstokenExpiry($user_accessToken);
-
             	return $access;	
 			}
         }catch(Exception $e) {
@@ -124,7 +123,10 @@ class DbHandler {
         $db->select($table, $rows, $where, '', '');
         $logged_User = $db->getResults();
 
-        return $logged_User[0];
+        if(!$logged_User) {
+            return false;
+        }
+        return $logged_User;
     }
 
     public function createUser($params) {
@@ -135,7 +137,7 @@ class DbHandler {
             $user_values  = [];
             $daarkorator_details = [];
             $is_daarkorator = false; 
-            // print_r($params);die();
+
             if(array_key_exists("daarkorator_details", $params) ){
                 $daarkorator_details = $params['daarkorator_details'];
                 
@@ -193,12 +195,12 @@ class DbHandler {
         
     }
 
-    public function usersBytype($type_id) {
+    public function usersBytype() {
         try {
             $db = new database();
             $table = 'user u left join daarkorator_details du on u.id = du.user_id';
             $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website ';
-            $where = 'u.user_type= "' . $type_id . '" and u.status=1';
+            $where = ' u.status=1';
 
             $db->selectJson($table, $rows, $where, '', '');
             $users = $db->getJson();
