@@ -30,6 +30,7 @@ function authenticate(\Slim\Route $route) {
         if (!$access) {
             $response["error"] = true;
             $response["message"] = "Access Denied. Invalid Access Token";
+			$response["test"] =  "dsfsdf";
             echoRespnse(401, $response);
             $app->stop();
         }else{
@@ -41,7 +42,9 @@ function authenticate(\Slim\Route $route) {
             }
 
             global $user_id;
+			global $features;
 			$user_id = $access['user_id'];
+			$features = $access['features'];
         }        
     } else {
         $response["error"] = true;
@@ -189,6 +192,21 @@ $app->delete('/user/:user_id', function($user_id) use ($app){
 		echoRespnse(200	, $response);
 	}
 });	
+
+/**
+ * Update price 
+ * url - /package
+ * method - PUT
+ * params - */
+$app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
+		$request = $app->request();
+		$DbHandler = new DbHandler();
+		$response = array();
+		$pkg =  $request->getBody();
+		global $features;
+		echo $features;
+		
+});
 		
 
 $app->run();
