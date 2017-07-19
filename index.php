@@ -39,9 +39,10 @@ function authenticate(\Slim\Route $route) {
 	            echoRespnse(200, $response);
 	            $app->stop();
             }
-
             global $user_id;
+			global $features;
 			$user_id = $access['user_id'];
+			$features = $access['features'];
         }        
     } else {
         $response["error"] = true;
@@ -60,12 +61,11 @@ $app->post('/login', function() use ($app){
 			$params = $app->request()->getBody();
 			$email= $params['email'];
 			$password = $params['password'];
-		
 			
 			if ($db->checkLogin($email, $password)) {
 
 				$logged_User = $db->getUserByEmail($email);
-			
+				
 				if ($logged_User != NULL) {
 					$access_token = $db->getAccessToken($logged_User['id']);
 					if(!$access_token) {
@@ -102,6 +102,14 @@ $app->post('/login', function() use ($app){
  * method 	- GET
  * params 	- $user_id */	
 $app->get('/userFeatures', 'authenticate', function() {
+		global $features;
+		$capabilities = json_decode($features);
+		if(!$capabilities->manageUsers->getFeatures) {
+			$response["error"] = true;
+            $response["message"] = "Unauthorized access";
+            echoRespnse(401, $response);
+		}
+
 		$response = array();
 		$DbHandler = new DbHandler();
 		global $user_id;			
@@ -125,12 +133,24 @@ $app->get('/userFeatures', 'authenticate', function() {
  * method - POST
  * params -user object
  */	
-$app->post('/user', function() use ($app){
+$app->post('/user', 'authenticate', function() use ($app){
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->create) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
 	$response 	= array();
 	if($app->request()){
 		$params 	=  $app->request()->getBody();
-
 		$DbHandler 	= new DbHandler();
+		if($DbHandler->getUserByEmail($params['email'])) {
+			$response["error"] = true;
+			$response["message"] = "Email already exist";
+			echoRespnse(200, $response);
+		}
 		$result = $DbHandler->createUser($params);
 
 		if($result) {
@@ -150,10 +170,18 @@ $app->post('/user', function() use ($app){
  * url - /user/:type_id/type
  * method - GET
  * params -type_id*/		
-$app->get('/user/:type_id/type', 'authenticate', function($type_id) {
+$app->get('/user', 'authenticate', function() {
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->view) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
 	$response = array();
 	$DbHandler = new DbHandler();	
-	$result = $DbHandler->usersBytype($type_id);
+	$result = $DbHandler->usersBytype();
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['users'] = $result;
@@ -171,7 +199,14 @@ $app->get('/user/:type_id/type', 'authenticate', function($type_id) {
  * method - DELETE
  * params -user object
  */	
-$app->delete('/user/:user_id', function($user_id) use ($app){
+$app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->remove) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
 	$response 	= array();
 	if($app->request()){
 
@@ -189,6 +224,27 @@ $app->delete('/user/:user_id', function($user_id) use ($app){
 		echoRespnse(200	, $response);
 	}
 });	
+
+/**
+ * Update price 
+ * url - /package/:id
+ * method - PUT
+ * params - */
+$app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
+		global $features;
+		$capabilities = json_decode($features);
+
+		if(!$capabilities->manageProjects->priceSetup) {
+			return false;
+		}
+
+		$request = $app->request();
+		$DbHandler = new DbHandler();
+		$response = array();
+		$pkg =  $request->getBody();
+
+		echo $features;
+});
 		
 
 $app->run();
