@@ -13,8 +13,7 @@
 - request 
 	`{
 	"email": "shuboothi@gmail.com",
-	"password" : "098f6bcd4621d373cade4e832627b4f6",
-	"type"	: 1
+	"password" : "098f6bcd4621d373cade4e832627b4f6"
 	}`
 
 - response with no errors
