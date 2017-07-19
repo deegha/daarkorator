@@ -33,7 +33,7 @@ function authenticate(\Slim\Route $route) {
             echoRespnse(401, $response);
             $app->stop();
         }else{
-            if($access['expiration'] < date('Y-m-d H:i:s')){
+            if($access['expiration'] <= date('Y-m-d H:i:s')){
                 $response["error"] = true;
 	            $response["message"] = "Access token has expired"; 
 	            echoRespnse(200, $response);
@@ -66,7 +66,6 @@ $app->post('/login', function() use ($app){
 			if ($db->checkLogin($email, $password)) {
 
 				$logged_User = $db->getUserByEmail($email);
-				//var_dump($logged_User);
 				if ($logged_User != NULL) {
 					$access_token = $db->getAccessToken($logged_User['id']);
 					if(!$access_token) {
@@ -77,7 +76,6 @@ $app->post('/login', function() use ($app){
 					$response["error"] = false;
 					$response['accessToken'] 	= $access_token;
 					$response['username'] 		= $logged_User['first_name'];
-					//$response['user_type']		= $logged_User['user_type'];
 					$response['message'] = "Successfully authenticated";
 					echoRespnse(200, $response);
 				} else {
