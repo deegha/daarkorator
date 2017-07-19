@@ -81,10 +81,14 @@ class DbHandler {
             $access = $db->getResults();
             if(!$access){
                 return false;
-            }else{
-				$this->updateAccesstokenExpiry($user_accessToken);
-            	return $access;	
-			}
+            }
+
+            if($access['expiration'] >= date('Y-m-d H:i:s')){
+                 $this->updateAccesstokenExpiry($user_accessToken);
+            }
+			
+        	return $access;	
+			
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
