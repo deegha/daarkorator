@@ -53,6 +53,7 @@ function authenticate(\Slim\Route $route) {
 }
 
 $app->post('/login', function() use ($app){
+	print_r("check");
 	$response = array();
 	$request = $app->request();
 	$db = new DbHandler();	
@@ -65,7 +66,7 @@ $app->post('/login', function() use ($app){
 			if ($db->checkLogin($email, $password)) {
 
 				$logged_User = $db->getUserByEmail($email);
-				
+				//var_dump($logged_User);
 				if ($logged_User != NULL) {
 					$access_token = $db->getAccessToken($logged_User['id']);
 					if(!$access_token) {
@@ -76,7 +77,7 @@ $app->post('/login', function() use ($app){
 					$response["error"] = false;
 					$response['accessToken'] 	= $access_token;
 					$response['username'] 		= $logged_User['first_name'];
-					$response['user_type']		= $logged_User['user_type'];
+					//$response['user_type']		= $logged_User['user_type'];
 					$response['message'] = "Successfully authenticated";
 					echoRespnse(200, $response);
 				} else {
@@ -94,31 +95,67 @@ $app->post('/login', function() use ($app){
         $db->callErrorLog($e);
         return false;
     }
-});	 
+});	
+
+
+
+
+/**
+ * User Login
+ * url - /login
+ * method - POST
+ * params -email, password */
+/*$app->post('/login', function() use ($app) {    						
+		// reading post params
+		if($app->request()->post('email')){
+			$email = $app->request()->post('email');
+			$password = $app->request()->post('password');
+		}else{
+			$params = $app->request()->getBody();
+			$email= $params['email'];
+			$password = $params['password'];
+		}
+		$response = array();
+		$db = new DbHandler();
+		if ($db->checkLogin($email, $password)) {
+			//get the user by email
+			$logged_User = $db->getUserByEmail($email); 
+			
+			if ($logged_User != NULL) {
+				$response["error"] = false;
+				$response['accessToken'] = $logged_User['user_accessToken'];
+				$response['username'] = $logged_User['user_name'];
+				$response['type'] = $logged_User['user_type'];;
+				$response['message'] = "Successfully authenticated";
+				echoRespnse(200, $response);
+			} else {
+				// unknown error occurred
+				$response['error'] = true;
+				$response['message'] = "An error occurred. Please try again";
+				echoRespnse(200, $response);
+			}
+		} else {
+			// user credentials are wrong
+			$response['error'] = true;
+			$response['message'] = 'Login failed. Incorrect credentials';
+			echoRespnse(200, $response);
+		}
+			
+}); */
 
 /**
  * Get user allowed features
  * url 		- /userFeatures
  * method 	- GET
  * params 	- $user_id */	
-$app->get('/userFeatures', 'authenticate', function() {
+$app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
-		$capabilities = json_decode($features);
-		if(!$capabilities->manageUsers->getFeatures) {
-			$response["error"] = true;
-            $response["message"] = "Unauthorized access";
-            echoRespnse(401, $response);
-		}
-
 		$response = array();
-		$DbHandler = new DbHandler();
-		global $user_id;			
-		$result = $DbHandler->getUserFeatures($user_id);
+		$DbHandler = new DbHandler();		
 
-        if ($result != NULL) {
-        
+        if ($features != NULL) {
         	$response["error"] = false;
-			$response['features'] = $result;
+			$response['features'] = json_decode($features);
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
@@ -170,7 +207,7 @@ $app->post('/user', 'authenticate', function() use ($app){
  * url - /user/:type_id/type
  * method - GET
  * params -type_id*/		
-$app->get('/user', 'authenticate', function() {
+$app->get('/user', 'authenticate', function() use ($app) {
 	global $features;
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
