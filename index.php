@@ -98,51 +98,6 @@ $app->post('/login', function() use ($app){
 });	
 
 
-
-
-/**
- * User Login
- * url - /login
- * method - POST
- * params -email, password */
-/*$app->post('/login', function() use ($app) {    						
-		// reading post params
-		if($app->request()->post('email')){
-			$email = $app->request()->post('email');
-			$password = $app->request()->post('password');
-		}else{
-			$params = $app->request()->getBody();
-			$email= $params['email'];
-			$password = $params['password'];
-		}
-		$response = array();
-		$db = new DbHandler();
-		if ($db->checkLogin($email, $password)) {
-			//get the user by email
-			$logged_User = $db->getUserByEmail($email); 
-			
-			if ($logged_User != NULL) {
-				$response["error"] = false;
-				$response['accessToken'] = $logged_User['user_accessToken'];
-				$response['username'] = $logged_User['user_name'];
-				$response['type'] = $logged_User['user_type'];;
-				$response['message'] = "Successfully authenticated";
-				echoRespnse(200, $response);
-			} else {
-				// unknown error occurred
-				$response['error'] = true;
-				$response['message'] = "An error occurred. Please try again";
-				echoRespnse(200, $response);
-			}
-		} else {
-			// user credentials are wrong
-			$response['error'] = true;
-			$response['message'] = 'Login failed. Incorrect credentials';
-			echoRespnse(200, $response);
-		}
-			
-}); */
-
 /**
  * Get user allowed features
  * url 		- /userFeatures
