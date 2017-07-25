@@ -235,6 +235,27 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 
 		echo $features;
 });
+
+/**
+ * Update password 
+ * url - /updatePassword
+ * method - POST
+ * params - */
+$app->post('/updatePassword', function() use ($app) {
+		$params =  $app->request()->getBody();
+
+		$message['text'] = 'hello world';
+
+		if(!send_email ('resetpassword', $message)) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);	
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Email sent Successfully";
+		echoRespnse(200	, $response);
+});
 		
 
 $app->run();
