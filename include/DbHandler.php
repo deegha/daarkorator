@@ -233,6 +233,42 @@ class DbHandler {
             return false;
         }
     }
+
+    public function updateUser($params, $id) {
+        try{
+            $db           = new database();
+            $user_table   = "user";
+            $daarkorator_details = [];
+            $is_daarkorator = false; 
+
+            if(array_key_exists("daarkorator_details", $params) ){
+                $daarkorator_details = $params['daarkorator_details'];
+                
+                unset($params['daarkorator_details']);
+                $is_daarkorator = true;
+            }
+            unset($params['email']);
+            unset($params['id']);
+
+            $where = "id=".$id;
+          
+            $db->update($user_table,$params,$where);
+
+            if($is_daarkorator) {
+                $daarkor_details_table = "daarkorator_details";
+                $where_daar = "user_id=".$id;
+                if(!$db->update($daarkor_details_table,$daarkorator_details,$where_daar)) {
+                    return false;
+                }
+            }
+
+            return true;
+
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>

@@ -152,8 +152,6 @@ private $numrows;
 		
 	}
 	
-	
-	
 	function delete($table,$where){
 		if($where != ""){
 			$del = 'delete from '.$table.' where '.$where;
@@ -185,7 +183,7 @@ private $numrows;
 			}
 		}
 		$update .= ' where '.$where;
-		//echo $update;
+		// echo $update;
 		if($up = mysqli_query($this->con,$update)){
 			return true;	
 		}else{
