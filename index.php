@@ -243,8 +243,27 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
  * params - */
 $app->post('/updatePassword', function() use ($app) {
 		$params =  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		$message['text'] = 'hello world';	
 
-		$message['text'] = 'hello world';
+		$user_id = $DbHandler->checkEmailExist($params['email']);
+		if(!$user_id){
+			$response["error"] = true;
+			$response["message"] = "Email does not exist";
+			echoRespnse(404, $response);
+		}
+		$resetKey = $DbHandler->generateResetKey($user_id);
+		if(!$resetKey ){
+			$response["error"] = true;
+			$response["message"] = "An error occurred while generating reset key Please try again";
+			echoRespnse(404, $response);
+		}
+
+		$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+
+		$message['text'] = 'Click the following link to reset your password '.$url;
+		$message['to']	 = $params['email'];
+		$message['subject']	= 'Reset your password';
 
 		if(!send_email ('resetpassword', $message)) {
 			$response["error"] = true;

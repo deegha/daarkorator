@@ -59,10 +59,11 @@ function validateEmail($email) {
 function send_email ($template, $message) {
 
     try{
+
         $message_text = $message['text'];
         $msg_body = require_once 'email/'.$template.".php";
 
-        if(!mail($message['to'],$message['subject'],$msgBody)) {
+        if(!mail($message['to'],$message['subject'],$msg_body)) {
             return false;
         }
 
@@ -71,8 +72,9 @@ function send_email ($template, $message) {
         callErrorLog($e);
         return false;
     }
-    
 }
+
+
 
 
 ?>

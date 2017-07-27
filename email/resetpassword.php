@@ -1,3 +1,3 @@
 <div>
-	<?php echo $message_text; ?>
+	<?php $message_text; ?>
 </div>
