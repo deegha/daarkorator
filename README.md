@@ -112,3 +112,34 @@
     "message": "User Successfully Deleted"
 }`
 
+#### Update user
+
+- `/user/:user_id`
+- method  : put 
+- headers : Authorization
+- response with no errors
+`{"error":false,"message":"User updated Successfully"}`
+- request body 
+
+`
+{
+"first_name" :  "deegha",
+"last_name" :"Galkissa",
+"email": "shuboothi@gmail.com",
+"password" : "098f6bcd4621d373cade4e832627b4f6",
+"user_type" : 1,
+"user_image" : "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
+"contact_number" : "0322222623",
+"daarkorator_details" : {
+    "company_name" : "jadopado",
+    "about" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "tranings" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
+    "tools" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
+    "instagrame":"https://www.instagram.com/?hl=en",
+    "website": "test.com"
+}
+}`
+
+** send request body without `daarkorator_details` attribute for non daarkorator users
+
+

@@ -235,7 +235,44 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 
 		echo $features;
 });
-		
+
+/**
+ * Update user
+ * url - /user
+ * method - PUT
+ * params -user object
+ */	
+$app->put('/user/:id', 'authenticate', function($id) use ($app){
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->update) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response 	= array();
+	if($app->request()){
+		$params 	=  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		if(!$DbHandler->getUserByEmail($params['email'])) {
+			$response["error"] = true;
+			$response["message"] = "Couldnt find matching email id";
+			echoRespnse(404, $response);
+		}
+		$result = $DbHandler->updateUser($params, $id);
+
+		if($result) {
+			$response["error"] = false;
+			$response['message'] = "User updated Successfully";
+			echoRespnse(200	, $response);
+		}else{
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);
+		}
+	}
+});
 
 $app->run();
 		
