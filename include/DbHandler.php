@@ -133,7 +133,7 @@ class DbHandler {
         return $logged_User;
     }
 
-    public function createUser($params) {
+    public function createUser($params, $user_type=null) {
         try{
             $db           = new database();
             $user_table   = "user";
@@ -148,8 +148,10 @@ class DbHandler {
                 unset($params['daarkorator_details']);
                 $is_daarkorator = true;
             }
-            $result = $this->getInsertSting($params);
+            if($user_type!=null)
+                $params['user_type'] = $user_type;
 
+            $result = $this->getInsertSting($params);
             $rows   = $result['rows'];
             $values = '"'.$result['values'].'"';
 
@@ -308,6 +310,25 @@ class DbHandler {
             callErrorLog($e);
             return false;
         }
+    }
+
+    public function validate($params, $if_signUp=null){
+
+        if(!array_key_exists("first_name", $params) || strlen(trim($params["first_name"])) <= 0  ){
+            return false;
+        }
+        if(!array_key_exists("last_name", $params) || strlen(trim($params["last_name"])) <= 0 ){
+            return false;
+        }
+        if(!array_key_exists("email", $params) || strlen(trim($params["email"])) <= 0 ){
+            return false;
+        }
+        if($if_signUp!=null) {
+            if(!array_key_exists("password", $params) || strlen(trim($params["password"])) <= 0  ){
+                return false;
+            }  
+        }
+       return true;
     }
 }
 
