@@ -11,10 +11,7 @@ function echoRespnse($status_code, $response) {
     echo json_encode($response);
     die();       
 }
- 
-function callErrorLog($e){
-    error_log($e->getMessage(). "\n", 3, "./error.log");
-}
+
 
 
 function verifyRequiredParams($required_fields) {
@@ -55,26 +52,6 @@ function validateEmail($email) {
         $app->stop();
     }
 }
-
-function send_email ($template, $message) {
-
-    try{
-
-        $message_text = $message['text'];
-        $msg_body = require_once 'email/'.$template.".php";
-
-        if(!mail($message['to'],$message['subject'],$msg_body)) {
-            return false;
-        }
-
-        return true;
-    }catch(Exception $e){
-        callErrorLog($e);
-        return false;
-    }
-}
-
-
 
 
 ?>

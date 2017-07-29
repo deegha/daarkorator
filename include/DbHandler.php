@@ -81,14 +81,10 @@ class DbHandler {
             $access = $db->getResults();
             if(!$access){
                 return false;
-            }
-
-            if($access['expiration'] >= date('Y-m-d H:i:s')){
-                 $this->updateAccesstokenExpiry($user_accessToken);
-            }
-			
-        	return $access;	
-			
+            }else{
+				$this->updateAccesstokenExpiry($user_accessToken);
+            	return $access;	
+			}
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
@@ -221,7 +217,7 @@ class DbHandler {
         try{
             $db = new database();
             $table  = 'user';
-            $rows   =  array('status' => 3);
+            $rows   =  array('status' => 0);
             $where  = 'id='.$user_id;
             if($db->update($table,$rows,$where)) {
                 return true;
@@ -231,97 +227,6 @@ class DbHandler {
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
-        }
-    }
-
-    public function updateUser($params, $id) {
-        try{
-            $db           = new database();
-            $user_table   = "user";
-            $daarkorator_details = [];
-            $is_daarkorator = false; 
-
-            if(array_key_exists("daarkorator_details", $params) ){
-                $daarkorator_details = $params['daarkorator_details'];
-                
-                unset($params['daarkorator_details']);
-                $is_daarkorator = true;
-            }
-            unset($params['email']);
-            unset($params['id']);
-
-            $where = "id=".$id;
-          
-            $db->update($user_table,$params,$where);
-
-            if($is_daarkorator) {
-                $daarkor_details_table = "daarkorator_details";
-                $where_daar = "user_id=".$id;
-                if(!$db->update($daarkor_details_table,$daarkorator_details,$where_daar)) {
-                    return false;
-                }
-            }
-
-            return true;
-
-        }catch(Exception $e){
-            $this->callErrorLog($e);
-        }
-    }    
-
-    public function checkEmailExist($email){
-        try{
-            $db = new database();
-            $table  = 'user';
-            $rows   = 'id';
-            $where  = 'email="'.$email.'"';
-            $db->selectJson($table, $rows, $where, '', '');
-            $result = $db->getJson();
-            if(!$result){
-                return false; 
-            }
-                
-            $id = json_decode($result)  ;           
-            return $id[0]->id ;
-
-        }catch(Exception $e){
-            $this->callErrorLog($e);
-            return false;
-        }
-    }
- 
-    public function generateResetKey($user_id) {
-        
-        try{
-            $db = new database();
-            $resetkey = md5(uniqid(rand(), true));  
-            $expiry   = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day'));
-            $table    = 'password_reset_table';
-            $rows     = 'user_id, reset_key, expiry';
-            $values   = '"'.$user_id.'", "'.$resetkey.'", "'.$expiry.'"';
-
-            if(!$db->insert($table,$values,$rows)) {
-                return false;
-            }
-            return $resetkey;
-        }catch(Exception $e){
-            callErrorLog($e);
-            return false;
-        }
-    }
-
-    public function updatePackage($params, $id){
-        try{
-            $db           = new database();
-            $table        = "subscription";
-            $where        = "id=".$id;
-            if(!$db->update($table,$params,$where)){
-                return false;
-            }
-            return true;
-
-        }catch(Exception $e){
-             $this->callErrorLog($e);
         }
     }
 }

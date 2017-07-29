@@ -33,7 +33,7 @@ function authenticate(\Slim\Route $route) {
             echoRespnse(401, $response);
             $app->stop();
         }else{
-            if($access['expiration'] <= date('Y-m-d H:i:s')){
+            if($access['expiration'] < date('Y-m-d H:i:s')){
                 $response["error"] = true;
 	            $response["message"] = "Access token has expired"; 
 	            echoRespnse(200, $response);
@@ -53,7 +53,6 @@ function authenticate(\Slim\Route $route) {
 }
 
 $app->post('/login', function() use ($app){
-	print_r("check");
 	$response = array();
 	$request = $app->request();
 	$db = new DbHandler();	
@@ -66,6 +65,7 @@ $app->post('/login', function() use ($app){
 			if ($db->checkLogin($email, $password)) {
 
 				$logged_User = $db->getUserByEmail($email);
+				
 				if ($logged_User != NULL) {
 					$access_token = $db->getAccessToken($logged_User['id']);
 					if(!$access_token) {
@@ -76,6 +76,7 @@ $app->post('/login', function() use ($app){
 					$response["error"] = false;
 					$response['accessToken'] 	= $access_token;
 					$response['username'] 		= $logged_User['first_name'];
+					$response['user_type']		= $logged_User['user_type'];
 					$response['message'] = "Successfully authenticated";
 					echoRespnse(200, $response);
 				} else {
@@ -93,22 +94,31 @@ $app->post('/login', function() use ($app){
         $db->callErrorLog($e);
         return false;
     }
-});	
-
+});	 
 
 /**
  * Get user allowed features
  * url 		- /userFeatures
  * method 	- GET
  * params 	- $user_id */	
-$app->get('/userFeatures', 'authenticate', function() use ($app) {
+$app->get('/userFeatures', 'authenticate', function() {
 		global $features;
-		$response = array();
-		$DbHandler = new DbHandler();		
+		$capabilities = json_decode($features);
+		if(!$capabilities->manageUsers->getFeatures) {
+			$response["error"] = true;
+            $response["message"] = "Unauthorized access";
+            echoRespnse(401, $response);
+		}
 
-        if ($features != NULL) {
+		$response = array();
+		$DbHandler = new DbHandler();
+		global $user_id;			
+		$result = $DbHandler->getUserFeatures($user_id);
+
+        if ($result != NULL) {
+        
         	$response["error"] = false;
-			$response['features'] = json_decode($features);
+			$response['features'] = $result;
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
@@ -156,11 +166,11 @@ $app->post('/user', 'authenticate', function() use ($app){
 });	
 
 /**
- * List all users
- * url - /user
+ * Get user by user type
+ * url - /user/:type_id/type
  * method - GET
  * params -type_id*/		
-$app->get('/user', 'authenticate', function() use ($app) {
+$app->get('/user', 'authenticate', function() {
 	global $features;
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
@@ -221,7 +231,6 @@ $app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
  * method - PUT
  * params - */
 $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
-        //print_r($app->request()->getBody());
 		global $features;
 		$capabilities = json_decode($features);
 
@@ -234,96 +243,9 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 		$response = array();
 		$pkg =  $request->getBody();
 
-        $results = $DbHandler->updatePackage($pkg, $pkg_id);
-        if($results) {
-            $response["error"] = false;
-            $response['message'] = "Package updated successfully";
-            echoRespnse(200	, $response);
-        }else{
-            $response["error"] = true;
-            $response["message"] = "An error occurred. Please try again";
-            echoRespnse(500, $response);
-        }
+		echo $features;
 });
-
-/**
- * Update user
- * url - /user
- * method - PUT
- * params -user object
- */	
-$app->put('/user/:id', 'authenticate', function($id) use ($app){
-	global $features;
-	$capabilities = json_decode($features);
-	if(!$capabilities->manageUsers->update) {
-		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
-        echoRespnse(401, $response);
-	}
-
-	$response 	= array();
-	if($app->request()){
-		$params 	=  $app->request()->getBody();
-		$DbHandler 	= new DbHandler();
-		if(!$DbHandler->getUserByEmail($params['email'])) {
-			$response["error"] = true;
-			$response["message"] = "Couldnt find matching email id";
-			echoRespnse(404, $response);
-		}
-		$result = $DbHandler->updateUser($params, $id);
-
-		if($result) {
-			$response["error"] = false;
-			$response['message'] = "User updated Successfully";
-			echoRespnse(200	, $response);
-		}else{
-			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
-			echoRespnse(500, $response);
-		}
-	}
-});
-
-/**
- * Rest password 
- * url - /forgotPassword
- * method - POST
- * params - */
-$app->post('/forgotPassword', function() use ($app) {
-		$params =  $app->request()->getBody();
-		$DbHandler 	= new DbHandler();
-		$message['text'] = 'hello world';	
-
-		$user_id = $DbHandler->checkEmailExist($params['email']);
-		if(!$user_id){
-			$response["error"] = true;
-			$response["message"] = "Email does not exist";
-			echoRespnse(404, $response);
-		}
-		$resetKey = $DbHandler->generateResetKey($user_id);
-		if(!$resetKey ){
-			$response["error"] = true;
-			$response["message"] = "An error occurred while generating reset key Please try again";
-			echoRespnse(404, $response);
-		}
-
-		$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
-
-		$message['text'] = 'Click the following link to reset your password '.$url;
-		$message['to']	 = $params['email'];
-		$message['subject']	= 'Reset your password';
-
-		if(!send_email ('resetpassword', $message)) {
-			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
-			echoRespnse(500, $response);	
-		}
-
-		$response["error"] = false;
-		$response["message"] = "Email sent Successfully";
-		echoRespnse(200	, $response);
-});
-
+		
 
 $app->run();
 		
