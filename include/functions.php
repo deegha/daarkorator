@@ -59,9 +59,10 @@ function validateEmail($email) {
 function send_email ($template, $message) {
 
     try{
-
         $message_text = $message['text'];
-        $msg_body = require_once 'email/'.$template.".php";
+        ob_start();
+        include 'email/'.$template.'.php';
+        $msg_body = ob_get_clean();
 
         if(!mail($message['to'],$message['subject'],$msg_body)) {
             return false;

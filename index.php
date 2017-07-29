@@ -136,6 +136,18 @@ $app->post('/user', 'authenticate', function() use ($app){
 	if($app->request()){
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
+
+		if(!$DbHandler->validate($params)) {
+			$response["error"] = false;
+			$response["message"] = "Validation failed";
+			echoRespnse(200	, $response);
+		}
+
+        if(array_key_exists("password", $params) ){
+			$response["error"] = true;
+			$response["message"] = "Unauthorized request";
+			echoRespnse(401, $response);
+        }
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
 			$response["message"] = "Email already exist";
@@ -144,8 +156,21 @@ $app->post('/user', 'authenticate', function() use ($app){
 		$result = $DbHandler->createUser($params);
 
 		if($result) {
+			$resetKey = $DbHandler->generateResetKey($result);
+			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+
+			$message['text'] = 'Click the following link to activate your account '.$url;
+			$message['to']	 = $params['email'];
+			$message['subject']	= 'Activate your account';
+
+			if(!send_email ('resetpassword', $message)) {
+				$response["error"] = true;
+				$response["message"] = "An error occurred. Please try again";
+				echoRespnse(500, $response);	
+			}
+
 			$response["error"] = false;
-			$response['user_id'] = $result;
+			$response["message"] = "user created successfully";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
@@ -265,11 +290,25 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 	if($app->request()){
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
-		if(!$DbHandler->getUserByEmail($params['email'])) {
+
+		if(isset($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Couldnt find matching email id";
-			echoRespnse(404, $response);
+			$response['message'] = "Unauthorized request, email cannot be changed";
+			echoRespnse(401	, $response);
 		}
+
+		if(isset($params['user_type'])) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, user type cannot be changed";
+			echoRespnse(401	, $response);
+		}
+
+		if(!isset($params['update_password']) &&  isset($params['password'])) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, password cannot be changed on this request";
+			echoRespnse(401	, $response);
+		}
+
 		$result = $DbHandler->updateUser($params, $id);
 
 		if($result) {
@@ -285,11 +324,11 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 });
 
 /**
- * Rest password 
- * url - /restPassword
+ * forgot password 
+ * url - /forgotPassword
  * method - POST
  * params - */
-$app->post('/restPassword', function() use ($app) {
+$app->post('/forgotPassword', function() use ($app) {
 		$params =  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
 		$message['text'] = 'hello world';	
