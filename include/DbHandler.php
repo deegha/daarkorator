@@ -309,6 +309,21 @@ class DbHandler {
             return false;
         }
     }
+
+    public function updatePackage($params, $id){
+        try{
+            $db           = new database();
+            $table        = "subscription";
+            $where        = "id=".$id;
+            if(!$db->update($table,$params,$where)){
+                return false;
+            }
+            return true;
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
 }
 
 ?>
