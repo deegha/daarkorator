@@ -286,10 +286,10 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 
 /**
  * Rest password 
- * url - /restPassword
+ * url - /forgotPassword
  * method - POST
  * params - */
-$app->post('/restPassword', function() use ($app) {
+$app->post('/forgotPassword', function() use ($app) {
 		$params =  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
 		$message['text'] = 'hello world';	

@@ -221,7 +221,7 @@ class DbHandler {
         try{
             $db = new database();
             $table  = 'user';
-            $rows   =  array('status' => 0);
+            $rows   =  array('status' => 3);
             $where  = 'id='.$user_id;
             if($db->update($table,$rows,$where)) {
                 return true;

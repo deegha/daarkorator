@@ -146,9 +146,12 @@
 
 #### Reset password
 
-- `/restPassword`
+- `/forgotPassword`
 - method  : post 
 - headers : non
+- request : {
+            	"email" : "dhammika97@gmail.com"
+            }
 - response with no errors
 `{"error":false,"message":"Email sent Successfully"}`
 
