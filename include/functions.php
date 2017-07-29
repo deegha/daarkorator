@@ -17,11 +17,11 @@ function callErrorLog($e){
 }
 
 
-function verifyRequiredParams($required_fields) {
+function verifyRequiredParams($required_fields,$params) {
     $error = false;
     $error_fields = "";
     $request_params = array();
-    $request_params = $_REQUEST;
+    $request_params = $params;
     // Handling PUT request params
     if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
         $app = \Slim\Slim::getInstance();
@@ -40,7 +40,7 @@ function verifyRequiredParams($required_fields) {
         $response = array();
         $app = \Slim\Slim::getInstance();
         $response["error"] = true;
-        $response["message"] = 'Required field(s) ' . substr($error_fields, 0, -2) . ' is missing or empty';
+        $response["message"] = 'Required field(s) is missing or empty';
         echoRespnse(400, $response);
         $app->stop();
     }
