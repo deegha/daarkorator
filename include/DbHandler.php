@@ -266,6 +266,46 @@ class DbHandler {
 
         }catch(Exception $e){
             $this->callErrorLog($e);
+        }
+    }    
+
+    public function checkEmailExist($email){
+        try{
+            $db = new database();
+            $table  = 'user';
+            $rows   = 'id';
+            $where  = 'email="'.$email.'"';
+            $db->selectJson($table, $rows, $where, '', '');
+            $result = $db->getJson();
+            if(!$result){
+                return false; 
+            }
+                
+            $id = json_decode($result)  ;           
+            return $id[0]->id ;
+
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+ 
+    public function generateResetKey($user_id) {
+        
+        try{
+            $db = new database();
+            $resetkey = md5(uniqid(rand(), true));  
+            $expiry   = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day'));
+            $table    = 'password_reset_table';
+            $rows     = 'user_id, reset_key, expiry';
+            $values   = '"'.$user_id.'", "'.$resetkey.'", "'.$expiry.'"';
+
+            if(!$db->insert($table,$values,$rows)) {
+                return false;
+            }
+            return $resetkey;
+        }catch(Exception $e){
+            callErrorLog($e);
             return false;
         }
     }

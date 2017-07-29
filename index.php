@@ -156,8 +156,8 @@ $app->post('/user', 'authenticate', function() use ($app){
 });	
 
 /**
- * Get user by user type
- * url - /user/:type_id/type
+ * List all users
+ * url - /user
  * method - GET
  * params -type_id*/		
 $app->get('/user', 'authenticate', function() use ($app) {
@@ -273,6 +273,47 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 		}
 	}
 });
+
+/**
+ * Rest password 
+ * url - /restPassword
+ * method - POST
+ * params - */
+$app->post('/restPassword', function() use ($app) {
+		$params =  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		$message['text'] = 'hello world';	
+
+		$user_id = $DbHandler->checkEmailExist($params['email']);
+		if(!$user_id){
+			$response["error"] = true;
+			$response["message"] = "Email does not exist";
+			echoRespnse(404, $response);
+		}
+		$resetKey = $DbHandler->generateResetKey($user_id);
+		if(!$resetKey ){
+			$response["error"] = true;
+			$response["message"] = "An error occurred while generating reset key Please try again";
+			echoRespnse(404, $response);
+		}
+
+		$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+
+		$message['text'] = 'Click the following link to reset your password '.$url;
+		$message['to']	 = $params['email'];
+		$message['subject']	= 'Reset your password';
+
+		if(!send_email ('resetpassword', $message)) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);	
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Email sent Successfully";
+		echoRespnse(200	, $response);
+});
+
 
 $app->run();
 		

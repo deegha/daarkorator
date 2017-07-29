@@ -112,6 +112,7 @@
     "message": "User Successfully Deleted"
 }`
 
+
 #### Update user
 
 - `/user/:user_id`
@@ -143,3 +144,10 @@
 ** send request body without `daarkorator_details` attribute for non daarkorator users
 
 
+#### Reset password
+
+- `/restPassword`
+- method  : post 
+- headers : non
+- response with no errors
+`{"error":false,"message":"Email sent Successfully"}`
