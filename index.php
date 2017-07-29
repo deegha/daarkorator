@@ -237,11 +237,11 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 });
 
 /**
- * Update password 
- * url - /updatePassword
+ * Rest password 
+ * url - /restPassword
  * method - POST
  * params - */
-$app->post('/updatePassword', function() use ($app) {
+$app->post('/restPassword', function() use ($app) {
 		$params =  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
 		$message['text'] = 'hello world';	

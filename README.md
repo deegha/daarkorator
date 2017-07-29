@@ -112,3 +112,10 @@
     "message": "User Successfully Deleted"
 }`
 
+#### Reset password
+
+- `/restPassword`
+- method  : post 
+- headers : non
+- response with no errors
+`{"error":false,"message":"Email sent Successfully"}`
