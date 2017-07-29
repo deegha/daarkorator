@@ -221,6 +221,7 @@ $app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
  * method - PUT
  * params - */
 $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
+        //print_r($app->request()->getBody());
 		global $features;
 		$capabilities = json_decode($features);
 
@@ -233,7 +234,16 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 		$response = array();
 		$pkg =  $request->getBody();
 
-		echo $features;
+        $results = $DbHandler->updatePackage($pkg, $pkg_id);
+        if($results) {
+            $response["error"] = false;
+            $response['message'] = "Package updated successfully";
+            echoRespnse(200	, $response);
+        }else{
+            $response["error"] = true;
+            $response["message"] = "An error occurred. Please try again";
+            echoRespnse(500, $response);
+        }
 });
 
 /**

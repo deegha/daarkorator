@@ -151,3 +151,15 @@
 - headers : non
 - response with no errors
 `{"error":false,"message":"Email sent Successfully"}`
+
+
+#### Update package
+
+- `/package`
+- method  : put
+- headers : Authorization
+- request : {
+            	"price":"23"
+            }
+- response with no errors
+`{"error":false,"message":"Package updated successfully"}`
