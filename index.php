@@ -324,6 +324,69 @@ $app->post('/forgotPassword', function() use ($app) {
 		echoRespnse(200	, $response);
 });
 
+/**
+ * User Signup
+ * url - /userSignUp
+ * method - POST
+ * params -user object
+ */	
+$app->post('/userSignUp',  function() use ($app){
+
+	$response 	= array();
+	if($app->request()){
+		$params 	=  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		if($DbHandler->getUserByEmail($params['email'])) {
+			$response["error"] = true;
+			$response["message"] = "Email already exist";
+			echoRespnse(200, $response);
+		}
+		$user_type = 2;
+		
+		if(!$DbHandler->validate($params, true)) {
+			$response["error"] = false;
+			$response["message"] = "Validation failed";
+			echoRespnse(200	, $response);
+		}
+
+		$result = $DbHandler->createUser($params, $user_type);
+
+		if($result) {
+			$response["error"] = false;
+			$response["message"] = "User created successfully";
+			echoRespnse(200	, $response);
+		}else{
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);
+		}
+	}
+});
+
+
+/**
+ * List all rooms
+ * url - /rooms
+ * method - GET
+ * params -
+
+ */
+$app->get('/rooms', function() use ($app) {
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getRoomList();
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['rooms'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
 
 $app->run();
 		
