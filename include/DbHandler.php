@@ -345,6 +345,22 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
+
+    public function getRoomList(){
+        try{
+            $db           = new database();
+            $table        = "room_types";
+            $rows         = "*";
+            $where         = "";
+            $db->selectJson($table, $rows, $where, '', '');
+            $rooms = $db->getJson();
+
+            return json_decode($rooms);
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
 }
 
 ?>

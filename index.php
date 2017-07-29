@@ -361,7 +361,31 @@ $app->post('/userSignUp',  function() use ($app){
 			echoRespnse(500, $response);
 		}
 	}
-});	
+});
+
+
+/**
+ * List all rooms
+ * url - /rooms
+ * method - GET
+ * params -
+
+ */
+$app->get('/rooms', function() use ($app) {
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getRoomList();
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['rooms'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
 
 
 $app->run();
