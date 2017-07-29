@@ -75,6 +75,10 @@ function send_email ($template, $message) {
     }
 }
 
+function checkBody () {
+    
+}
+
 
 
 
