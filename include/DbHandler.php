@@ -249,8 +249,8 @@ class DbHandler {
                 unset($params['daarkorator_details']);
                 $is_daarkorator = true;
             }
-            unset($params['email']);
-            unset($params['id']);
+            if(array_key_exists("update_password", $params))
+                 unset($params['update_password']);
 
             $where = "id=".$id;
           
@@ -263,7 +263,6 @@ class DbHandler {
                     return false;
                 }
             }
-
             return true;
 
         }catch(Exception $e){

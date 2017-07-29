@@ -144,11 +144,12 @@
 ** send request body without `daarkorator_details` attribute for non daarkorator users
 
 
-#### Reset password
+#### forgot password
 
-- `/restPassword`
+- `/forgotPassword`
 - method  : post 
 - headers : non
+- request :`{"email":"shuboothi@gmail.com"}`
 - response with no errors
 `{"error":false,"message":"Email sent Successfully"}`
 
@@ -163,3 +164,21 @@
             }
 - response with no errors
 `{"error":false,"message":"Package updated successfully"}`
+
+#### User Signup
+
+-userSignUp
+-method : post
+-headers: non
+-request: 
+`{
+"first_name" :  "jone",
+"last_name" :"smith",
+"email": "shuboothi@gmail.com",
+"password" : "098f6bcd4621d373cade4e832627b4f6",
+"user_type" : 1,
+"user_image" : "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
+"contact_number" : "0322222623"
+}`
+- response with no errors
+`{"error": false,"message": "User created successfully"}`

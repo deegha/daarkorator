@@ -58,7 +58,7 @@ $app->post('/login', function() use ($app){
 	$request = $app->request();
 	$db = new DbHandler();	
 	try{
-		if($app->request()){
+		if($app->request() && $app->request()->getBody()){
 			$params = $app->request()->getBody();
 			$email= $params['email'];
 			$password = $params['password'];
@@ -88,6 +88,10 @@ $app->post('/login', function() use ($app){
 				$response['message'] = 'Login failed. Incorrect credentials';
 				echoRespnse(200, $response);
 			}
+		}else {
+			$response["error"] = true;
+			$response["message"] = "An error occurred. No request body";
+			echoRespnse(500, $response);
 		}
 	}catch(Exception $e) {
         $db->callErrorLog($e);
@@ -133,9 +137,20 @@ $app->post('/user', 'authenticate', function() use ($app){
 	}
 
 	$response 	= array();
-	if($app->request()){
+	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
+		if(!$DbHandler->validate($params)) {
+			$response["error"] = false;
+			$response["message"] = "Validation failed";
+			echoRespnse(200	, $response);
+		}
+
+        if(array_key_exists("password", $params) ){
+			$response["error"] = true;
+			$response["message"] = "Unauthorized request";
+			echoRespnse(401, $response);
+        }
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
 			$response["message"] = "Email already exist";
@@ -144,14 +159,31 @@ $app->post('/user', 'authenticate', function() use ($app){
 		$result = $DbHandler->createUser($params);
 
 		if($result) {
+			$resetKey = $DbHandler->generateResetKey($result);
+			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+
+			$message['text'] = 'Click the following link to activate your account '.$url;
+			$message['to']	 = $params['email'];
+			$message['subject']	= 'Activate your account';
+
+			if(!send_email ('resetpassword', $message)) {
+				$response["error"] = true;
+				$response["message"] = "An error occurred. Please try again";
+				echoRespnse(500, $response);	
+			}
+
 			$response["error"] = false;
-			$response['user_id'] = $result;
+			$response["message"] = "user created successfully";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
 			$response["message"] = "An error occurred. Please try again";
 			echoRespnse(500, $response);
 		}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
 	}
 });	
 
@@ -229,21 +261,27 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 			return false;
 		}
 
-		$request = $app->request();
-		$DbHandler = new DbHandler();
-		$response = array();
-		$pkg =  $request->getBody();
+		if($app->request() && $app->request()->getBody()){
+			$request = $app->request();
+			$DbHandler = new DbHandler();
+			$response = array();
+			$pkg =  $request->getBody();
 
-        $results = $DbHandler->updatePackage($pkg, $pkg_id);
-        if($results) {
-            $response["error"] = false;
-            $response['message'] = "Package updated successfully";
-            echoRespnse(200	, $response);
-        }else{
-            $response["error"] = true;
-            $response["message"] = "An error occurred. Please try again";
-            echoRespnse(500, $response);
-        }
+	        $results = $DbHandler->updatePackage($pkg, $pkg_id);
+	        if($results) {
+	            $response["error"] = false;
+	            $response['message'] = "Package updated successfully";
+	            echoRespnse(200	, $response);
+	        }else{
+	            $response["error"] = true;
+	            $response["message"] = "An error occurred. Please try again";
+	            echoRespnse(500, $response);
+	        }
+    	}else {
+			$response["error"] = true;
+			$response["message"] = "An error occurred. No request body";
+			echoRespnse(500, $response);
+		}
 });
 
 /**
@@ -262,14 +300,28 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 	}
 
 	$response 	= array();
-	if($app->request()){
+	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
-		if(!$DbHandler->getUserByEmail($params['email'])) {
+
+		if(isset($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Couldnt find matching email id";
-			echoRespnse(404, $response);
+			$response['message'] = "Unauthorized request, email cannot be changed";
+			echoRespnse(401	, $response);
 		}
+
+		if(isset($params['user_type'])) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, user type cannot be changed";
+			echoRespnse(401	, $response);
+		}
+
+		if(!isset($params['update_password']) &&  isset($params['password'])) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, password cannot be changed on this request";
+			echoRespnse(401	, $response);
+		}
+
 		$result = $DbHandler->updateUser($params, $id);
 
 		if($result) {
@@ -281,47 +333,58 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 			$response["message"] = "An error occurred. Please try again";
 			echoRespnse(500, $response);
 		}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
 	}
 });
 
 /**
- * Rest password 
- * url - /restPassword
+ * forgot password 
+ * url - /forgotPassword
  * method - POST
  * params - */
-$app->post('/restPassword', function() use ($app) {
-		$params =  $app->request()->getBody();
-		$DbHandler 	= new DbHandler();
-		$message['text'] = 'hello world';	
+$app->post('/forgotPassword', function() use ($app) {
 
-		$user_id = $DbHandler->checkEmailExist($params['email']);
-		if(!$user_id){
+		if($app->request() && $app->request()->getBody()){
+			$params =  $app->request()->getBody();
+			$DbHandler 	= new DbHandler();
+			$message['text'] = 'hello world';	
+
+			$user_id = $DbHandler->checkEmailExist($params['email']);
+			if(!$user_id){
+				$response["error"] = true;
+				$response["message"] = "Email does not exist";
+				echoRespnse(404, $response);
+			}
+			$resetKey = $DbHandler->generateResetKey($user_id);
+			if(!$resetKey ){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while generating reset key Please try again";
+				echoRespnse(404, $response);
+			}
+
+			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+
+			$message['text'] = 'Click the following link to reset your password '.$url;
+			$message['to']	 = $params['email'];
+			$message['subject']	= 'Reset your password';
+
+			if(!send_email ('resetpassword', $message)) {
+				$response["error"] = true;
+				$response["message"] = "An error occurred. Please try again";
+				echoRespnse(500, $response);	
+			}
+
+			$response["error"] = false;
+			$response["message"] = "Email sent Successfully";
+			echoRespnse(200	, $response);
+		}else {
 			$response["error"] = true;
-			$response["message"] = "Email does not exist";
-			echoRespnse(404, $response);
-		}
-		$resetKey = $DbHandler->generateResetKey($user_id);
-		if(!$resetKey ){
-			$response["error"] = true;
-			$response["message"] = "An error occurred while generating reset key Please try again";
-			echoRespnse(404, $response);
-		}
-
-		$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
-
-		$message['text'] = 'Click the following link to reset your password '.$url;
-		$message['to']	 = $params['email'];
-		$message['subject']	= 'Reset your password';
-
-		if(!send_email ('resetpassword', $message)) {
-			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
-			echoRespnse(500, $response);	
-		}
-
-		$response["error"] = false;
-		$response["message"] = "Email sent Successfully";
-		echoRespnse(200	, $response);
+			$response["message"] = "An error occurred. No request body";
+			echoRespnse(500, $response);
+		}	
 });
 
 /**
@@ -333,7 +396,7 @@ $app->post('/restPassword', function() use ($app) {
 $app->post('/userSignUp',  function() use ($app){
 
 	$response 	= array();
-	if($app->request()){
+	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
 		if($DbHandler->getUserByEmail($params['email'])) {
@@ -360,7 +423,11 @@ $app->post('/userSignUp',  function() use ($app){
 			$response["message"] = "An error occurred. Please try again";
 			echoRespnse(500, $response);
 		}
-	}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}	
 });
 
 
@@ -386,7 +453,6 @@ $app->get('/rooms', function() use ($app) {
 		echoRespnse(404, $response);
 	}
 });
-
 
 $app->run();
 		
