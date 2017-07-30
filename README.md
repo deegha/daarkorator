@@ -201,3 +201,12 @@
 - resquest :
 - response with no errors
 {"error":false,"roomImages":[{"id":"1","image_url":"http:\/\/cdn.home-designing.com\/wp-content\/uploads\/2009\/07\/living-room-arrangement.jpg"},{"id":"2","image_url":"http:\/\/www.amazadesign.com\/wp-content\/uploads\/Admirable-White-Living-Room-Design-Ideas-with-Red-Curtains-Furnished-with-Sofa-and-Chairs-Completed-with-Glass-Round-Table-and-Pendant-Lamp-plus-Wall-Flatscreen-TV.jpg"},{"id":"3","image_url":"https:\/\/s-media-cache-ak0.pinimg.com\/originals\/cb\/90\/80\/cb90809a736cf358c8fc804ad6e78b54.jpg"},{"id":"4","image_url":"http:\/\/cdn.home-designing.com\/wp-content\/uploads\/2009\/07\/living-room-arrangement.jpg"}]}
+
+#### get color choices
+
+- `/color-choices`
+- method : get
+- headers : none
+- resquest :
+- response with no errors
+{"error":false,"roomColors":[{"id":"5","name":"Blues","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-6-main.png?v=20110818210849"},{"id":"6","name":"Reds","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-7-main.png?v=20110818210849"},{"id":"7","name":"Yellows","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-3-main.png?v=20110818210849"},{"id":"8","name":"Purples","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-2-main.png?v=20110818210849"},{"id":"9","name":"Greens","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-8-main.png?v=20110818210849"}]}

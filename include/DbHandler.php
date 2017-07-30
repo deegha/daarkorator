@@ -349,7 +349,7 @@ class DbHandler {
         try{
             $db           = new database();
             $table        = "room_types";
-            $rows         = "*";
+            $rows         = "id, title as displayName";
             $db->selectJson($table, $rows, '', '', '');
             $rooms = $db->getJson();
 
@@ -364,7 +364,7 @@ class DbHandler {
         try{
             $db           = new database();
             $table        = "resources_table";
-            $rows         = "id, image_url";
+            $rows         = "id, image_url as imageUrl";
             $where         = "recource_type = 1";
             $db->selectJson($table, $rows, $where, '', '');
             $rooms = $db->getJson();
@@ -375,6 +375,23 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
+
+
+    public function getColorChoices(){
+            try{
+                $db           = new database();
+                $table        = "resources_table";
+                $rows         = "id,title as name, image_url as imageUrl";
+                $where         = "recource_type = 2";
+                $db->selectJson($table, $rows, $where, '', '');
+                $rooms = $db->getJson();
+
+                return json_decode($rooms);
+
+            }catch(Exception $e){
+                 $this->callErrorLog($e);
+            }
+        }
 }
 
 ?>
