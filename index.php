@@ -108,7 +108,7 @@ $app->post('/login', function() use ($app){
 $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
 		$response = array();
-		$DbHandler = new DbHandler();		
+		$DbHandler = new DbHandler();	
 
         if ($features != NULL) {
         	$response["error"] = false;
@@ -258,7 +258,9 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 		$capabilities = json_decode($features);
 
 		if(!$capabilities->manageProjects->priceSetup) {
-			return false;
+			$response["error"] = true;
+	        $response["message"] = "Unauthorized access";
+	        echoRespnse(401, $response);
 		}
 
 		if($app->request() && $app->request()->getBody()){
