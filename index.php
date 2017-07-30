@@ -454,6 +454,29 @@ $app->get('/rooms', function() use ($app) {
 	}
 });
 
+/**
+ * List all rooms images
+ * url - /room-images
+ * method - GET
+ * params -
+
+ */
+$app->get('/room-images', function() use ($app) {
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getRoomImages();
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['roomImages'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
 $app->run();
 		
 ?>
