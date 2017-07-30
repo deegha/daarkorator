@@ -316,9 +316,17 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 			echoRespnse(401	, $response);
 		}
 
-		if(!isset($params['update_password']) &&  isset($params['password'])) {
+		if(!isset($params['update_password']) 
+				&&  isset($params['password']) 
+				|| $params['update_password'] == false) {
 			$response["error"] = true;
 			$response['message'] = "Unauthorized request, password cannot be changed on this request";
+			echoRespnse(401	, $response);
+		}
+
+		if(isset($params['update_password']) &&  strlen(trim($params['password'])) <= 0){
+			$response["error"] = true;
+			$response['message'] = "password cannot be empty";
 			echoRespnse(401	, $response);
 		}
 
