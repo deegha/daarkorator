@@ -414,7 +414,15 @@ $app->post('/userSignUp',  function() use ($app){
 
 		$result = $DbHandler->createUser($params, $user_type);
 
+		$message['to']	 = $params['email'];
+		$message['subject']	= 'Your user account has created successfully';
+
 		if($result) {
+			if(!send_email ('new_user_created', $message)) {
+				$response["error"] = true;
+				$response["message"] = "User created, Coundn't send an email";
+				echoRespnse(500, $response);	
+			}
 			$response["error"] = false;
 			$response["message"] = "User created successfully";
 			echoRespnse(200	, $response);

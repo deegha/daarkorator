@@ -63,7 +63,7 @@
 
 #### List users
 
-- `/user/:type_id/type`
+- `/user`
 - method  : get 
 - headers : Authorization
 - response with no errors
@@ -174,9 +174,9 @@
 `{
 "first_name" :  "jone",
 "last_name" :"smith",
-"email": "shuboothi@gmail.com",
+"email": "shuboothi4353ds@gmail.com",
 "password" : "098f6bcd4621d373cade4e832627b4f6",
-"user_type" : 1,
+"confirm_password" : "098f6bcd4621d373cade4e832627b4f6",
 "user_image" : "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
 "contact_number" : "0322222623"
 }`
