@@ -126,9 +126,8 @@
 {
 "first_name" :  "deegha",
 "last_name" :"Galkissa",
-"email": "shuboothi@gmail.com",
+"update_password":true,
 "password" : "098f6bcd4621d373cade4e832627b4f6",
-"user_type" : 1,
 "user_image" : "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
 "contact_number" : "0322222623",
 "daarkorator_details" : {
