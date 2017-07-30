@@ -56,10 +56,11 @@ function validateEmail($email) {
     }
 }
 
-function send_email ($template, $message) {
+function send_email ($template, $message=null) {
 
     try{
-        $message_text = $message['text'];
+        if(isset($message['text']))
+            $message_text = $message['text'];
         ob_start();
         include 'email/'.$template.'.php';
         $msg_body = ob_get_clean();
@@ -74,12 +75,4 @@ function send_email ($template, $message) {
         return false;
     }
 }
-
-function checkBody () {
-    
-}
-
-
-
-
 ?>

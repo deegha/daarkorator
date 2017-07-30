@@ -134,7 +134,7 @@ class DbHandler {
     }
 
     public function createUser($params, $user_type=null) {
-        try{
+        try{ 
             $db           = new database();
             $user_table   = "user";
             $user_rows    = [];
@@ -147,6 +147,10 @@ class DbHandler {
                 
                 unset($params['daarkorator_details']);
                 $is_daarkorator = true;
+            }
+            if(array_key_exists("confirm_password", $params) ){
+                unset($params['confirm_password']);
+                $is_daarkorator = false;
             }
             if($user_type!=null)
                 $params['user_type'] = $user_type;
@@ -326,6 +330,14 @@ class DbHandler {
             if(!array_key_exists("password", $params) || strlen(trim($params["password"])) <= 0  ){
                 return false;
             }  
+
+            if(!array_key_exists("confirm_password", $params) || strlen(trim($params["confirm_password"])) <= 0  ){
+                return false;
+            }  
+
+            if(trim($params["password"]) != trim($params["confirm_password"])) {
+                return false;
+            }
         }
        return true;
     }
