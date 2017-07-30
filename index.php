@@ -191,7 +191,7 @@ $app->post('/user', 'authenticate', function() use ($app){
  * List all users
  * url - /user
  * method - GET
- * params -type_id*/		
+ */		
 $app->get('/user', 'authenticate', function() use ($app) {
 	global $features;
 	$capabilities = json_decode($features);
@@ -203,7 +203,7 @@ $app->get('/user', 'authenticate', function() use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();	
-	$result = $DbHandler->usersBytype();
+	$result = $DbHandler->getUser();
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['users'] = $result;
@@ -547,6 +547,34 @@ $app->get('/user/types', 'authenticate', function() use ($app) {
 		echoRespnse(404, $response);
 	}
 });
+
+/**
+ * List single user
+ * url - /user/:id
+ * method - GET
+ **/		
+$app->get('/user/:id', 'authenticate', function($id) use ($app) {
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->viewSingleuser) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response = array();
+	$DbHandler = new DbHandler();	
+	$result = $DbHandler->getUser($id);
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['users'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});	
 
 $app->run();
 		
