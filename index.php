@@ -13,6 +13,7 @@ $app->add(new \Slim\Middleware\ContentTypes());
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
 header('Content-Type: application/json');
+header("HTTP/1.1 200 OK");
 
 /**
  * Adding Middle Layer to authenticate every request
