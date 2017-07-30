@@ -477,6 +477,30 @@ $app->get('/room-images', function() use ($app) {
 	}
 });
 
+
+/**
+ * List all color choices
+ * url - /color-choices
+ * method - GET
+ * params -
+
+ */
+$app->get('/color-choices', function() use ($app) {
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getColorChoices();
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['roomColors'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
 $app->run();
 		
 ?>
