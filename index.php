@@ -459,6 +459,11 @@ $app->post('/userSignUp',  function() use ($app){
  */
 $app->get('/rooms', function() use ($app) {
 
+	header('Access-Control-Allow-Origin: *');
+	header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
+	header('Content-Type: application/json');
+	header("HTTP/1.1 200 OK");
+
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getRoomList();
