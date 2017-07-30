@@ -182,3 +182,22 @@
 }`
 - response with no errors
 `{"error": false,"message": "User created successfully"}`
+
+
+#### get Room types
+
+- `/rooms`
+- method : get
+- headers : none
+- resquest :
+- response with no errors
+{"error":false,"rooms":[{"id":"1","title":"Living room"},{"id":"2","title":"Dining Room"},{"id":"3","title":"Office"},{"id":"4","title":"Master BedRoom"},{"id":"5","title":"Kid's Bedroom"},{"id":"6","title":"Guest BedRoom"},{"id":"7","title":"Nursery"},{"id":"8","title":"Balcony"}]}
+
+#### get Room images
+
+- `/room-images`
+- method : get
+- headers : none
+- resquest :
+- response with no errors
+{"error":false,"roomImages":[{"id":"1","image_url":"http:\/\/cdn.home-designing.com\/wp-content\/uploads\/2009\/07\/living-room-arrangement.jpg"},{"id":"2","image_url":"http:\/\/www.amazadesign.com\/wp-content\/uploads\/Admirable-White-Living-Room-Design-Ideas-with-Red-Curtains-Furnished-with-Sofa-and-Chairs-Completed-with-Glass-Round-Table-and-Pendant-Lamp-plus-Wall-Flatscreen-TV.jpg"},{"id":"3","image_url":"https:\/\/s-media-cache-ak0.pinimg.com\/originals\/cb\/90\/80\/cb90809a736cf358c8fc804ad6e78b54.jpg"},{"id":"4","image_url":"http:\/\/cdn.home-designing.com\/wp-content\/uploads\/2009\/07\/living-room-arrangement.jpg"}]}

@@ -350,7 +350,22 @@ class DbHandler {
             $db           = new database();
             $table        = "room_types";
             $rows         = "*";
-            $where         = "";
+            $db->selectJson($table, $rows, '', '', '');
+            $rooms = $db->getJson();
+
+            return json_decode($rooms);
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
+    public function getRoomImages(){
+        try{
+            $db           = new database();
+            $table        = "resources_table";
+            $rows         = "id, image_url";
+            $where         = "recource_type = 1";
             $db->selectJson($table, $rows, $where, '', '');
             $rooms = $db->getJson();
 
