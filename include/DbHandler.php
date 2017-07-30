@@ -378,20 +378,35 @@ class DbHandler {
 
 
     public function getColorChoices(){
-            try{
-                $db           = new database();
-                $table        = "resources_table";
-                $rows         = "id,title as name, image_url as imageUrl";
-                $where         = "recource_type = 2";
-                $db->selectJson($table, $rows, $where, '', '');
-                $rooms = $db->getJson();
+        try{
+            $db           = new database();
+            $table        = "resources_table";
+            $rows         = "id,title as name, image_url as imageUrl";
+            $where         = "recource_type = 2";
+            $db->selectJson($table, $rows, $where, '', '');
+            $rooms = $db->getJson();
 
-                return json_decode($rooms);
+            return json_decode($rooms);
 
-            }catch(Exception $e){
-                 $this->callErrorLog($e);
-            }
+        }catch(Exception $e){
+             $this->callErrorLog($e);
         }
+    }
+
+    public function getUserRoles(){
+        try{
+            $db           = new database();
+            $table        = "user_type";
+            $rows         = "id,type_name as display_name";
+            $db->selectJson($table, $rows, '', '', '');
+            $rooms = $db->getJson();
+
+            return json_decode($rooms);
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
 }
 
 ?>

@@ -210,3 +210,14 @@
 - resquest :
 - response with no errors
 {"error":false,"roomColors":[{"id":"5","name":"Blues","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-6-main.png?v=20110818210849"},{"id":"6","name":"Reds","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-7-main.png?v=20110818210849"},{"id":"7","name":"Yellows","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-3-main.png?v=20110818210849"},{"id":"8","name":"Purples","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-2-main.png?v=20110818210849"},{"id":"9","name":"Greens","imageUrl":"http:\/\/s3.amazonaws.com\/colorcombos-images\/users\/1\/color-schemes\/color-scheme-8-main.png?v=20110818210849"}]}
+
+
+#### get user roles
+
+- `/user/types`
+- method : get
+- headers : Authorization
+- resquest :
+- response with no errors
+{"error":false,"user_types":[{"id":"1","display_name":"Administrator"},{"id":"2","display_name":"Customer"},{"id":"3","display_name":"Daakor"}]}
+

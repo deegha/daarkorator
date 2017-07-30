@@ -501,6 +501,37 @@ $app->get('/color-choices', function() use ($app) {
 	}
 });
 
+
+/**
+ * List all roles
+ * url - /user/types
+ * method - GET
+ * params -
+
+ */
+$app->get('/user/types', 'authenticate', function() use ($app) {
+
+    global $features;
+    $capabilities = json_decode($features);
+    if(!$capabilities->manageUsers->enabled) {
+        $response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+    }
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getUserRoles();
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['user_types'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
 $app->run();
 		
 ?>
