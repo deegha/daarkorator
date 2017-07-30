@@ -201,16 +201,18 @@ class DbHandler {
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
-        }
-        
+        }   
     }
 
-    public function usersBytype() {
+    public function getUser($id=null) {
         try {
             $db = new database();
             $table = 'user u left join daarkorator_details du on u.id = du.user_id';
-            $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website ';
-            $where = ' u.status=1';
+            $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website ';
+            $where = ' u.status<>3';
+
+            if($id!=null)
+                $where = $where." and u.id=".$id;
 
             $db->selectJson($table, $rows, $where, '', '');
             $users = $db->getJson();
@@ -227,7 +229,7 @@ class DbHandler {
         try{
             $db = new database();
             $table  = 'user';
-            $rows   =  array('status' => 0);
+            $rows   =  array('status' => 3);
             $where  = 'id='.$user_id;
             if($db->update($table,$rows,$where)) {
                 return true;
