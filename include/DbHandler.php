@@ -421,6 +421,16 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
+
+    public function getPasswordChangeUser($changeRequestCode){
+        $db = new database();
+        $table = "password_reset_table";
+        $rows = "user_id as id";
+        $where = "reset_key = '".$changeRequestCode."' AND expiry >= '".date('Y-m-d H:i:s')."'";
+        $db->select($table, $rows, $where, '', '');
+        $user = $db->getResults();
+        return $user;
+    }
 }
 
 ?>

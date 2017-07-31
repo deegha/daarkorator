@@ -582,7 +582,42 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
-});	
+});
+
+
+/**
+ * User resetPasword
+ * url - /resetpassword
+ * method - POST
+ * params -user object
+ */
+$app->post('/resetpassword',  function() use ($app){
+
+	$response 	= array();
+	if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		if(isset($params['user'])==null || $params['password'] != $params['confirmPassword']){
+		    $response["error"] = true;
+            $response["message"] = "Password mis-matched or invalid request!";
+            echoRespnse(200, $response);
+		}else{
+		    $result = $DbHandler->getPasswordChangeUser($params['user']);
+		    if($result){
+                if($DbHandler->updateUser($params, $result['id'])){
+                    $response["error"] = false;
+                    $response['message'] = "Password updated Successfully";
+                    echoRespnse(200	, $response);
+                }
+		    }else{
+		        $response["error"] = true;
+                $response["message"] = "Password reset request has been expired!";
+                echoRespnse(200, $response);
+		    }
+		}
+	}
+});
+
 
 $app->run();
 		

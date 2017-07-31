@@ -3,3 +3,5 @@ mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
 mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
 mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
 mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()
+Array to string conversion
