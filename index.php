@@ -54,7 +54,6 @@ function authenticate(\Slim\Route $route) {
 }
 
 $app->post('/login', function() use ($app){
-	print_r("check");
 	$response = array();
 	$request = $app->request();
 	$db = new DbHandler();	
