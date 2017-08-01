@@ -602,7 +602,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 
 		if ($result) {
 			$response["error"] = false;
-			$response["message"] = "Project successfully created";
+			$response["message"] = "Project successfully created.$result";
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;

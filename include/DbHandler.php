@@ -433,8 +433,10 @@ class DbHandler {
                 return false;
             }
 
-            $project_id = $db->insert($project_table,$values,$rows);  
-            if($project_id) {
+            $db->insert($project_table,$values,$rows);
+
+            if($project_id = $db->getInsertId()) {
+            return $project_id;
                 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
                 $insert_params['room_types']     = json_encode($params['room']);
@@ -467,8 +469,8 @@ class DbHandler {
 
 
 
-                $project_id = $db->insert($project_table,$values_details,$rows_detials); 
-                if($project_id) 
+
+                if($db->insert($project_table,$values_details,$rows_detials))
                     return true;
 
                 return false;     
