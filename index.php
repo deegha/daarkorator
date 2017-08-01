@@ -13,7 +13,6 @@ $app->add(new \Slim\Middleware\ContentTypes());
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
 header('Content-Type: application/json');
-header("HTTP/1.1 200 OK");
 
 /**
  * Adding Middle Layer to authenticate every request
@@ -459,11 +458,6 @@ $app->post('/userSignUp',  function() use ($app){
  */
 $app->get('/rooms', function() use ($app) {
 
-	header('Access-Control-Allow-Origin: *');
-	header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
-	header('Content-Type: application/json');
-	header("HTTP/1.1 200 OK");
-
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getRoomList();
@@ -582,6 +576,44 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
+});	
+
+/**
+ * Create Project
+ * url - /project
+ * method - post
+ **/		
+$app->post('/project', 'authenticate', function() use ($app) {
+	global $features;
+	global $user_id;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->create) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+	if($app->request() && $app->request()->getBody()){
+		$response 	= array();
+		$DbHandler 	= new DbHandler();	
+		$params 	= $app->request()->getBody();
+		$result 	= false;
+
+		$result = $DbHandler->createProject($params, $user_id);	
+
+		if ($result) {
+			$response["error"] = false;
+			$response["message"] = "Project successfully created";
+			echoRespnse(200	, $response);
+		} else {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while create the project";
+			echoRespnse(500, $response);
+		}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}	
 });	
 
 $app->run();

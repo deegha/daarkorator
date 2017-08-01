@@ -1,5 +1,0 @@
-include(email/new_user_created.php.php): failed to open stream: No such file or directory
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
