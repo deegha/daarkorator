@@ -436,7 +436,7 @@ class DbHandler {
             $db->insert($project_table,$values,$rows);
 
             if($project_id = $db->getInsertId()) {
-            return $project_id;
+
                 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
                 $insert_params['room_types']     = json_encode($params['room']);
@@ -455,6 +455,7 @@ class DbHandler {
                 $result = $this->getInsertSting($insert_params); 
 
                 $rows_detials   = $result['rows'];
+                $rows_detials   = $rows_detials.', project_id';
                 $values_details = '"'.$result['values'].'"';
                 $project_table  = "project_details";
 
@@ -465,11 +466,9 @@ class DbHandler {
                                 "'".$insert_params['color_exceptions'] ."',".
                                 "'".$insert_params['dimensions'] ."',".
                                 "'".$insert_params['description'] ."',".
-                                "'".$insert_params['social_media_links'] ."'";
-
-
-
-
+                                "'".$insert_params['social_media_links'] ."',".
+                                "'".$project_id."'";
+                                
                 if($db->insert($project_table,$values_details,$rows_detials))
                     return true;
 
