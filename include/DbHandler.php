@@ -159,12 +159,12 @@ class DbHandler {
             $rows   = $result['rows'];
             $values = '"'.$result['values'].'"';
 
-            $id = $db->insert($user_table,$values,$rows);
-            if(!$id) {
+            //$id = $db->insert($user_table,$values,$rows);
+            if(!$db->insert($user_table,$values,$rows)) {
                 return false;
             }
 
-            $daarkorator_details["user_id"] = $id;
+            $daarkorator_details["user_id"] = $db->getInsertId();
             if($is_daarkorator) {
                 $result_d = $this->getInsertSting($daarkorator_details );
                 $values_d = '"'.$result_d['values'].'"';
@@ -172,7 +172,7 @@ class DbHandler {
                     return false;
                 }
             }
-            return $id;
+            return true;
         
         }catch(Exception $e) {
             $this->callErrorLog($e);
