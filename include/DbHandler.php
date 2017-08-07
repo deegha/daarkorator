@@ -159,12 +159,12 @@ class DbHandler {
             $rows   = $result['rows'];
             $values = '"'.$result['values'].'"';
 
-            $id = $db->insert($user_table,$values,$rows);
-            if(!$id) {
+            //$id = $db->insert($user_table,$values,$rows);
+            if(!$db->insert($user_table,$values,$rows)) {
                 return false;
             }
 
-            $daarkorator_details["user_id"] = $id;
+            $daarkorator_details["user_id"] = $db->getInsertId();
             if($is_daarkorator) {
                 $result_d = $this->getInsertSting($daarkorator_details );
                 $values_d = '"'.$result_d['values'].'"';
@@ -172,7 +172,7 @@ class DbHandler {
                     return false;
                 }
             }
-            return $id;
+            return true;
         
         }catch(Exception $e) {
             $this->callErrorLog($e);
@@ -191,8 +191,8 @@ class DbHandler {
                 $rows[$inc]          =  $key;
                 $insert_values[$inc] =  $value; 
                 $inc++;
-            }
-     
+            }   
+            
             $result['rows']     =  implode(",", $rows);
             $result['values']   =  implode('","', $insert_values);
 
@@ -421,6 +421,63 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
+    public function createProject($params, $customer_id) {
+        try{
+            $db            = new database();
+            $project_table = 'project';
+            $rows          = 'customer_id, status';
+            $values        = $customer_id.', 1';
+            
+            if(!isset($params['roomDetails'])) {
+                return false;
+            }
+
+            $db->insert($project_table,$values,$rows);
+
+            if($project_id = $db->getInsertId()) {
+
+                
+                $insert_params['title']          = $params['roomDetails']['projectName'];
+                $insert_params['room_types']     = json_encode($params['room']);
+                $insert_params['desing_styles']  = json_encode($params['designStyle']);
+                $insert_params['color_palettes'] = json_encode($params['colorChoice']['likeColors']);
+                $insert_params['color_exceptions'] = json_encode($params['colorChoice']['dislikeColors']);
+                $insert_params['dimensions']     = json_encode( array(
+                    "length" => $params['roomDetails']['length'],
+                    "width"  => $params['roomDetails']['width'],
+                    "height" => $params['roomDetails']['height'],
+                    "unit"   => $params['roomDetails']['unit']  
+                ));
+                $insert_params['description']        = $params['inspirations']['description'];
+                $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
+
+                $result = $this->getInsertSting($insert_params); 
+
+                $rows_detials   = $result['rows'];
+                $rows_detials   = $rows_detials.', project_id';
+                $values_details = '"'.$result['values'].'"';
+                $project_table  = "project_details";
+
+                $values_details = "'".$insert_params['title'] ."',".
+                                "'".$insert_params['room_types'] ."',".
+                                "'".$insert_params['desing_styles'] ."',".
+                                "'".$insert_params['color_palettes'] ."',".
+                                "'".$insert_params['color_exceptions'] ."',".
+                                "'".$insert_params['dimensions'] ."',".
+                                "'".$insert_params['description'] ."',".
+                                "'".$insert_params['social_media_links'] ."',".
+                                "'".$project_id."'";
+                                
+                if($db->insert($project_table,$values_details,$rows_detials))
+                    return true;
+
+                return false;     
+            }
+        }catch (Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 
     public function getPasswordChangeUser($changeRequestCode){
         $db = new database();
@@ -430,6 +487,7 @@ class DbHandler {
         $db->select($table, $rows, $where, '', '');
         $user = $db->getResults();
         return $user;
+
     }
 }
 

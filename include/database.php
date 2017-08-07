@@ -140,7 +140,7 @@ private $numrows;
 			$ins = mysqli_query($this->con,$insert);
 			$this->insertid = mysqli_insert_id($this->con);
 			if($ins){
-				return $this->insertid;
+				return true;
 			}else{
 				return false;	
 			}
