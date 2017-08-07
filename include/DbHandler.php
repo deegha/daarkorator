@@ -421,7 +421,6 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
-
     public function createProject($params, $customer_id) {
         try{
             $db            = new database();
@@ -478,6 +477,17 @@ class DbHandler {
             $this->callErrorLog($e);
             return false;
         }
+    }
+
+    public function getPasswordChangeUser($changeRequestCode){
+        $db = new database();
+        $table = "password_reset_table";
+        $rows = "user_id as id";
+        $where = "reset_key = '".$changeRequestCode."' AND expiry >= '".date('Y-m-d H:i:s')."'";
+        $db->select($table, $rows, $where, '', '');
+        $user = $db->getResults();
+        return $user;
+
     }
 }
 

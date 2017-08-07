@@ -14,6 +14,27 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
 header('Content-Type: application/json');
 
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Max-Age: 86400');    // cache for 1 day
+    header("HTTP/1.1 200 OK");
+}
+// Access-Control headers are received during OPTIONS requests
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+
+}
+
+$app->map('/:x+', function($x) {
+    http_response_code(200);
+})->via('OPTIONS');
+
 /**
  * Adding Middle Layer to authenticate every request
  * Checking if the request has valid api key in the 'Authorization' header
@@ -53,7 +74,6 @@ function authenticate(\Slim\Route $route) {
 }
 
 $app->post('/login', function() use ($app){
-	print_r("check");
 	$response = array();
 	$request = $app->request();
 	$db = new DbHandler();	
@@ -576,7 +596,42 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
-});	
+});
+
+
+/**
+ * User resetPasword
+ * url - /resetpassword
+ * method - POST
+ * params -user object
+ */
+$app->post('/resetpassword',  function() use ($app){
+
+	$response 	= array();
+	if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		if(isset($params['user'])==null || $params['password'] != $params['confirmPassword']){
+		    $response["error"] = true;
+            $response["message"] = "Password mis-matched or invalid request!";
+            echoRespnse(200, $response);
+		}else{
+		    $result = $DbHandler->getPasswordChangeUser($params['user']);
+		    if($result){
+                if($DbHandler->updateUser($params, $result['id'])){
+                    $response["error"] = false;
+                    $response['message'] = "Password updated Successfully";
+                    echoRespnse(200	, $response);
+                }
+		    }else{
+		        $response["error"] = true;
+                $response["message"] = "Password reset request has been expired!";
+                echoRespnse(200, $response);
+		    }
+		}
+	}
+});
+
 
 /**
  * Create Project

@@ -247,3 +247,14 @@
       }
    ]
 }`
+
+
+#### User resetPasword
+ * url - /resetpassword
+ * method - POST
+ * params -user object
+ response with no errors
+ {
+    {"error":false,"message":"Password updated Successfully"}
+ }
+ */
