@@ -57,7 +57,7 @@ function authenticate(\Slim\Route $route) {
             if($access['expiration'] <= date('Y-m-d H:i:s')){
                 $response["error"] = true;
 	            $response["message"] = "Access token has expired"; 
-	            echoRespnse(200, $response);
+	            echoRespnse(400, $response);
 	            $app->stop();
             }
             global $user_id;
