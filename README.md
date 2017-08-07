@@ -258,3 +258,68 @@
     {"error":false,"message":"Password updated Successfully"}
  }
  */
+
+
+ #### Create project
+
+- `/u/project`
+- method  : post 
+- headers : Authorization
+- Request
+`   {  
+       "room":{  
+          "id":6,
+          "displayName":"Guest Bed Room"
+       },
+       "designStyle":[  
+          {  
+             "id":2,
+             "imgUrl":"http://cdn.home-designing.com/wp-content/uploads/2009/07/living-room-arrangement.jpg",
+             "selected":true
+          }
+       ],
+       "colorChoice":{  
+          "likeColors":[  
+             {  
+                "id":3,
+                "name":"Yellows",
+                "imgUrl":"http://s3.amazonaws.com/colorcombos-images/users/1/color-schemes/color-scheme-3-main.png?v=20110818210849",
+                "selected":true
+             }
+          ],
+          "dislikeColors":"Black Red Yellow"
+       },
+       "roomDetails":{  
+          "projectName":"Test Project name",
+          "length":10,
+          "width":20,
+          "height":30,
+          "unit":"m/cm",
+          "roomImage":null,
+          "budget":"900",
+          "furnitureImage":null
+       },
+       "inspirations":{  
+          "urls":[  
+             {  
+                "id":"ac5635bd-339d-43f5-d18e-43b067909c39",
+                "url":"http://localhost:4200/project-wizard"
+             },
+             {  
+                "id":"8a00f503-1ac4-cae0-6018-2375cdc56a1d",
+                "url":"https://github.com/deegha/daarkorator/tree/develop"
+             },
+             {  
+                "id":"3621e7f9-98b6-1584-542a-5a7286890d81",
+                "url":"http://localhost:3333/#"
+             }
+          ],
+          "description":"down vote\naccepted\nI found the solution. Thanks to the comments on the API site: http://www.asp.net/web-api/overview/security/individual-accounts-in-web-api\n\nI had to set the correct header for application/x-www-form-urlencoded; charset=UTF-8 and serialize the object i posted. I canŽt find an Angular serializer method, so I made my own(copy from another stackoverflow site) in JavaScript"
+       }
+    }`
+
+    - respose with no errors
+    `{
+    "error": false,
+    "message": "Project successfully created."
+}`
