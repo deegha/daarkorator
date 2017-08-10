@@ -39,6 +39,7 @@
 - `/user`  
 - method  : post 
 - headers : Authorization
+- Note : `"save_project" : true ` for save project
 - request 
 `{
 "first_name" : 	"jone",
@@ -57,6 +58,8 @@
 	"website": "test.com"
 	}
 }`
+
+
 
 - response with no errors
 `{"error":false,"user_id":14}`
