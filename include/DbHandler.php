@@ -172,7 +172,7 @@ class DbHandler {
                     return false;
                 }
             }
-            return true;
+            return $db->getInsertId();
         
         }catch(Exception $e) {
             $this->callErrorLog($e);
@@ -495,6 +495,7 @@ class DbHandler {
         return $user;
 
     }
+
 }
 
 ?>

@@ -392,7 +392,7 @@ $app->post('/forgotPassword', function() use ($app) {
 			if(!$resetKey ){
 				$response["error"] = true;
 				$response["message"] = "An error occurred while generating reset key Please try again";
-				echoRespnse(404, $response);
+				echoRespnse(500, $response);
 			}
 
 			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
@@ -444,13 +444,22 @@ $app->post('/userSignUp',  function() use ($app){
 
 		$result = $DbHandler->createUser($params, $user_type);
 
-		$message['to']	 = $params['email'];
-		$message['subject']	= 'Your user account has created successfully';
-
 		if($result) {
+			$activationKey = $DbHandler->generateResetKey($result);
+			if(!$activationKey ){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while generating reset key Please try again";
+				echoRespnse(500, $response);
+			}
+
+			$url = 'http://daakor.dhammika.me/reset-password?k='.$activationKey;
+			$message['text'] = $url;
+			$message['to']	 = $params['email'];
+			$message['subject']	= 'Activate your account';
+
 			if(!send_email ('new_user_created', $message)) {
 				$response["error"] = true;
-				$response["message"] = "User created, Coundn't send an email";
+				$response["message"] = "User created, Coundn't send an activation email";
 				echoRespnse(500, $response);	
 			}
 			$response["error"] = false;
@@ -694,6 +703,13 @@ $app->post('/sendEmail', function() use ($app) {
             echoRespnse(200	, $response);
             }
 });
+
+/**
+ * Activte User
+ * url - /activateUser/
+ * method - GET
+ * params - */
+
 
 $app->run();
 		
