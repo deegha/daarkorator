@@ -66,7 +66,13 @@ function send_email ($template, $message=null) {
         include 'email/'.$template.'.php';
         $msg_body = ob_get_clean();
 
-        if(!mail($message['to'],$message['subject'],$msg_body)) {
+        $headers[] = 'MIME-Version: 1.0';
+        $headers[] = 'Content-type: text/html; charset=iso-8859-1';
+        $headers[] = 'From: daakorinc@gmail.com ' ;
+        $headers[] = 'Reply-To: daakorinc@gmail.com ';
+        $headers[] = 'X-Mailer: PHP/' . phpversion();
+
+        if(!mail($message['to'],$message['subject'],$msg_body, implode("\r\n", $headers))) {
             return false;
         }
 
