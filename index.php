@@ -452,7 +452,7 @@ $app->post('/userSignUp',  function() use ($app){
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/reset-password?k='.$activationKey;
+			$url = 'http://daakor.dhammika.me/activateUser/'.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -709,7 +709,29 @@ $app->post('/sendEmail', function() use ($app) {
  * url - /activateUser/
  * method - GET
  * params - */
+$app->post('/activateUser/:activationKey', function($changeRequestCode) use ($app) {
+	$DbHandler 	= new DbHandler();
 
+	$user_id = $DbHandler->getPasswordChangeUser($changeRequestCode);
+	if(!$user_id) {
+		$response["error"] = true;
+        $response["message"] = "The requested activation key does not exist";
+        echoRespnse(404, $response);
+	}	
+
+	$params = array("status" => 1);
+
+	if(!$DbHandler->updateUser($params, $user_id['id'])){
+		$response["error"] = true;
+        $response["message"] = "something went wrong while updating user";
+        echoRespnse(500, $response);
+	}
+
+	$response["error"] = false;
+    $response["message"] = "Account was successfully activated";
+	echoRespnse(200	, $response);
+
+});
 
 $app->run();
 		
