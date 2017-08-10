@@ -425,8 +425,14 @@ class DbHandler {
         try{
             $db            = new database();
             $project_table = 'project';
+
+            $status = 1;
+
+            if(isset($params['save_project']) && $params['save_project'] == true)
+                $status = 0;
+
             $rows          = 'customer_id, status';
-            $values        = $customer_id.', 1';
+            $values        = $customer_id.', '.$status;
             
             if(!isset($params['roomDetails'])) {
                 return false;
