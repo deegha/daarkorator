@@ -397,7 +397,7 @@ $app->post('/forgotPassword', function() use ($app) {
 
 			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
 
-			$message['text'] = 'Click the following link to reset your password '.$url;
+			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Reset your password';
 
@@ -669,7 +669,31 @@ $app->post('/project', 'authenticate', function() use ($app) {
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(500, $response);
 	}	
-});	
+});
+
+/**
+ * send email
+ * url - /sendEmail
+ * method - POST
+ * params - */
+$app->post('/sendEmail', function() use ($app) {
+
+            $url = 'http://daakor.dhammika.me/reset-password?k=';
+
+            $message['text'] = $url;
+            $message['to']	 = "dhammika97@gmail.com";
+            $message['subject']	= 'Testing emails';
+
+            if(!send_email ('signup-complete', $message)) {
+                $response["error"] = true;
+                $response["message"] = "An error occurred. Please try again";
+                echoRespnse(500, $response);
+            }else{
+            $response["error"] = false;
+            $response["message"] = "Email sent Successfully";
+            echoRespnse(200	, $response);
+            }
+});
 
 $app->run();
 		
