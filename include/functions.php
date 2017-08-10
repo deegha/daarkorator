@@ -81,6 +81,10 @@ function send_email ($template, $message=null) {
         callErrorLog($e);
         return false;
     }
+
+    function getSiteBaseUrl() {
+        return true;
+    }
 }
 
 
