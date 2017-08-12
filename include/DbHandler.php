@@ -523,6 +523,23 @@ class DbHandler {
         }
     }
 
+    public function payment($params , $user_id, $transaction_id){
+        try{
+            $db           = new database();
+            $rows         = "user_id, project_id, amount, transaction_id, payment_status";
+            $table        = "payment_table";
+            $values       =  "'".$user_id."', '".$params['project_id']."', '"
+                            .$params['amount']."', '".$transaction_id."', '0'";
+            if(!$db->insert($table,$values,$rows)){
+                return false;
+            }
+            return true;
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
 }
 
 ?>
