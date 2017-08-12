@@ -501,6 +501,28 @@ class DbHandler {
         }
     }
 
+    public function getPackage($pkg_id){
+        try{
+
+            $db = new database();
+            $table = "subscription";
+            $rows = "price";
+            $where = " id = '".$pkg_id."'";
+             
+            $db->select($table, $rows, $where, '', '');
+            $result = $db->getResults();
+
+            if(!$result){
+                return false;
+            }
+
+            return $result;
+        }catch (Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
 }
 
 ?>

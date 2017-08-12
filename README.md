@@ -344,7 +344,7 @@
 
 #### myProfile
 
-- `/user`
+- `/myProfile`
 - Method  : get 
 - Respose with no errors
 `{  
@@ -367,3 +367,10 @@
       }
    ]
 }`
+
+#### Get package
+
+
+- `/package/:id`
+- Method  : get 
+- Respose with no errors

@@ -1,2 +1,5 @@
 
 Array to string conversion
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given

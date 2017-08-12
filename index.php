@@ -769,6 +769,37 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 	}
 });
 
+/**
+ * Get package
+ * url - /user
+ * method - GET
+ **/	
+$app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
+        //print_r($app->request()->getBody());
+		global $features;
+		$capabilities = json_decode($features);
+		$DbHandler = new DbHandler();	
+
+		if(!$capabilities->manageProjects->priceSetup) {
+			$response["error"] = true;
+	        $response["message"] = "Unauthorized access";
+	        echoRespnse(401, $response);
+		}
+			
+		$package = $DbHandler->getPackage($pkg_id);
+        if(!$package) {
+        	$response["error"] = true;
+	        $response["message"] = "No price set";
+	        echoRespnse(404, $response);
+        }
+
+        $response["error"] 	 = false;
+        $response["message"] = "Request successful";
+        $response["price"]	 = $package[0];
+        echoRespnse(200, $response);
+    	
+});
+
 $app->run();
 		
 ?>
