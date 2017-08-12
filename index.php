@@ -749,7 +749,7 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
 	$capabilities = json_decode($features);
-	if(!$capabilities->manageUsers->viewSingleuser) {
+	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
         $response["message"] = "Unauthorized access";
         echoRespnse(401, $response);
