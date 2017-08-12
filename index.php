@@ -91,7 +91,7 @@ $app->post('/login', function() use ($app){
 					if(!$access_token) {
 						$response['error'] = true;
 						$response['message'] = "An error occurred. Please try again";
-						echoRespnse(200, $response);
+						echoRespnse(400, $response);
 					} 
 					$response["error"] = false;
 					$response['accessToken'] 	= $access_token;
@@ -101,12 +101,12 @@ $app->post('/login', function() use ($app){
 				} else {
 					$response['error'] = true;
 					$response['message'] = "An error occurred. Please try again";
-					echoRespnse(200, $response);
+					echoRespnse(400, $response);
 				}
 			} else {
 				$response['error'] = true;
 				$response['message'] = 'Login failed. Incorrect credentials';
-				echoRespnse(200, $response);
+				echoRespnse(400, $response);
 			}
 		}else {
 			$response["error"] = true;
@@ -174,7 +174,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
 			$response["message"] = "Email already exist";
-			echoRespnse(200, $response);
+			echoRespnse(400, $response);
 		}
 		$result = $DbHandler->createUser($params);
 
@@ -189,7 +189,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 			if(!send_email ('resetpassword', $message)) {
 				$response["error"] = true;
 				$response["message"] = "An error occurred. Please try again";
-				echoRespnse(500, $response);	
+				echoRespnse(400, $response);
 			}
 
 			$response["error"] = false;
@@ -198,12 +198,12 @@ $app->post('/user', 'authenticate', function() use ($app){
 		}else{
 			$response["error"] = true;
 			$response["message"] = "An error occurred. Please try again";
-			echoRespnse(500, $response);
+			echoRespnse(400, $response);
 		}
 	}else {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. No request body";
-		echoRespnse(500, $response);
+		echoRespnse(400, $response);
 	}
 });	
 
@@ -395,7 +395,7 @@ $app->post('/forgotPassword', function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+			$url = 'http://daakor.dhammika.me/#/reset-password?k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
