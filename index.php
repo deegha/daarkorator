@@ -163,7 +163,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 		if(!$DbHandler->validate($params)) {
 			$response["error"] = false;
 			$response["message"] = "Validation failed";
-			echoRespnse(200	, $response);
+			echoRespnse(400	, $response);
 		}
 
         if(array_key_exists("password", $params) ){
@@ -584,8 +584,9 @@ $app->get('/user/types', 'authenticate', function() use ($app) {
  * url - /user/:id
  * method - GET
  **/		
-$app->get('/user/:id', 'authenticate', function($id) use ($app) {
+$app->get('/user', 'authenticate', function() use ($app) {
 	global $features;
+	global $user_id;
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->viewSingleuser) {
 		$response["error"] = true;
@@ -595,7 +596,7 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();	
-	$result = $DbHandler->getUser($id);
+	$result = $DbHandler->getUser($user_id);
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['users'] = $result;
@@ -614,28 +615,34 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
  * method - POST
  * params -user object
  */
-$app->post('/resetpassword',  function() use ($app){
+$app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 
 	$response 	= array();
 	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
-		if(isset($params['user'])==null || $params['password'] != $params['confirmPassword']){
+		if($params['password'] != $params['confirmPassword']){
 		    $response["error"] = true;
             $response["message"] = "Password mis-matched or invalid request!";
             echoRespnse(200, $response);
 		}else{
-		    $result = $DbHandler->getPasswordChangeUser($params['user']);
+		    $result = $DbHandler->getPasswordChangeUser($resetKey);
 		    if($result){
-                if($DbHandler->updateUser($params, $result['id'])){
+		    	if($result['expiry'] <= date('Y-m-d H:i:s')) {
+		    		$response["error"] = true;
+	                $response["message"] = "Password reset request has been expired!";
+	                echoRespnse(400, $response);
+		    	}
+		    	$update_params = array('password' => $params['password']);
+                if($DbHandler->updateUser($update_params, $result['id'])){
                     $response["error"] = false;
                     $response['message'] = "Password updated Successfully";
                     echoRespnse(200	, $response);
                 }
 		    }else{
 		        $response["error"] = true;
-                $response["message"] = "Password reset request has been expired!";
-                echoRespnse(200, $response);
+                $response["message"] = "Token not found";
+                echoRespnse(400, $response);
 		    }
 		}
 	}

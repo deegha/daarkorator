@@ -226,7 +226,7 @@
 
 #### List single user
 
-- `/user/:id`
+- `/user`
 - method  : get 
 - headers : Authorization
 - response with no errors
@@ -255,7 +255,10 @@
 #### User resetPasword
  * url - /resetpassword
  * method - POST
- * params -user object
+ * params - `{
+  "password": "098f6bcd4621d373cade4e832627b4f6",
+  "confirmPassword": "098f6bcd4621d373cade4e832627b4f6"
+}`
  response with no errors
  {
     {"error":false,"message":"Password updated Successfully"}
@@ -265,7 +268,7 @@
 
  #### Create project
 
-- `/u/project`
+- `/project`
 - method  : post 
 - headers : Authorization
 - Request
@@ -326,3 +329,14 @@
     "error": false,
     "message": "Project successfully created."
 }`
+
+#### Activte User
+
+- `/activateUser/:activationKey`
+- Method  : post 
+- Request : non
+- Respose with no errors
+    `{
+      "error": false,
+      "message": "Account was successfully activated"
+    }`
