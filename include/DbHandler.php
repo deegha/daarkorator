@@ -490,8 +490,8 @@ class DbHandler {
 
             $db = new database();
             $table = "password_reset_table";
-            $rows = "user_id as id";
-            $where = "reset_key = '".$changeRequestCode."' AND expiry >= '".date('Y-m-d H:i:s')."'";
+            $rows = "user_id as id, expiry";
+            $where = "reset_key = '".$changeRequestCode."'";
             $db->select($table, $rows, $where, '', '');
             $user = $db->getResults();
             return $user;
