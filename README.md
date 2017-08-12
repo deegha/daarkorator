@@ -340,3 +340,30 @@
       "error": false,
       "message": "Account was successfully activated"
     }`
+
+
+#### myProfile
+
+- `/user`
+- Method  : get 
+- Respose with no errors
+`{  
+   "error":false,
+   "users":[  
+      {  
+         "id":"1",
+         "first_name":"deegha",
+         "last_name":"Galkissa",
+         "email":"shuboothi@gmail.com",
+         "user_image":"https:\/\/www.atomix.com.au\/media\/2015\/06\/atomix_user31.png",
+         "contact_number":"0322222623",
+         "status":"1",
+         "company_name":null,
+         "about":null,
+         "tranings":null,
+         "tools":null,
+         "instagrame":null,
+         "website":null
+      }
+   ]
+}`

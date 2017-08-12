@@ -584,9 +584,9 @@ $app->get('/user/types', 'authenticate', function() use ($app) {
  * url - /user/:id
  * method - GET
  **/		
-$app->get('/user', 'authenticate', function() use ($app) {
+$app->get('/user/:id', 'authenticate', function($id) use ($app) {
 	global $features;
-	global $user_id;
+	
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->viewSingleuser) {
 		$response["error"] = true;
@@ -596,7 +596,7 @@ $app->get('/user', 'authenticate', function() use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();	
-	$result = $DbHandler->getUser($user_id);
+	$result = $DbHandler->getUser($id);
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['users'] = $result;
@@ -738,6 +738,35 @@ $app->post('/activateUser/:activationKey', function($changeRequestCode) use ($ap
     $response["message"] = "Account was successfully activated";
 	echoRespnse(200	, $response);
 
+});
+
+/**
+ * My profile
+ * url - /user
+ * method - GET
+ **/		
+$app->get('/myprofile', 'authenticate', function() use ($app) {
+	global $features;
+	global $user_id;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->viewSingleuser) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response = array();
+	$DbHandler = new DbHandler();	
+	$result = $DbHandler->getUser($user_id);
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['users'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
 });
 
 $app->run();
