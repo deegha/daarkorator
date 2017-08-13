@@ -4,7 +4,9 @@ require_once 'include/database.php';
 require_once 'include/DbHandler.php';
 require_once 'include/PassHash.php';
 require_once 'include/functions.php';
+require_once 'include/SimpleImage.php';
 require 'libs/Slim/Slim.php';
+
 //test 
 \Slim\Slim::registerAutoloader();
 $app = new \Slim\Slim();
@@ -441,7 +443,7 @@ $app->post('/userSignUp',  function() use ($app){
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
 			$response["message"] = "Email already exist";
-			echoRespnse(200, $response);
+			echoRespnse(400, $response);
 		}
 		$user_type = 2;
 		
@@ -461,7 +463,7 @@ $app->post('/userSignUp',  function() use ($app){
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/activateUser/'.$activationKey;
+			$url = 'http://daakor.dhammika.me/#/activateUser/'.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -924,6 +926,46 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 		echoRespnse(500, $response);
 	}
 });
+
+/**
+ * File upload
+ * url - /fileUplaod
+ * method - POST
+ **/		
+
+$app->put('/fileUplaod', 'authenticate', function() use ($app) {
+	if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+		$path = 'uploads/';
+		$DbHandler 	= new DbHandler();
+
+		if (!is_writable($path)) {
+			$response["error"] = true;
+			$response["message"] = "Image destination directory not writable.";
+			echoRespnse(500, $response);
+		}
+
+		$unique = strtoupper(md5(uniqid(rand(), true)));
+		$image = new SimpleImage();
+		$image->load($_FILES['news_image']['tmp_name']);
+        $ext = pathinfo($_FILES['news_image']['name'], PATHINFO_EXTENSION);
+        
+		if (!$image->save($path . $unique . '.' . $ext)) {
+		    $response["error"] = false;
+			$response["message"] = "Imgage uplaod successfully";
+			echoRespnse(500, $response);
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Imgage uplaod successfully";
+		echoRespnse(500, $response);
+
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}
+}
 
 $app->run();
 		
