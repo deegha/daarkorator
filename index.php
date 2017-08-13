@@ -927,6 +927,7 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 	}
 });
 
+
 /**
  * File upload
  * url - /fileUplaod
@@ -972,7 +973,7 @@ $app->put('/fileUplaod', 'authenticate', function() use ($app) {
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(500, $response);
 	}
-}
+});
 
 $app->run();
 		
