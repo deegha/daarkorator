@@ -344,16 +344,21 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 
 		if(!isset($params['update_password']) 
 				&&  isset($params['password']) 
-				|| $params['update_password'] == false) {
+				|| isset($params['update_password']) && $params['update_password'] == false && isset($params['password']) ) {
 			$response["error"] = true;
 			$response['message'] = "Unauthorized request, password cannot be changed on this request";
 			echoRespnse(401	, $response);
 		}
 
-		if(isset($params['update_password']) &&  strlen(trim($params['password'])) <= 0){
+		if(isset($params['update_password']) && $params['update_password'] == true &&  !isset($params['password'])){
+			$response["error"] = true;
+			$response['message'] = "Update password is set, but no password provided";
+			echoRespnse(400	, $response);
+		}
+		if(isset($params['update_password']) &&  isset($params['password']) && strlen(trim($params['password'])) <= 0){
 			$response["error"] = true;
 			$response['message'] = "password cannot be empty";
-			echoRespnse(401	, $response);
+			echoRespnse(400	, $response);
 		}
 
 		$result = $DbHandler->updateUser($params, $id);
@@ -885,13 +890,18 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 
 		if(!isset($params['update_password']) 
 				&&  isset($params['password']) 
-				|| $params['update_password'] == false) {
+				|| isset($params['update_password']) && $params['update_password'] == false && isset($params['password']) ) {
 			$response["error"] = true;
 			$response['message'] = "Unauthorized request, password cannot be changed on this request";
 			echoRespnse(401	, $response);
 		}
 
-		if(isset($params['update_password']) &&  strlen(trim($params['password'])) <= 0){
+		if(isset($params['update_password']) && $params['update_password'] == true &&  !isset($params['password'])){
+			$response["error"] = true;
+			$response['message'] = "Update password is set, but no password provided";
+			echoRespnse(400	, $response);
+		}
+		if(isset($params['update_password']) &&  isset($params['password']) && strlen(trim($params['password'])) <= 0){
 			$response["error"] = true;
 			$response['message'] = "password cannot be empty";
 			echoRespnse(400	, $response);
