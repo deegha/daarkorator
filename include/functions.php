@@ -88,6 +88,16 @@ function send_email ($template, $message=null) {
 }
 
 
+function gnerateTransactionId($user_id) {
+    try{
+        $transactionId = md5(time()); 
+        return $transactionId;
+    }catch(Exception $e){
+        callErrorLog($e);
+        return false;
+    }
+}
+
 
 
 

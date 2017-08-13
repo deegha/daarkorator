@@ -314,6 +314,10 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
  */	
 $app->put('/user/:id', 'authenticate', function($id) use ($app){
 	global $features;
+	if(!isset($id)) {
+		global $user_id;
+		$id = $user_id;
+	}
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->update) {
 		$response["error"] = true;
@@ -775,11 +779,9 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
  * method - GET
  **/	
 $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
-        //print_r($app->request()->getBody());
 		global $features;
 		$capabilities = json_decode($features);
 		$DbHandler = new DbHandler();	
-
 		if(!$capabilities->manageProjects->priceSetup) {
 			$response["error"] = true;
 	        $response["message"] = "Unauthorized access";
@@ -792,12 +794,123 @@ $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 	        $response["message"] = "No price set";
 	        echoRespnse(404, $response);
         }
-
         $response["error"] 	 = false;
         $response["message"] = "Request successful";
         $response["price"]	 = $package[0];
         echoRespnse(200, $response);
     	
+});
+
+/*
+* Payment
+* Url : /payment
+* method - POST
+*/
+
+$app->post('/payment','authenticate', function() use ($app) {
+	global $user_id;
+	
+	if($app->request() && $app->request()->getBody()){
+
+		$response 	= array();
+		$DbHandler 	= new DbHandler();	
+		$params 	= $app->request()->getBody();
+
+		if( $params["project_id"] == "" || $params["amount"] == "" ) {
+			$response["error"] = true;
+	        $response["message"] = "Validation faild, all feilds are required";
+	        echoRespnse(400, $response);
+		}
+
+		$transactionId = gnerateTransactionId($user_id);	
+
+		if(!$transactionId) {
+			$response["error"] = true;
+			$response["message"] = "Error in creating the transactioin Id";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->payment($params, $user_id, $transactionId)) {
+			$response["error"] = true;
+	        $response["message"] = "Payment unsuccessful";
+	        echoRespnse(400, $response);
+		}	
+
+		$response["error"] = false;
+	    $response["message"] = "Payment successful";
+		echoRespnse(200	, $response);
+
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}
+
+});
+
+
+/**
+ * Update My profile
+ * url - /user
+ * method -PUT
+ **/		
+$app->put('/myprofile', 'authenticate', function() use ($app) {
+	global $features;
+	global $user_id;
+	$capabilities = json_decode($features);
+	$id = $user_id;
+	if($app->request() && $app->request()->getBody()){
+
+		if(!$capabilities->manageUsers->update) {
+			$response["error"] = true;
+	        $response["message"] = "Unauthorized access";
+	        echoRespnse(401, $response);
+		}
+		$params 	=  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+
+		if(isset($params['email'])) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, email cannot be changed";
+			echoRespnse(401	, $response);
+		}
+
+		if(isset($params['user_type'])) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, user type cannot be changed";
+			echoRespnse(401	, $response);
+		}
+
+		if(!isset($params['update_password']) 
+				&&  isset($params['password']) 
+				|| $params['update_password'] == false) {
+			$response["error"] = true;
+			$response['message'] = "Unauthorized request, password cannot be changed on this request";
+			echoRespnse(401	, $response);
+		}
+
+		if(isset($params['update_password']) &&  strlen(trim($params['password'])) <= 0){
+			$response["error"] = true;
+			$response['message'] = "password cannot be empty";
+			echoRespnse(401	, $response);
+		}
+
+		$result = $DbHandler->updateUser($params, $id);
+
+		if($result) {
+			$response["error"] = false;
+			$response['message'] = "User updated Successfully";
+			echoRespnse(200	, $response);
+		}else{
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);
+		}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}
 });
 
 $app->run();

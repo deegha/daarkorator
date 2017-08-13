@@ -1,5 +1,9 @@
 
+Illegal string offset 'project_id'
+Undefined index: payment_status
+Undefined variable: where
 Array to string conversion
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Array to string conversion
+Array to string conversion
+Array to string conversion
+Undefined index: transaction_id
