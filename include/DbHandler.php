@@ -207,8 +207,8 @@ class DbHandler {
     public function getUser($id=null) {
         try {
             $db = new database();
-            $table = 'user u left join daarkorator_details du on u.id = du.user_id';
-            $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website ';
+            $table = 'user u left join daarkorator_details du on u.id = du.user_id join user_type ut on u.user_type = ut.id';
+            $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id';
             $where = ' u.status<>3';
 
             if($id!=null)
@@ -548,7 +548,7 @@ class DbHandler {
             $rows         = "image_url, title, project_id, recource_type";
             $table        = "resources_table";
             $values       =  $generatedFileNAme.", ".$generatedFileNAme.", ".$project_id.", 3";
-            
+
             if(!$db->insert($table,$values,$rows)){
                 return false;
             }
