@@ -462,8 +462,7 @@ $app->post('/userSignUp',  function() use ($app){
 				$response["message"] = "An error occurred while generating reset key Please try again";
 				echoRespnse(500, $response);
 			}
-
-			$url = 'http://daakor.dhammika.me/daakor-activation/'.$activationKey;
+			$url = 'http://daakor.dhammika.me/activate-user;key='.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
