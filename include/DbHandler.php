@@ -542,6 +542,22 @@ class DbHandler {
         }
     }
 
+    public function saveImageName($project_id,$generatedFileNAme){
+        try{
+            $db           = new database();
+            $rows         = "image_url, title, project_id, recource_type";
+            $table        = "resources_table";
+            $values       =  $generatedFileNAme.", ".$generatedFileNAme.", ".$project_id.", 3";
+            
+            if(!$db->insert($table,$values,$rows)){
+                return false;
+            }
+            return true;
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
 }
 
 ?>

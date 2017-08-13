@@ -463,7 +463,7 @@ $app->post('/userSignUp',  function() use ($app){
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/#/activateUser/'.$activationKey;
+			$url = 'http://daakor.dhammika.me/daakor-activation/'.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -949,10 +949,17 @@ $app->put('/fileUplaod', 'authenticate', function() use ($app) {
 		$image = new SimpleImage();
 		$image->load($_FILES['news_image']['tmp_name']);
         $ext = pathinfo($_FILES['news_image']['name'], PATHINFO_EXTENSION);
+        $generatedFileName = $unique . '.' . $ext;
         
-		if (!$image->save($path . $unique . '.' . $ext)) {
-		    $response["error"] = false;
-			$response["message"] = "Imgage uplaod successfully";
+		if (!$image->save($path.$generatedFileName)) {
+		    $response["error"] = true;
+			$response["message"] = "Error in uploading the file";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveImageName($params['project_id'],$generatedFileNAme)) {
+			$response["error"] = true;
+			$response["message"] = "Error while writing the file name to database";
 			echoRespnse(500, $response);
 		}
 

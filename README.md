@@ -405,3 +405,7 @@ Payment
     "message": "User updated Successfully"
 }`
 
+#### Image Upload
+
+ URL     : `/fileUplaod`
+- Method  : POST
