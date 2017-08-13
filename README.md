@@ -369,8 +369,39 @@
 }`
 
 #### Get package
+Payment
 
-
-- `/package/:id`
+- URL     : /package/:id`
 - Method  : get 
 - Respose with no errors
+`{"error":false,"message":"Request successful","price":"23"}`
+
+#### Payment
+
+- URL     : `/payment`
+- Method  : PUT 
+-Request  : 
+`{  
+   "project_id":123,
+   "amount":230
+}`
+- Respose with no errors
+{"error":false,"message":"Payment successful"}
+
+#### Update My profile
+- URL     : `/myprofile`
+- Method  : GET
+- Request : `{  
+             "first_name":"Deegha",
+             "last_name":"Galkissa",
+             "update_password":true,
+             "password":"password",
+             "user_image":"https://www.atomix.com.au/media/2015/06/atomix_user31.png",
+             "contact_number":"0322222623"
+          }`
+- Respose with no errors
+`{
+    "error": false,
+    "message": "User updated Successfully"
+}`
+

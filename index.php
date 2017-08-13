@@ -779,29 +779,25 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
  * method - GET
  **/	
 $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
-
-		if($app->request() && $app->request()->getBody()){
-			$response 	= array();
-			$DbHandler 	= new DbHandler();	
-			$params 	= $app->request()->getBody();
-			$result 	= false;
-
-			$result = $DbHandler->payment($params);	
-
-			if ($result) {
-				$response["error"] = false;
-				$response["message"] = "Transaction Successful";
-				echoRespnse(200	, $response);
-			} else {
-				$response["error"] = true;
-				$response["message"] = "An error occurred while doing the transaction";
-				echoRespnse(500, $response);
-			}
-		}else {
+		global $features;
+		$capabilities = json_decode($features);
+		$DbHandler = new DbHandler();	
+		if(!$capabilities->manageProjects->priceSetup) {
 			$response["error"] = true;
-			$response["message"] = "An error occurred. No request body";
-			echoRespnse(400, $response);
-		}	
+	        $response["message"] = "Unauthorized access";
+	        echoRespnse(401, $response);
+		}
+			
+		$package = $DbHandler->getPackage($pkg_id);
+        if(!$package) {
+        	$response["error"] = true;
+	        $response["message"] = "No price set";
+	        echoRespnse(404, $response);
+        }
+        $response["error"] 	 = false;
+        $response["message"] = "Request successful";
+        $response["price"]	 = $package[0];
+        echoRespnse(200, $response);
     	
 });
 
