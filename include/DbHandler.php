@@ -474,8 +474,10 @@ class DbHandler {
                                 "'".$insert_params['social_media_links'] ."',".
                                 "'".$project_id."'";
                                 
-                if($db->insert($project_table,$values_details,$rows_detials))
-                    return true;
+                if($db->insert($project_table,$values_details,$rows_detials)) {
+                    $id =  $db->getInsertId();
+                    return $id;
+                }
 
                 return false;     
             }

@@ -443,7 +443,7 @@ $app->post('/userSignUp',  function() use ($app){
 		if(!$DbHandler->validate($params, true)) {
 			$response["error"] = false;
 			$response["message"] = "Validation failed";
-			echoRespnse(200	, $response);
+			echoRespnse(400	, $response);
 		}
 
 		$result = $DbHandler->createUser($params, $user_type);
@@ -557,7 +557,7 @@ $app->get('/color-choices', function() use ($app) {
  * List all roles
  * url - /user/types
  * method - GET
- * params -
+ * 
 
  */
 $app->get('/user/types', 'authenticate', function() use ($app) {
@@ -675,14 +675,16 @@ $app->post('/project', 'authenticate', function() use ($app) {
 
 		$result = $DbHandler->createProject($params, $user_id);	
 
-		if ($result) {
-			$response["error"] = false;
-			$response["message"] = "Project successfully created.";
-			echoRespnse(200	, $response);
-		} else {
+		if (!$result) {
 			$response["error"] = true;
 			$response["message"] = "An error occurred while create the project";
 			echoRespnse(500, $response);
+		} else {
+	
+			$response["error"] = false;
+			$response["message"] = "Project successfully created.";
+			$response["project_id"] = $result;
+			echoRespnse(200	, $response);
 		}
 	}else {
 		$response["error"] = true;
@@ -892,7 +894,7 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 		if(isset($params['update_password']) &&  strlen(trim($params['password'])) <= 0){
 			$response["error"] = true;
 			$response['message'] = "password cannot be empty";
-			echoRespnse(401	, $response);
+			echoRespnse(400	, $response);
 		}
 
 		$result = $DbHandler->updateUser($params, $id);
