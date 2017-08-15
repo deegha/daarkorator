@@ -98,7 +98,19 @@ function gnerateTransactionId($user_id) {
     }
 }
 
+function uploadProjectImages($file) {
+    $path = 'uploads/';
+    $unique = strtoupper(md5(uniqid(rand(), true)));
+    $image = new SimpleImage();
+    $image->load($file['tmp_name']);
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $generatedFileName = $unique . '.' . $ext;
+    
+    $image->save($path.$generatedFileName);
+    return $generatedFileName;
 
+   
+}
 
 
 ?>

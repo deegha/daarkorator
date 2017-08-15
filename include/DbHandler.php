@@ -435,6 +435,7 @@ class DbHandler {
             $values        = $customer_id.', '.$status;
             
             if(!isset($params['roomDetails'])) {
+
                 return false;
             }
 
@@ -476,7 +477,7 @@ class DbHandler {
                                 
                 if($db->insert($project_table,$values_details,$rows_detials)) {
                     $id =  $db->getInsertId();
-                    return $id;
+                    return $project_id;
                 }
 
                 return false;     
@@ -542,16 +543,17 @@ class DbHandler {
         }
     }
 
-    public function saveImageName($project_id,$generatedFileNAme){
+    public function saveImageName($project_id,$generatedFileNAme,$type){
         try{
             $db           = new database();
             $rows         = "image_url, title, project_id, recource_type";
             $table        = "resources_table";
-            $values       =  $generatedFileNAme.", ".$generatedFileNAme.", ".$project_id.", 3";
+            $values       =  "'".$generatedFileNAme."', '".$generatedFileNAme."', ".$project_id.", ".$type;
 
             if(!$db->insert($table,$values,$rows)){
                 return false;
             }
+
             return true;
 
         }catch(Exception $e){

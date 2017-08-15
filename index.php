@@ -64,10 +64,10 @@ function authenticate(\Slim\Route $route) {
             }
             global $user_id;
 			global $features;
-			global $loged_user_type;
+			global $logged_user_type;
 			$user_id = $access['user_id'];
 			$features = $access['features'];
-			$loged_user_type = $access['type'];
+			$logged_user_type = $access['type'];
 
         }        
     } else {
@@ -132,14 +132,14 @@ $app->post('/login', function() use ($app){
  * params 	- $user_id */	
 $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
-		global $loged_user_type;
+		global $logged_user_type;
 		$response = array();
 		$DbHandler = new DbHandler();	
 
         if ($features != NULL) {
         	$response["error"] = false;	
 			$response['features'] = json_decode($features);
-			$response['loged_user_type'] = json_decode($loged_user_type);
+			$response['features']->logged_user_type=json_decode($logged_user_type);
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
@@ -672,37 +672,85 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 $app->post('/project', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
+
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->create) {
 		$response["error"] = true;
         $response["message"] = "Unauthorized access";
         echoRespnse(401, $response);
-	}
-	if($app->request() && $app->request()->getBody()){
-
-		$response 	= array();
-		$DbHandler 	= new DbHandler();	
-		$params 	= $app->request()->getBody();
-		$result 	= false;
-
-		$result = $DbHandler->createProject($params, $user_id);	
-
-		if (!$result) {
-			$response["error"] = true;
-			$response["message"] = "An error occurred while create the project";
-			echoRespnse(500, $response);
-		} else {
-	
-			$response["error"] = false;
-			$response["message"] = "Project successfully created.";
-			$response["project_id"] = $result;
-			echoRespnse(200	, $response);
-		}
-	}else {
-		$response["error"] = true;
-		$response["message"] = "An error occurred. No request body";
-		echoRespnse(500, $response);
 	}	
+
+	
+	$room_images = $_FILES['room_images'];
+	$furniture_images = $_FILES['furniture_images'];
+
+	$response 	= array();
+	$DbHandler 	= new DbHandler();	
+	$params 	= json_decode($_POST['project'] , True);
+	$result 	= false;
+
+	$result = $DbHandler->createProject($params, $user_id);	
+
+	$inc = 0;
+	foreach ($room_images['name'] as $key => $value) {
+		$file['name'] = $room_images['name'][$inc];
+		$file['type'] = $room_images['type'][$inc]; 
+		$file['tmp_name'] = $room_images['tmp_name'][$inc];
+		$file['error'] = $room_images['error'][$inc];
+		$file['size'] = $room_images['size'][$inc];
+
+		$generated_name = uploadProjectImages($file);
+
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading images";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveImageName($result,$generated_name,3)){
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving images";
+			echoRespnse(500, $response);
+		}
+		$inc++;
+	}
+
+	$inc = 0;
+	foreach ($furniture_images['name'] as $key => $value) {
+		$file['name'] = $furniture_images['name'][$inc];
+		$file['type'] = $furniture_images['type'][$inc]; 
+		$file['tmp_name'] = $furniture_images['tmp_name'][$inc];
+		$file['error'] = $furniture_images['error'][$inc];
+		$file['size'] = $furniture_images['size'][$inc];
+
+		$generated_name = uploadProjectImages($file);
+
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading images";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveImageName($result,$generated_name,4)){
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving images";
+			echoRespnse(500, $response);
+		}
+		$inc++;
+	}
+
+	if (!$result) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred while create the project";
+		echoRespnse(500, $response);
+	} else {
+
+		$response["error"] = false;
+		$response["message"] = "Project successfully created.";
+		$response["project_id"] = $result;
+		echoRespnse(200	, $response);
+	}
+
 });
 
 /**
@@ -939,35 +987,25 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
  * method - POST
  **/		
 
-$app->put('/fileUplaod', 'authenticate', function() use ($app) {
+$app->post('/fileUplaod'	, function() use ($app) {
+
+print_r( $_FILES);
+print_r($_POST);die();
+
+
+
 	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 		$path = 'uploads/';
 		$DbHandler 	= new DbHandler();
-
+		print_r($params);die();
 		if (!is_writable($path)) {
 			$response["error"] = true;
 			$response["message"] = "Image destination directory not writable.";
 			echoRespnse(500, $response);
 		}
 
-		$unique = strtoupper(md5(uniqid(rand(), true)));
-		$image = new SimpleImage();
-		$image->load($_FILES['news_image']['tmp_name']);
-        $ext = pathinfo($_FILES['news_image']['name'], PATHINFO_EXTENSION);
-        $generatedFileName = $unique . '.' . $ext;
-        
-		if (!$image->save($path.$generatedFileName)) {
-		    $response["error"] = true;
-			$response["message"] = "Error in uploading the file";
-			echoRespnse(500, $response);
-		}
-
-		if(!$DbHandler->saveImageName($params['project_id'],$generatedFileNAme)) {
-			$response["error"] = true;
-			$response["message"] = "Error while writing the file name to database";
-			echoRespnse(500, $response);
-		}
+		
 
 		$response["error"] = false;
 		$response["message"] = "Imgage uplaod successfully";
