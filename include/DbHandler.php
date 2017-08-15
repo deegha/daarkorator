@@ -74,7 +74,7 @@ class DbHandler {
         try{
             $db          = new database();
             $table       = "authentication_table a JOIN user_type t JOIN user u";
-            $rows        = 'a.user_id, a.expiration, t.features';
+            $rows        = 'a.user_id, a.expiration, t.features, t.type';
             $where       = 'a.access_token= "' . $user_accessToken .'" AND u.user_type = t.type AND a.user_id = u.id';
 
             $db->select($table, $rows, $where, '', '');

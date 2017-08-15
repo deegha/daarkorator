@@ -64,8 +64,11 @@ function authenticate(\Slim\Route $route) {
             }
             global $user_id;
 			global $features;
+			global $loged_user_type;
 			$user_id = $access['user_id'];
 			$features = $access['features'];
+			$loged_user_type = $access['type'];
+
         }        
     } else {
         $response["error"] = true;
@@ -129,12 +132,14 @@ $app->post('/login', function() use ($app){
  * params 	- $user_id */	
 $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
+		global $loged_user_type;
 		$response = array();
 		$DbHandler = new DbHandler();	
 
         if ($features != NULL) {
-        	$response["error"] = false;
+        	$response["error"] = false;	
 			$response['features'] = json_decode($features);
+			$response['loged_user_type'] = json_decode($loged_user_type);
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
@@ -674,6 +679,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
         echoRespnse(401, $response);
 	}
 	if($app->request() && $app->request()->getBody()){
+
 		$response 	= array();
 		$DbHandler 	= new DbHandler();	
 		$params 	= $app->request()->getBody();
@@ -728,7 +734,7 @@ $app->post('/sendEmail', function() use ($app) {
  * url - /activateUser/
  * method - GET
  * params - */
-$app->post('/activateUser/:activationKey', function($changeRequestCode) use ($app) {
+$app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app) {
 	$DbHandler 	= new DbHandler();
 
 	$user_id = $DbHandler->getPasswordChangeUser($changeRequestCode);
