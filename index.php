@@ -980,6 +980,63 @@ $app->put('/fileUplaod', 'authenticate', function() use ($app) {
 	}
 });
 
+
+/**
+ * List all Projects
+ * url - /project
+ * method - GET
+ */
+$app->get('/project', 'authenticate', function() use ($app) {
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->view) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getProjects();
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['projects'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
+$app->post('/send', function() use ($app) {
+
+    $uploadDir = 'uploads/';
+    $error = false;
+
+    if (empty($_FILES)) {
+        echo 'No files included';
+        $app->stop();
+    }
+    $tmp = $_FILES['test'];
+    print_r( $tmp);
+
+	/*if($app->request() && $app->request()->getBody()){
+
+		$response 	= array();
+		$DbHandler 	= new DbHandler();
+		$params 	= $app->request()->getBody();
+		//print_r($params);
+
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}*/
+
+});
+
+
 $app->run();
 		
 ?>

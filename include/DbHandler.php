@@ -558,6 +558,21 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
+
+    public function getProjects(){
+        try{
+            $db           = new database();
+            $table        = "project";
+            $rows         = "*";
+            $db->selectJson($table, $rows, '', '', '');
+            $projects = $db->getJson();
+
+            return json_decode($projects);
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
 }
 
 ?>
