@@ -814,6 +814,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 $app->get('/myprofile', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
+
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
@@ -823,7 +824,35 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();	
-	$result = $DbHandler->getUser($user_id);
+	$result = (array)$DbHandler->getUser($user_id);
+
+	$result = (array)$result[0];
+
+	if(array_key_exists("id", $result))
+                 unset($result['id']);
+
+    if(array_key_exists("status", $result))
+         unset($result['status']);
+     
+    if($result['user_type'] != 3) {
+		if(array_key_exists("company_name", $result))
+		unset($result['company_name']);
+
+		if(array_key_exists("about", $result))
+			unset($result['about']);
+		if(array_key_exists("tranings", $result))
+			unset($result['tranings']);
+		if(array_key_exists("tools", $result))
+			unset($result['tools']);
+		if(array_key_exists("instagrame", $result))
+			unset($result['instagrame']);
+		if(array_key_exists("website", $result))
+			unset($result['website']);
+    }
+
+    if(array_key_exists("user_type", $result))
+		unset($result['user_type']);
+
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['users'] = $result;
@@ -923,11 +952,6 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 	$id = $user_id;
 	if($app->request() && $app->request()->getBody()){
 
-		if(!$capabilities->manageUsers->update) {
-			$response["error"] = true;
-	        $response["message"] = "Unauthorized access";
-	        echoRespnse(401, $response);
-		}
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
 
@@ -980,43 +1004,6 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 	}
 });
 
-
-/**
- * File upload
- * url - /fileUplaod
- * method - POST
- **/		
-
-$app->post('/fileUplaod'	, function() use ($app) {
-
-print_r( $_FILES);
-print_r($_POST);die();
-
-
-
-	if($app->request() && $app->request()->getBody()){
-		$params 	=  $app->request()->getBody();
-		$path = 'uploads/';
-		$DbHandler 	= new DbHandler();
-		print_r($params);die();
-		if (!is_writable($path)) {
-			$response["error"] = true;
-			$response["message"] = "Image destination directory not writable.";
-			echoRespnse(500, $response);
-		}
-
-		
-
-		$response["error"] = false;
-		$response["message"] = "Imgage uplaod successfully";
-		echoRespnse(500, $response);
-
-	}else {
-		$response["error"] = true;
-		$response["message"] = "An error occurred. No request body";
-		echoRespnse(500, $response);
-	}
-});
 
 $app->run();
 		
