@@ -248,8 +248,9 @@ class DbHandler {
             $user_table   = "user";
             $daarkorator_details = [];
             $is_daarkorator = false; 
+            $where = "id=".$id;
 
-            if(array_key_exists("daarkorator_details", $params) ){
+            if(array_key_exists("daarkorator_details", $params)  ){
                 $daarkorator_details = $params['daarkorator_details'];
                 
                 unset($params['daarkorator_details']);
@@ -258,7 +259,7 @@ class DbHandler {
             if(array_key_exists("update_password", $params))
                  unset($params['update_password']);
 
-            $where = "id=".$id;
+            // print_r($params);die();
           
             $db->update($user_table,$params,$where);
 
@@ -556,6 +557,26 @@ class DbHandler {
 
             return true;
 
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
+    public function chekOldPassword($oldPassword, $user_id){
+        try{
+            $db = new database();
+            $table = "user";
+            $rows = "password";
+            $where = " id = '".$user_id."'";
+             
+            $db->select($table, $rows, $where, '', '');
+            $result = $db->getResults();
+
+            if($result['password'] != $oldPassword) {
+                return false;
+            }
+
+            return true;
         }catch(Exception $e){
              $this->callErrorLog($e);
         }

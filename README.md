@@ -398,6 +398,14 @@ Payment
              "password":"password",
              "user_image":"https://www.atomix.com.au/media/2015/06/atomix_user31.png",
              "contact_number":"0322222623"
+             "daarkorator_details" : {
+    "company_name" : "jadopado",
+    "about" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "tranings" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
+    "tools" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
+    "instagrame":"https://www.instagram.com/?hl=en",
+    "website": "test.com"
+}
           }`
 - Respose with no errors
 `{

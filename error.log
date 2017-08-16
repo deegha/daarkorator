@@ -7,3 +7,6 @@ Array to string conversion
 Array to string conversion
 Array to string conversion
 Undefined index: transaction_id
+Undefined variable: table
+Array to string conversion
+mysqli_query(): Couldn't fetch mysqli

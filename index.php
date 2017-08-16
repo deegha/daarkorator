@@ -833,7 +833,7 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 
     if(array_key_exists("status", $result))
          unset($result['status']);
-     
+
     if($result['user_type'] != 3) {
 		if(array_key_exists("company_name", $result))
 		unset($result['company_name']);
@@ -852,6 +852,8 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 
     if(array_key_exists("user_type", $result))
 		unset($result['user_type']);
+	if(array_key_exists("type_id", $result))
+		unset($result['type_id']);
 
 	if ($result != NULL) {
 		$response["error"] = false;
@@ -984,6 +986,25 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 			$response["error"] = true;
 			$response['message'] = "password cannot be empty";
 			echoRespnse(400	, $response);
+		}
+
+		if(isset($params['password']) && isset($params['oldPassword']) && isset($params['repeatPassword'])) {
+			if($params['password'] != $params['repeatPassword']) {
+				$response["error"] = true;
+				$response["message"] = "Confirm password mismatch";
+				echoRespnse(400, $response);
+			}
+
+			if(!$DbHandler->chekOldPassword($params['oldPassword'], $user_id)) {
+				$response["error"] = true;
+				$response["message"] = "wrong old password";
+				echoRespnse(400, $response);
+			} 
+
+			if(array_key_exists("oldPassword", $params))
+			 	unset($params['oldPassword']);
+			if(array_key_exists("repeatPassword", $params))
+			 	unset($params['repeatPassword']);
 		}
 
 		$result = $DbHandler->updateUser($params, $id);
