@@ -392,13 +392,13 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
  * method - POST
  * params - */
 $app->post('/forgotPassword', function() use ($app) {
-
+		
 		if($app->request() && $app->request()->getBody()){
 			$params =  $app->request()->getBody();
 			$DbHandler 	= new DbHandler();
-			$message['text'] = 'hello world';	
 
-			$user_id = $DbHandler->checkEmailExist($params['email']);
+			$user =  $DbHandler->checkEmailExist($params['email']);
+			$user_id = $user->id;
 			if(!$user_id){
 				$response["error"] = true;
 				$response["message"] = "Email does not exist";
@@ -416,10 +416,12 @@ $app->post('/forgotPassword', function() use ($app) {
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Reset your password';
+			$message['first_name']	 = $user->first_name;
+			$message['last_name']	 = $user->last_name;
 
 			if(!send_email ('resetpassword', $message)) {
 				$response["error"] = true;
-				$response["message"] = "An error occurred. Please try again";
+				$response["message"] = "An error occurred while sending the rest key email. Please try again";
 				echoRespnse(500, $response);	
 			}
 
@@ -798,6 +800,16 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 		$response["error"] = true;
         $response["message"] = "something went wrong while updating user";
         echoRespnse(500, $response);
+	}
+	$user = $DbHandler->getUser($id=null)[0];
+	$message['to']	 = $user->email;
+	$message['subject']	= 'Your account activated successfully';
+	$message['first_name']	 = $user->first_name;
+
+	if(!send_email ('signup-complete', $message)) {
+		$response["error"] = true;
+		$response["message"] = "User created, Coundn't send an activation email";
+		echoRespnse(500, $response);	
 	}
 
 	$response["error"] = false;

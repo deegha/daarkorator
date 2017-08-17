@@ -58,10 +58,14 @@ function validateEmail($email) {
 }
 
 function send_email ($template, $message=null) {
-
+   
     try{
         if(isset($message['text']))
             $message_text = $message['text'];
+        if(isset($message['first_name']))
+            $message_first_name = $message['first_name'];
+        if(isset($message['last_name']))
+            $message_last_name = $message['last_name'];
         ob_start();
         include 'email/'.$template.'.php';
         $msg_body = ob_get_clean();

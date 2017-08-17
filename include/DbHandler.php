@@ -35,7 +35,7 @@ class DbHandler {
         try{
             $db          = new database();
             $table       = "authentication_table";
-            $accesstoken = md5(uniqid($user_id, true));
+            $accesstoken = bin2hex(openssl_random_pseudo_bytes(260));
             $expiration  = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day'));
 
             $rows   = 'user_id,access_token,expiration';
@@ -208,7 +208,7 @@ class DbHandler {
         try {
             $db = new database();
             $table = 'user u left join daarkorator_details du on u.id = du.user_id join user_type ut on u.user_type = ut.id';
-            $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id';
+            $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id, ut.type_name';
             $where = ' u.status<>3';
 
             if($id!=null)
@@ -281,7 +281,7 @@ class DbHandler {
         try{
             $db = new database();
             $table  = 'user';
-            $rows   = 'id';
+            $rows   = 'id, first_name, last_name';
             $where  = 'email="'.$email.'"';
             $db->selectJson($table, $rows, $where, '', '');
             $result = $db->getJson();
@@ -290,7 +290,7 @@ class DbHandler {
             }
                 
             $id = json_decode($result)  ;           
-            return $id[0]->id ;
+            return $id[0];
 
         }catch(Exception $e){
             $this->callErrorLog($e);

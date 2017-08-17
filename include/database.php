@@ -95,7 +95,7 @@ private $numrows;
 			$q .= ' limit '.$limit;
 		}
 		
-		// echo $q;
+		// echo $q;die();
 		$query = mysqli_query($this->con,$q);
 		$numRows = mysqli_num_rows($query);
 		$this->numrows = $numRows;
