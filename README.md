@@ -42,21 +42,19 @@
 - Note : `"save_project" : true ` for save project
 - request 
 `{
-"first_name" : 	"jone",
-"last_name"	:"smith",
-"email": "shuboothi@gmail.com",
-"password" : "098f6bcd4621d373cade4e832627b4f6",
-"user_type" : 1,
-"user_image" : "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
-"contact_number" : "0322222623",
-"daarkorator_details" : {
-	"company_name" : "jadopado",
-	"about"	: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-	"tranings" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
-	"tools" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
-	"instagrame":"https://www.instagram.com/?hl=en",
-	"website": "test.com"
-	}
+  "first_name": "Shirvin",
+  "last_name": "Janze",
+  "email": "shirvinjanze@gmail.com",
+  "user_type": 3,
+  "contact_number": "0711129349",
+  "daarkorator_details": {
+    "company_name": "testcompany",
+    "about": "test about",
+    "tranings": "test trainings",
+    "tools": "test tools",
+    "instagrame": "test insta",
+    "website": "test web"
+  }
 }`
 
 

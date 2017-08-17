@@ -195,7 +195,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 			if(!send_email ('resetpassword', $message)) {
 				$response["error"] = true;
-				$response["message"] = "An error occurred. Please try again";
+				$response["message"] = "User created, Could not sent email";
 				echoRespnse(400, $response);
 			}
 
