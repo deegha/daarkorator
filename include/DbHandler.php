@@ -422,13 +422,15 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
-    public function createProject($params, $customer_id) {
+    public function createProject($params, $customer_id, $draft=null) {
         try{
             $db            = new database();
             $project_table = 'project';
 
             $status = 1;
-
+            if($draft && $draft != null) 
+                $status = 2; 
+                
             if(isset($params['save_project']) && $params['save_project'] == true)
                 $status = 0;
 
@@ -436,7 +438,6 @@ class DbHandler {
             $values        = $customer_id.', '.$status;
             
             if(!isset($params['roomDetails'])) {
-
                 return false;
             }
 

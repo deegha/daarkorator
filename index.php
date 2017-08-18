@@ -679,6 +679,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 	global $user_id;
 	$has_room_images = false;
 	$has_furniture_images = false;
+	$draft  = false;
 
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->create) {
@@ -696,13 +697,16 @@ $app->post('/project', 'authenticate', function() use ($app) {
 		$furniture_images = $_FILES['furniture_images'];
 		$has_furniture_images = true;
 	}
+
+	if(isset($_POST['draft']) && $_POST['draft'] == true)
+		$draft = true;
 	
 	$response 	= array();
 	$DbHandler 	= new DbHandler();	
 	$params 	= json_decode($_POST['project'] , True);
 	$result 	= false;
 
-	$result = $DbHandler->createProject($params, $user_id);	
+	$result = $DbHandler->createProject($params, $user_id, $draft);	
 
 	if($has_room_images) {
 		$inc = 0;
@@ -730,7 +734,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 		}
 	}
 
-	if($furniture_images) {
+	if($has_furniture_images) {
 		$inc = 0;
 		foreach ($furniture_images['name'] as $key => $value) {
 			$file['name'] = $furniture_images['name'][$inc];

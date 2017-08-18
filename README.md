@@ -73,31 +73,79 @@
     "users": [
         {
             "id": "3",
+            "user_type": "1",
             "first_name": "jone",
             "last_name": "smith",
-            "email": "shuboothi@gmail.com",
+            "email": "vass@gmail.com",
             "user_image": "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
             "contact_number": "0322222623",
+            "status": "1",
             "company_name": "jadopado",
             "about": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             "tranings": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
             "tools": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
             "instagrame": "https://www.instagram.com/?hl=en",
-            "website": "test.com"
+            "website": "test.com",
+            "type_id": "1",
+            "type_name": "Admin",
+            "status_title": "Active"
+        },
+        {
+            "id": "4",
+            "user_type": "1",
+            "first_name": "Shirvin",
+            "last_name": "Janze",
+            "email": "shirvinjanzae@gmail.com",
+            "user_image": "",
+            "contact_number": "0711129349",
+            "status": "1",
+            "company_name": "testcompany",
+            "about": "test about",
+            "tranings": "test trainings",
+            "tools": "test tools",
+            "instagrame": "test insta",
+            "website": "test web",
+            "type_id": "1",
+            "type_name": "Admin",
+            "status_title": "Active"
         },
         {
             "id": "1",
+            "user_type": "1",
             "first_name": "deegha",
-            "last_name": "galkissa",
+            "last_name": "Galkissa",
             "email": "shuboothi@gmail.com",
+            "user_image": "https://www.atomix.com.au/media/2015/06/atomix_user31.png",
+            "contact_number": "0322222623",
+            "status": "1",
+            "company_name": "testcompany",
+            "about": "test about",
+            "tranings": "test trainings",
+            "tools": "test tools",
+            "instagrame": "test insta",
+            "website": "test web",
+            "type_id": "1",
+            "type_name": "Admin",
+            "status_title": "Active"
+        },
+        {
+            "id": "2",
+            "user_type": "1",
+            "first_name": "Chaminda",
+            "last_name": "Vass",
+            "email": "vass@gmail.com",
             "user_image": "",
             "contact_number": "0322222623",
+            "status": "2",
             "company_name": null,
             "about": null,
             "tranings": null,
             "tools": null,
             "instagrame": null,
-            "website": null
+            "website": null,
+            "type_id": "1",
+            "type_name": "Admin",
+            "status_title": "Inactive"
         }
     ]
 }`
@@ -319,7 +367,7 @@
              }
           ],
           "description":"down vote\naccepted\nI found the solution. Thanks to the comments on the API site: http://www.asp.net/web-api/overview/security/individual-accounts-in-web-api\n\nI had to set the correct header for application/x-www-form-urlencoded; charset=UTF-8 and serialize the object i posted. I canŽt find an Angular serializer method, so I made my own(copy from another stackoverflow site) in JavaScript"
-       }
+       } 
     }`
 
     - respose with no errors
