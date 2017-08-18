@@ -283,7 +283,7 @@ class DbHandler {
             $db = new database();
             $table  = 'user';
             $rows   = 'id, first_name, last_name';
-            $where  = 'email="'.$email.'"';
+            $where  = 'email="'.$email.' and status = 1"';
             $db->selectJson($table, $rows, $where, '', '');
             $result = $db->getJson();
             if(!$result){
