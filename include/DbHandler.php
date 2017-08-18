@@ -209,7 +209,7 @@ class DbHandler {
         try {
             $db = new database();
             $table = 'user u left join daarkorator_details du on u.id = du.user_id join user_type ut on u.user_type = ut.id';
-            $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id, ut.type_name';
+            $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id, ut.type_name, case u.status WHEN 1 then "Active" when 2 then "Inactive"   END AS status_title';
             $where = ' u.status<>3';
 
             if($id!=null)
