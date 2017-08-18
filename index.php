@@ -677,6 +677,8 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 $app->post('/project', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
+	$has_room_images = false;
+	$has_furniture_images = false;
 
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->create) {
@@ -685,10 +687,16 @@ $app->post('/project', 'authenticate', function() use ($app) {
         echoRespnse(401, $response);
 	}	
 
+	if(isset($_FILES['room_images']) && $_FILES['room_images'] != null && $_FILES['room_images'] != ""){
+		$room_images = $_FILES['room_images'];
+		$has_room_images = true;
+	}
+			
+	if(isset($_FILES['furniture_images']) && $_FILES['furniture_images'] != null && $_FILES['furniture_images'] != "")	{
+		$furniture_images = $_FILES['furniture_images'];
+		$has_furniture_images = true;
+	}
 	
-	$room_images = $_FILES['room_images'];
-	$furniture_images = $_FILES['furniture_images'];
-
 	$response 	= array();
 	$DbHandler 	= new DbHandler();	
 	$params 	= json_decode($_POST['project'] , True);
@@ -696,53 +704,57 @@ $app->post('/project', 'authenticate', function() use ($app) {
 
 	$result = $DbHandler->createProject($params, $user_id);	
 
-	$inc = 0;
-	foreach ($room_images['name'] as $key => $value) {
-		$file['name'] = $room_images['name'][$inc];
-		$file['type'] = $room_images['type'][$inc]; 
-		$file['tmp_name'] = $room_images['tmp_name'][$inc];
-		$file['error'] = $room_images['error'][$inc];
-		$file['size'] = $room_images['size'][$inc];
+	if($has_room_images) {
+		$inc = 0;
+		foreach ($room_images['name'] as $key => $value) {
+			$file['name'] = $room_images['name'][$inc];
+			$file['type'] = $room_images['type'][$inc]; 
+			$file['tmp_name'] = $room_images['tmp_name'][$inc];
+			$file['error'] = $room_images['error'][$inc];
+			$file['size'] = $room_images['size'][$inc];
 
-		$generated_name = uploadProjectImages($file);
+			$generated_name = uploadProjectImages($file);
 
-		if($generated_name == "") {
-			$response["error"] = true;
-			$response["message"] = "An error occurred while uploading images";
-			echoRespnse(500, $response);
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "An error occurred while uploading images";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,3)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+			$inc++;
 		}
-
-		if(!$DbHandler->saveImageName($result,$generated_name,3)){
-			$response["error"] = true;
-			$response["message"] = "An error occurred while saving images";
-			echoRespnse(500, $response);
-		}
-		$inc++;
 	}
 
-	$inc = 0;
-	foreach ($furniture_images['name'] as $key => $value) {
-		$file['name'] = $furniture_images['name'][$inc];
-		$file['type'] = $furniture_images['type'][$inc]; 
-		$file['tmp_name'] = $furniture_images['tmp_name'][$inc];
-		$file['error'] = $furniture_images['error'][$inc];
-		$file['size'] = $furniture_images['size'][$inc];
+	if($furniture_images) {
+		$inc = 0;
+		foreach ($furniture_images['name'] as $key => $value) {
+			$file['name'] = $furniture_images['name'][$inc];
+			$file['type'] = $furniture_images['type'][$inc]; 
+			$file['tmp_name'] = $furniture_images['tmp_name'][$inc];
+			$file['error'] = $furniture_images['error'][$inc];
+			$file['size'] = $furniture_images['size'][$inc];
 
-		$generated_name = uploadProjectImages($file);
+			$generated_name = uploadProjectImages($file);
 
-		if($generated_name == "") {
-			$response["error"] = true;
-			$response["message"] = "An error occurred while uploading images";
-			echoRespnse(500, $response);
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "An error occurred while uploading images";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,4)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+			$inc++;
 		}
-
-		if(!$DbHandler->saveImageName($result,$generated_name,4)){
-			$response["error"] = true;
-			$response["message"] = "An error occurred while saving images";
-			echoRespnse(500, $response);
-		}
-		$inc++;
-	}
+	}	
 
 	if (!$result) {
 		$response["error"] = true;
@@ -755,7 +767,6 @@ $app->post('/project', 'authenticate', function() use ($app) {
 		$response["project_id"] = $result;
 		echoRespnse(200	, $response);
 	}
-
 });
 
 /**
