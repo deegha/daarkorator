@@ -58,7 +58,6 @@ function validateEmail($email) {
 }
 
 function send_email ($template, $message=null) {
-   
     try{
         if(isset($message['text']))
             $message_text = $message['text'];
@@ -79,7 +78,6 @@ function send_email ($template, $message=null) {
         if(!mail($message['to'],$message['subject'],$msg_body, implode("\r\n", $headers))) {
             return false;
         }
-
         return true;
     }catch(Exception $e){
         callErrorLog($e);

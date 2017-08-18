@@ -251,7 +251,7 @@
 
 
 #### User resetPasword
- * url - /resetpassword
+ * url - /resetpassword/e7a816f506f942dacb756c882af80fab
  * method - POST
  * params - `{
   "password": "098f6bcd4621d373cade4e832627b4f6",
@@ -331,7 +331,7 @@
 #### Activte User
 
 - `/activateUser/:activationKey`
-- Method  : post 
+- Method  : put 
 - Request : non
 - Respose with no errors
     `{

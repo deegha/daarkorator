@@ -122,7 +122,7 @@ class DbHandler {
         $db = new database();
         $table = 'user';
         $rows = '*';
-        $where = 'email= "' . $email . '"';
+        $where = 'email= "' . $email . '" and status <> 3';
 
         $db->select($table, $rows, $where, '', '');
         $logged_User = $db->getResults();
@@ -159,12 +159,13 @@ class DbHandler {
             $rows   = $result['rows'];
             $values = '"'.$result['values'].'"';
 
-            //$id = $db->insert($user_table,$values,$rows);
-            if(!$db->insert($user_table,$values,$rows)) {
+            $db->insert($user_table,$values,$rows);
+            $id = $db->getInsertId();
+            if(!$id) {
                 return false;
             }
 
-            $daarkorator_details["user_id"] = $db->getInsertId();
+            $daarkorator_details["user_id"] = $id ;
             if($is_daarkorator) {
                 $result_d = $this->getInsertSting($daarkorator_details );
                 $values_d = '"'.$result_d['values'].'"';
@@ -172,7 +173,7 @@ class DbHandler {
                     return false;
                 }
             }
-            return $db->getInsertId();
+            return $id;
         
         }catch(Exception $e) {
             $this->callErrorLog($e);
@@ -299,7 +300,6 @@ class DbHandler {
     }
  
     public function generateResetKey($user_id) {
-        
         try{
             $db = new database();
             $resetkey = md5(uniqid(rand(), true));  
@@ -307,7 +307,7 @@ class DbHandler {
             $table    = 'password_reset_table';
             $rows     = 'user_id, reset_key, expiry';
             $values   = '"'.$user_id.'", "'.$resetkey.'", "'.$expiry.'"';
-
+          
             if(!$db->insert($table,$values,$rows)) {
                 return false;
             }

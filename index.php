@@ -187,13 +187,13 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 		if($result) {
 			$resetKey = $DbHandler->generateResetKey($result);
-			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+			$url = 'http://daakor.dhammika.me/#/set-password;k='.$resetKey;
 
-			$message['text'] = 'Click the following link to activate your account '.$url;
+			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
 
-			if(!send_email ('resetpassword', $message)) {
+			if(!send_email ('new_user_set_password', $message)) {
 				$response["error"] = true;
 				$response["message"] = "User created, Could not sent email";
 				echoRespnse(400, $response);
@@ -411,7 +411,7 @@ $app->post('/forgotPassword', function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/#/reset-password?k='.$resetKey;
+			$url = 'http://daakor.dhammika.me/#/reset-password;k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
@@ -469,7 +469,7 @@ $app->post('/userSignUp',  function() use ($app){
 				$response["message"] = "An error occurred while generating reset key Please try again";
 				echoRespnse(500, $response);
 			}
-			$url = 'http://daakor.dhammika.me/activate-user;key='.$activationKey;
+			$url = 'http://daakor.dhammika.me/#/activate-user;key='.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -650,7 +650,10 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 	                $response["message"] = "Password reset request has been expired!";
 	                echoRespnse(400, $response);
 		    	}
-		    	$update_params = array('password' => $params['password']);
+				$update_params = array('password' => $params['password']);
+				if(isset($params['new_user']) && $params['new_user'] == true){
+					$update_params['status'] = 1;
+				}
                 if($DbHandler->updateUser($update_params, $result['id'])){
                     $response["error"] = false;
                     $response['message'] = "Password updated Successfully";
@@ -762,7 +765,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
  * params - */
 $app->post('/sendEmail', function() use ($app) {
 
-            $url = 'http://daakor.dhammika.me/reset-password?k=';
+            $url = 'http://daakor.dhammika.me/#/reset-password;k=';
 
             $message['text'] = $url;
             $message['to']	 = "dhammika97@gmail.com";
@@ -1011,13 +1014,13 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 				$response["error"] = true;
 				$response["message"] = "wrong old password";
 				echoRespnse(400, $response);
-			} 
-
-			if(array_key_exists("oldPassword", $params))
-			 	unset($params['oldPassword']);
-			if(array_key_exists("repeatPassword", $params))
-			 	unset($params['repeatPassword']);
+			}
 		}
+
+		if(array_key_exists("oldPassword", $params))
+			unset($params['oldPassword']);
+		if(array_key_exists("repeatPassword", $params))
+				unset($params['repeatPassword']);
 
 		$result = $DbHandler->updateUser($params, $id);
 
