@@ -605,7 +605,7 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 	global $features;
 	
 	$capabilities = json_decode($features);
-	if(!$capabilities->manageUsers->viewSingleuser) {
+	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
         $response["message"] = "Unauthorized access";
         echoRespnse(401, $response);
@@ -1062,7 +1062,7 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
  * url - /project
  * method - GET
  */
-$app->get('/project/:limit(/:status)', 'authenticate', function($limit, $status=null) use ($app) {
+$app->get('/project(/:limit)(/:status)', 'authenticate', function($limit=null, $status=null) use ($app) {
 	global $features;
 	global $user_id;
 	global $logged_user_type;

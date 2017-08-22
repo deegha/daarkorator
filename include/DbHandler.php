@@ -583,7 +583,7 @@ class DbHandler {
         }
     }
 
-    public function getProjects($user_id, $logged_user_type=null, $limit=null, $status=null){
+    public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null){
         try{
             $db           = new database();
             $table        = "project";
