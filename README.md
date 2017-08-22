@@ -463,3 +463,31 @@ Payment
 
  URL     : `/fileUplaod`
 - Method  : POST
+
+
+#### Project list
+
+- `/project/:limit(/:status)`
+- Method  : get
+- headers : Authorization
+- Respose with no errors
+`{
+   "error":false,
+   "projects": [
+           {
+               "id": "26",
+               "customer_id": "67",
+               "published_date": "2017-08-18 13:33:38",
+               "status": "2"
+           },
+           {
+               "id": "28",
+               "customer_id": "67",
+               "published_date": "2017-08-19 11:15:05",
+               "status": "2"
+           },
+           {
+           .......
+           }
+       ]
+}
