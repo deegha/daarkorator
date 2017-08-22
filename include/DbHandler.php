@@ -307,7 +307,7 @@ class DbHandler {
             $table    = 'password_reset_table';
             $rows     = 'user_id, reset_key, expiry';
             $values   = '"'.$user_id.'", "'.$resetkey.'", "'.$expiry.'"';
-          
+
             if(!$db->insert($table,$values,$rows)) {
                 return false;
             }
@@ -428,9 +428,9 @@ class DbHandler {
             $project_table = 'project';
 
             $status = 1;
-            if($draft && $draft != null) 
-                $status = 2; 
-                
+            if($draft && $draft != null)
+                $status = 2;
+
             if(isset($params['save_project']) && $params['save_project'] == true)
                 $status = 0;
 
@@ -569,8 +569,8 @@ class DbHandler {
             $table = "user";
             $rows = "password";
             $where = " id = '".$user_id."'";
-             
-            $db->select($table, $rows, $where, '', '');
+
+            $db->select($table, $rows, $where);
             $result = $db->getResults();
 
             if($result['password'] != $oldPassword) {
@@ -578,6 +578,35 @@ class DbHandler {
             }
 
             return true;
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
+    public function getProjects($user_id, $logged_user_type=null, $limit=null, $status=null){
+        try{
+            $db           = new database();
+            $table        = "project";
+            $rows         = "*";
+            if($logged_user_type == 3 ){
+                $where = "";
+                if($status != null)
+                $where .= " status = ".$status;
+            }elseif($logged_user_type == 2){
+                $where = "customer_id=".$user_id;
+                if($status != null)
+                    $where .= " AND status = ".$status;
+            }else{
+                $where = "";
+                if($status != null)
+                $where .= " status = ".$status;
+            }
+
+            $db->selectJson($table, $rows, $where, '', '', $limit);
+            $projects = $db->getJson();
+
+            return json_decode($projects);
+
         }catch(Exception $e){
              $this->callErrorLog($e);
         }
