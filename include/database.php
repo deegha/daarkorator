@@ -80,7 +80,7 @@ private $numrows;
 		$this->disconnect();
 	}
 	
-	function selectJson($table = null,$rows = null,$where = null,$order = null,$group = null,$limit = null){
+	function selectJson($table = null,$rows = null,$where = null,$order = null,$group = null, $limit = null){
 		$q = 'select '.$rows.' from '.$table;
 		if($where!=""){
 			$q .= ' where '.$where;

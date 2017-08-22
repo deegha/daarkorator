@@ -570,7 +570,7 @@ class DbHandler {
             $rows = "password";
             $where = " id = '".$user_id."'";
 
-            $db->select($table, $rows, $where, '', '');
+            $db->select($table, $rows, $where);
             $result = $db->getResults();
 
             if($result['password'] != $oldPassword) {
@@ -583,12 +583,26 @@ class DbHandler {
         }
     }
 
-    public function getProjects(){
+    public function getProjects($user_id, $logged_user_type=null, $limit=null, $status=null){
         try{
             $db           = new database();
             $table        = "project";
             $rows         = "*";
-            $db->selectJson($table, $rows, '', '', '');
+            if($logged_user_type == 3 ){
+                $where = "";
+                if($status != null)
+                $where .= " status = ".$status;
+            }elseif($logged_user_type == 2){
+                $where = "customer_id=".$user_id;
+                if($status != null)
+                    $where .= " AND status = ".$status;
+            }else{
+                $where = "";
+                if($status != null)
+                $where .= " status = ".$status;
+            }
+
+            $db->selectJson($table, $rows, $where, '', '', $limit);
             $projects = $db->getJson();
 
             return json_decode($projects);

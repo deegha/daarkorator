@@ -1062,8 +1062,10 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
  * url - /project
  * method - GET
  */
-$app->get('/project', 'authenticate', function() use ($app) {
+$app->get('/project/:limit(/:status)', 'authenticate', function($limit, $status=null) use ($app) {
 	global $features;
+	global $user_id;
+	global $logged_user_type;
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->view) {
 		$response["error"] = true;
@@ -1073,7 +1075,7 @@ $app->get('/project', 'authenticate', function() use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getProjects();
+	$result = $DbHandler->getProjects($user_id, $logged_user_type, $limit, $status);
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['projects'] = $result;
