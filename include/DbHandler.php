@@ -35,7 +35,7 @@ class DbHandler {
         try{
             $db          = new database();
             $table       = "authentication_table";
-            $accesstoken = md5(uniqid($user_id, true));
+            $accesstoken = bin2hex(openssl_random_pseudo_bytes(260));
             $expiration  = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day'));
 
             $rows   = 'user_id,access_token,expiration';
@@ -122,7 +122,7 @@ class DbHandler {
         $db = new database();
         $table = 'user';
         $rows = '*';
-        $where = 'email= "' . $email . '"';
+        $where = 'email= "' . $email . '" and status <> 3';
 
         $db->select($table, $rows, $where, '', '');
         $logged_User = $db->getResults();
@@ -159,12 +159,13 @@ class DbHandler {
             $rows   = $result['rows'];
             $values = '"'.$result['values'].'"';
 
-            //$id = $db->insert($user_table,$values,$rows);
-            if(!$db->insert($user_table,$values,$rows)) {
+            $db->insert($user_table,$values,$rows);
+            $id = $db->getInsertId();
+            if(!$id) {
                 return false;
             }
 
-            $daarkorator_details["user_id"] = $db->getInsertId();
+            $daarkorator_details["user_id"] = $id ;
             if($is_daarkorator) {
                 $result_d = $this->getInsertSting($daarkorator_details );
                 $values_d = '"'.$result_d['values'].'"';
@@ -172,7 +173,7 @@ class DbHandler {
                     return false;
                 }
             }
-            return $db->getInsertId();
+            return $id;
         
         }catch(Exception $e) {
             $this->callErrorLog($e);
@@ -208,7 +209,7 @@ class DbHandler {
         try {
             $db = new database();
             $table = 'user u left join daarkorator_details du on u.id = du.user_id join user_type ut on u.user_type = ut.id';
-            $rows = 'u.id, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id';
+            $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id, ut.type_name, case u.status WHEN 1 then "Active" when 2 then "Inactive"   END AS status_title';
             $where = ' u.status<>3';
 
             if($id!=null)
@@ -248,8 +249,9 @@ class DbHandler {
             $user_table   = "user";
             $daarkorator_details = [];
             $is_daarkorator = false; 
+            $where = "id=".$id;
 
-            if(array_key_exists("daarkorator_details", $params) ){
+            if(array_key_exists("daarkorator_details", $params)  ){
                 $daarkorator_details = $params['daarkorator_details'];
                 
                 unset($params['daarkorator_details']);
@@ -258,7 +260,7 @@ class DbHandler {
             if(array_key_exists("update_password", $params))
                  unset($params['update_password']);
 
-            $where = "id=".$id;
+            // print_r($params);die();
           
             $db->update($user_table,$params,$where);
 
@@ -280,8 +282,8 @@ class DbHandler {
         try{
             $db = new database();
             $table  = 'user';
-            $rows   = 'id';
-            $where  = 'email="'.$email.'"';
+            $rows   = 'id, first_name, last_name';
+            $where  = 'email="'.$email.'" and status = 1';
             $db->selectJson($table, $rows, $where, '', '');
             $result = $db->getJson();
             if(!$result){
@@ -289,7 +291,7 @@ class DbHandler {
             }
                 
             $id = json_decode($result)  ;           
-            return $id[0]->id ;
+            return $id[0];
 
         }catch(Exception $e){
             $this->callErrorLog($e);
@@ -298,7 +300,6 @@ class DbHandler {
     }
  
     public function generateResetKey($user_id) {
-        
         try{
             $db = new database();
             $resetkey = md5(uniqid(rand(), true));  
@@ -421,12 +422,14 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
-    public function createProject($params, $customer_id) {
+    public function createProject($params, $customer_id, $draft=null) {
         try{
             $db            = new database();
             $project_table = 'project';
 
             $status = 1;
+            if($draft && $draft != null)
+                $status = 2;
 
             if(isset($params['save_project']) && $params['save_project'] == true)
                 $status = 0;
@@ -476,7 +479,7 @@ class DbHandler {
                                 
                 if($db->insert($project_table,$values_details,$rows_detials)) {
                     $id =  $db->getInsertId();
-                    return $id;
+                    return $project_id;
                 }
 
                 return false;     
@@ -542,18 +545,39 @@ class DbHandler {
         }
     }
 
-    public function saveImageName($project_id,$generatedFileNAme){
+    public function saveImageName($project_id,$generatedFileNAme,$type){
         try{
             $db           = new database();
             $rows         = "image_url, title, project_id, recource_type";
             $table        = "resources_table";
-            $values       =  $generatedFileNAme.", ".$generatedFileNAme.", ".$project_id.", 3";
+            $values       =  "'".$generatedFileNAme."', '".$generatedFileNAme."', ".$project_id.", ".$type;
 
             if(!$db->insert($table,$values,$rows)){
                 return false;
             }
+
             return true;
 
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
+    public function chekOldPassword($oldPassword, $user_id){
+        try{
+            $db = new database();
+            $table = "user";
+            $rows = "password";
+            $where = " id = '".$user_id."'";
+
+            $db->select($table, $rows, $where, '', '');
+            $result = $db->getResults();
+
+            if($result['password'] != $oldPassword) {
+                return false;
+            }
+
+            return true;
         }catch(Exception $e){
              $this->callErrorLog($e);
         }

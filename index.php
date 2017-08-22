@@ -64,10 +64,10 @@ function authenticate(\Slim\Route $route) {
             }
             global $user_id;
 			global $features;
-			global $loged_user_type;
+			global $logged_user_type;
 			$user_id = $access['user_id'];
 			$features = $access['features'];
-			$loged_user_type = $access['type'];
+			$logged_user_type = $access['type'];
 
         }        
     } else {
@@ -132,14 +132,14 @@ $app->post('/login', function() use ($app){
  * params 	- $user_id */	
 $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
-		global $loged_user_type;
+		global $logged_user_type;
 		$response = array();
 		$DbHandler = new DbHandler();	
 
         if ($features != NULL) {
         	$response["error"] = false;	
 			$response['features'] = json_decode($features);
-			$response['loged_user_type'] = json_decode($loged_user_type);
+			$response['features']->logged_user_type=json_decode($logged_user_type);
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
@@ -187,15 +187,15 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 		if($result) {
 			$resetKey = $DbHandler->generateResetKey($result);
-			$url = 'http://daakor.dhammika.me/reset-password?k='.$resetKey;
+			$url = 'http://daakor.dhammika.me/#/set-password;k='.$resetKey;
 
-			$message['text'] = 'Click the following link to activate your account '.$url;
+			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
 
-			if(!send_email ('resetpassword', $message)) {
+			if(!send_email ('new_user_set_password', $message)) {
 				$response["error"] = true;
-				$response["message"] = "An error occurred. Please try again";
+				$response["message"] = "User created, Could not sent email";
 				echoRespnse(400, $response);
 			}
 
@@ -396,9 +396,9 @@ $app->post('/forgotPassword', function() use ($app) {
 		if($app->request() && $app->request()->getBody()){
 			$params =  $app->request()->getBody();
 			$DbHandler 	= new DbHandler();
-			$message['text'] = 'hello world';	
 
-			$user_id = $DbHandler->checkEmailExist($params['email']);
+			$user =  $DbHandler->checkEmailExist($params['email']);
+			$user_id = $user->id;
 			if(!$user_id){
 				$response["error"] = true;
 				$response["message"] = "Email does not exist";
@@ -411,15 +411,17 @@ $app->post('/forgotPassword', function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/#/reset-password?k='.$resetKey;
+			$url = 'http://daakor.dhammika.me/#/reset-password;k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Reset your password';
+			$message['first_name']	 = $user->first_name;
+			$message['last_name']	 = $user->last_name;
 
 			if(!send_email ('resetpassword', $message)) {
 				$response["error"] = true;
-				$response["message"] = "An error occurred. Please try again";
+				$response["message"] = "An error occurred while sending the rest key email. Please try again";
 				echoRespnse(500, $response);	
 			}
 
@@ -467,7 +469,7 @@ $app->post('/userSignUp',  function() use ($app){
 				$response["message"] = "An error occurred while generating reset key Please try again";
 				echoRespnse(500, $response);
 			}
-			$url = 'http://daakor.dhammika.me/activate-user;key='.$activationKey;
+			$url = 'http://daakor.dhammika.me/#/activate-user;key='.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -648,7 +650,10 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 	                $response["message"] = "Password reset request has been expired!";
 	                echoRespnse(400, $response);
 		    	}
-		    	$update_params = array('password' => $params['password']);
+				$update_params = array('password' => $params['password']);
+				if(isset($params['new_user']) && $params['new_user'] == true){
+					$update_params['status'] = 1;
+				}
                 if($DbHandler->updateUser($update_params, $result['id'])){
                     $response["error"] = false;
                     $response['message'] = "Password updated Successfully";
@@ -672,37 +677,100 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 $app->post('/project', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
+	$has_room_images = false;
+	$has_furniture_images = false;
+	$draft  = false;
+
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->create) {
 		$response["error"] = true;
         $response["message"] = "Unauthorized access";
         echoRespnse(401, $response);
 	}
-	if($app->request() && $app->request()->getBody()){
 
-		$response 	= array();
-		$DbHandler 	= new DbHandler();	
-		$params 	= $app->request()->getBody();
-		$result 	= false;
+	if(isset($_FILES['room_images']) && $_FILES['room_images'] != null && $_FILES['room_images'] != ""){
+		$room_images = $_FILES['room_images'];
+		$has_room_images = true;
+	}
 
-		$result = $DbHandler->createProject($params, $user_id);	
+	if(isset($_FILES['furniture_images']) && $_FILES['furniture_images'] != null && $_FILES['furniture_images'] != "")	{
+		$furniture_images = $_FILES['furniture_images'];
+		$has_furniture_images = true;
+	}
 
-		if (!$result) {
-			$response["error"] = true;
-			$response["message"] = "An error occurred while create the project";
-			echoRespnse(500, $response);
-		} else {
-	
-			$response["error"] = false;
-			$response["message"] = "Project successfully created.";
-			$response["project_id"] = $result;
-			echoRespnse(200	, $response);
+	if(isset($_POST['draft']) && $_POST['draft'] == true)
+		$draft = true;
+
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+	$params 	= json_decode($_POST['project'] , True);
+	$result 	= false;
+
+	$result = $DbHandler->createProject($params, $user_id, $draft);
+
+	if($has_room_images) {
+		$inc = 0;
+		foreach ($room_images['name'] as $key => $value) {
+			$file['name'] = $room_images['name'][$inc];
+			$file['type'] = $room_images['type'][$inc];
+			$file['tmp_name'] = $room_images['tmp_name'][$inc];
+			$file['error'] = $room_images['error'][$inc];
+			$file['size'] = $room_images['size'][$inc];
+
+			$generated_name = uploadProjectImages($file);
+
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "An error occurred while uploading images";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,3)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+			$inc++;
 		}
-	}else {
+	}
+
+	if($has_furniture_images) {
+		$inc = 0;
+		foreach ($furniture_images['name'] as $key => $value) {
+			$file['name'] = $furniture_images['name'][$inc];
+			$file['type'] = $furniture_images['type'][$inc];
+			$file['tmp_name'] = $furniture_images['tmp_name'][$inc];
+			$file['error'] = $furniture_images['error'][$inc];
+			$file['size'] = $furniture_images['size'][$inc];
+
+			$generated_name = uploadProjectImages($file);
+
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "An error occurred while uploading images";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,4)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+			$inc++;
+		}
+	}
+
+	if (!$result) {
 		$response["error"] = true;
-		$response["message"] = "An error occurred. No request body";
+		$response["message"] = "An error occurred while create the project";
 		echoRespnse(500, $response);
-	}	
+	} else {
+
+		$response["error"] = false;
+		$response["message"] = "Project successfully created.";
+		$response["project_id"] = $result;
+		echoRespnse(200	, $response);
+	}
 });
 
 /**
@@ -712,7 +780,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
  * params - */
 $app->post('/sendEmail', function() use ($app) {
 
-            $url = 'http://daakor.dhammika.me/reset-password?k=';
+            $url = 'http://daakor.dhammika.me/#/reset-password;k=';
 
             $message['text'] = $url;
             $message['to']	 = "dhammika97@gmail.com";
@@ -751,6 +819,16 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
         $response["message"] = "something went wrong while updating user";
         echoRespnse(500, $response);
 	}
+	$user = $DbHandler->getUser($id=null)[0];
+	$message['to']	 = $user->email;
+	$message['subject']	= 'Your account activated successfully';
+	$message['first_name']	 = $user->first_name;
+
+	if(!send_email ('signup-complete', $message)) {
+		$response["error"] = true;
+		$response["message"] = "User created, Coundn't send an activation email";
+		echoRespnse(500, $response);
+	}
 
 	$response["error"] = false;
     $response["message"] = "Account was successfully activated";
@@ -766,6 +844,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 $app->get('/myprofile', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
+
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
@@ -775,7 +854,37 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();	
-	$result = $DbHandler->getUser($user_id);
+	$result = (array)$DbHandler->getUser($user_id);
+
+	$result = (array)$result[0];
+
+	if(array_key_exists("id", $result))
+                 unset($result['id']);
+
+    if(array_key_exists("status", $result))
+         unset($result['status']);
+
+    if($result['user_type'] != 3) {
+		if(array_key_exists("company_name", $result))
+		unset($result['company_name']);
+
+		if(array_key_exists("about", $result))
+			unset($result['about']);
+		if(array_key_exists("tranings", $result))
+			unset($result['tranings']);
+		if(array_key_exists("tools", $result))
+			unset($result['tools']);
+		if(array_key_exists("instagrame", $result))
+			unset($result['instagrame']);
+		if(array_key_exists("website", $result))
+			unset($result['website']);
+    }
+
+    if(array_key_exists("user_type", $result))
+		unset($result['user_type']);
+	if(array_key_exists("type_id", $result))
+		unset($result['type_id']);
+
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['users'] = $result;
@@ -875,11 +984,6 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 	$id = $user_id;
 	if($app->request() && $app->request()->getBody()){
 
-		if(!$capabilities->manageUsers->update) {
-			$response["error"] = true;
-	        $response["message"] = "Unauthorized access";
-	        echoRespnse(401, $response);
-		}
 		$params 	=  $app->request()->getBody();
 		$DbHandler 	= new DbHandler();
 
@@ -914,6 +1018,25 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 			echoRespnse(400	, $response);
 		}
 
+		if(isset($params['password']) && isset($params['oldPassword']) && isset($params['repeatPassword'])) {
+			if($params['password'] != $params['repeatPassword']) {
+				$response["error"] = true;
+				$response["message"] = "Confirm password mismatch";
+				echoRespnse(400, $response);
+			}
+
+			if(!$DbHandler->chekOldPassword($params['oldPassword'], $user_id)) {
+				$response["error"] = true;
+				$response["message"] = "wrong old password";
+				echoRespnse(400, $response);
+			}
+		}
+
+		if(array_key_exists("oldPassword", $params))
+			unset($params['oldPassword']);
+		if(array_key_exists("repeatPassword", $params))
+				unset($params['repeatPassword']);
+
 		$result = $DbHandler->updateUser($params, $id);
 
 		if($result) {
@@ -932,53 +1055,6 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 	}
 });
 
-
-/**
- * File upload
- * url - /fileUplaod
- * method - POST
- **/		
-
-$app->put('/fileUplaod', 'authenticate', function() use ($app) {
-	if($app->request() && $app->request()->getBody()){
-		$params 	=  $app->request()->getBody();
-		$path = 'uploads/';
-		$DbHandler 	= new DbHandler();
-
-		if (!is_writable($path)) {
-			$response["error"] = true;
-			$response["message"] = "Image destination directory not writable.";
-			echoRespnse(500, $response);
-		}
-
-		$unique = strtoupper(md5(uniqid(rand(), true)));
-		$image = new SimpleImage();
-		$image->load($_FILES['news_image']['tmp_name']);
-        $ext = pathinfo($_FILES['news_image']['name'], PATHINFO_EXTENSION);
-        $generatedFileName = $unique . '.' . $ext;
-        
-		if (!$image->save($path.$generatedFileName)) {
-		    $response["error"] = true;
-			$response["message"] = "Error in uploading the file";
-			echoRespnse(500, $response);
-		}
-
-		if(!$DbHandler->saveImageName($params['project_id'],$generatedFileNAme)) {
-			$response["error"] = true;
-			$response["message"] = "Error while writing the file name to database";
-			echoRespnse(500, $response);
-		}
-
-		$response["error"] = false;
-		$response["message"] = "Imgage uplaod successfully";
-		echoRespnse(500, $response);
-
-	}else {
-		$response["error"] = true;
-		$response["message"] = "An error occurred. No request body";
-		echoRespnse(500, $response);
-	}
-});
 
 
 /**

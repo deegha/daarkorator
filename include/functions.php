@@ -58,10 +58,13 @@ function validateEmail($email) {
 }
 
 function send_email ($template, $message=null) {
-
     try{
         if(isset($message['text']))
             $message_text = $message['text'];
+        if(isset($message['first_name']))
+            $message_first_name = $message['first_name'];
+        if(isset($message['last_name']))
+            $message_last_name = $message['last_name'];
         ob_start();
         include 'email/'.$template.'.php';
         $msg_body = ob_get_clean();
@@ -75,7 +78,6 @@ function send_email ($template, $message=null) {
         if(!mail($message['to'],$message['subject'],$msg_body, implode("\r\n", $headers))) {
             return false;
         }
-
         return true;
     }catch(Exception $e){
         callErrorLog($e);
@@ -98,7 +100,19 @@ function gnerateTransactionId($user_id) {
     }
 }
 
+function uploadProjectImages($file) {
+    $path = 'uploads/';
+    $unique = strtoupper(md5(uniqid(rand(), true)));
+    $image = new SimpleImage();
+    $image->load($file['tmp_name']);
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $generatedFileName = $unique . '.' . $ext;
+    
+    $image->save($path.$generatedFileName);
+    return $generatedFileName;
 
+   
+}
 
 
 ?>
