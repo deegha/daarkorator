@@ -583,24 +583,34 @@ class DbHandler {
         }
     }
 
-    public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null){
+    public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
         try{
             $db           = new database();
             $table        = "project";
             $rows         = "*";
-            if($logged_user_type == 3 ){
-                $where = "";
-                if($status != null)
-                $where .= " status = ".$status;
-            }elseif($logged_user_type == 2){
-                $where = "customer_id=".$user_id;
-                if($status != null)
-                    $where .= " AND status = ".$status;
+            $where        = "";
+            if($bidding == "yes"){
+                if($logged_user_type == 3 || $logged_user_type == 1){
+                    $where .= "status = 1";
+                }else{
+                    return false;
+                }
             }else{
-                $where = "";
-                if($status != null)
-                $where .= " status = ".$status;
+                if($logged_user_type == 3 ){
+                    $where = "";
+                    if($status != null)
+                    $where .= " status = ".$status;
+                }elseif($logged_user_type == 2){
+                    $where = "customer_id=".$user_id;
+                    if($status != null)
+                        $where .= " AND status = ".$status;
+                }else{
+                    $where = "";
+                    if($status != null)
+                    $where .= " status = ".$status;
+                }
             }
+
 
             $db->selectJson($table, $rows, $where, '', '', $limit);
             $projects = $db->getJson();
