@@ -467,7 +467,7 @@ Payment
 
 #### Project list
 
-- `/project/:limit(/:status)`
+- `/project(/:limit(/:bidding(/:status)))`
 - Method  : get
 - headers : Authorization
 - Respose with no errors

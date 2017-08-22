@@ -1062,7 +1062,7 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
  * url - /project
  * method - GET
  */
-$app->get('/project(/:limit)(/:status)', 'authenticate', function($limit=null, $status=null) use ($app) {
+$app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($limit=null, $bidding=null, $status=null) use ($app) {
 	global $features;
 	global $user_id;
 	global $logged_user_type;
@@ -1075,7 +1075,7 @@ $app->get('/project(/:limit)(/:status)', 'authenticate', function($limit=null, $
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getProjects($user_id, $logged_user_type, $limit, $status);
+	$result = $DbHandler->getProjects($user_id, $logged_user_type, $limit, $status, $bidding);
 	if ($result != NULL) {
 		$response["error"] = false;
 		$response['projects'] = $result;
