@@ -1161,6 +1161,35 @@ $app->get('/notifications(/:limit(/:status))', 'authenticate', function($limit=n
 });
 
 
+
+/*$app->post('/test', function() use ($app) {
+    if($app->request() && $app->request()->getBody()){
+
+		$response 	= array();
+		$DbHandler 	= new DbHandler();
+		$params 	= $app->request()->getBody();
+		//print_r($params);
+		$values = $params['values'];
+		if($tmp = $DbHandler->createNotification($values)){
+            $response["error"] = false;
+            $response['message'] = "Notification created !";
+            $response['tmp'] = $tmp;
+            echoRespnse(200	, $response);
+		}else{
+		    $response["error"] = true;
+            $response["message"] = "An error occurred.";
+            echoRespnse(500, $response);
+		}
+
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}
+
+});*/
+
+
 $app->run();
 		
 ?>
