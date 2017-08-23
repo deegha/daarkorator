@@ -621,6 +621,42 @@ class DbHandler {
              $this->callErrorLog($e);
         }
     }
+
+    public function getNotificationCount($user_id=null){
+        try{
+            $db           = new database();
+            $table        = "notifications";
+            $rows         = "*";
+            $where        = "user_id =".$user_id." AND status = 0";
+
+            $db->selectJson($table, $rows, $where);
+            $count = $db->getNumRows();
+
+            return $count;
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
+    public function getNotifications($user_id=null, $limit=null, $status=null){
+        try{
+            $db           = new database();
+            $table        = "notifications";
+            $rows         = "id, notification_text, url, notification_type";
+            $where        = "user_id = ".$user_id;
+            if($status != null)
+            $where .= " AND status = ".$status;
+
+            $db->selectJson($table, $rows, $where, 'datetime', '', $limit);
+            $results = $db->getJson();
+
+            return json_decode($results);
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
 }
 
 ?>

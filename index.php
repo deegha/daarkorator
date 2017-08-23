@@ -1059,7 +1059,7 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 
 /**
  * List all Projects
- * url - /project
+ * url - /project/:limit/:bidding/:status
  * method - GET
  */
 $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($limit=null, $bidding=null, $status=null) use ($app) {
@@ -1112,6 +1112,52 @@ $app->post('/send', function() use ($app) {
 		echoRespnse(500, $response);
 	}*/
 
+});
+
+
+/**
+ * get notification count
+ * url - /notificationcount
+ * method - GET
+ */
+$app->get('/notificationcount', 'authenticate', function() use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getNotificationCount($user_id);
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['count'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
+
+/**
+ * get notifications list
+ * url - /notifications
+ * method - GET
+ */
+$app->get('/notifications(/:limit(/:status))', 'authenticate', function($limit=null, $status=null) use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getNotifications($user_id, $limit, $status);
+	if ($result != NULL) {
+		$response["error"] = false;
+		$response['notifications'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
 });
 
 
