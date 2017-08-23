@@ -598,15 +598,15 @@ class DbHandler {
             }else{
                 if($logged_user_type == 3 ){
                     $where = "";
-                    if($status != null)
+                    if(isset($status))
                     $where .= " status = ".$status;
                 }elseif($logged_user_type == 2){
                     $where = "customer_id=".$user_id;
-                    if($status != null)
+                    if(isset($status))
                         $where .= " AND status = ".$status;
                 }else{
                     $where = "";
-                    if($status != null)
+                    if(isset($status))
                     $where .= " status = ".$status;
                 }
             }
@@ -639,13 +639,13 @@ class DbHandler {
         }
     }
 
-    public function getNotifications($user_id=null, $limit=null, $status=null){
+    public function getNotifications($user_id, $limit=null, $status=null){
         try{
             $db           = new database();
             $table        = "notifications";
             $rows         = "id, notification_text, url, notification_type";
             $where        = "user_id = ".$user_id;
-            if($status != null)
+            if(isset($status))
             $where .= " AND status = ".$status;
 
             $db->selectJson($table, $rows, $where, 'datetime', '', $limit);
@@ -655,6 +655,46 @@ class DbHandler {
 
         }catch(Exception $e){
              $this->callErrorLog($e);
+        }
+    }
+
+    private function createNotification($values=null ){
+        try{
+            $db           = new database();
+            $table        = "notifications";
+            $rows         = "user_id, notification_text, url, notification_type";
+
+            if($db->insert($table, $values, $rows, "true")){
+                return  true;
+            }else{
+                return false;
+            }
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+             return false;
+        }
+    }
+
+    private function getUsers($type=null, $status=null){
+        try{
+            $db           = new database();
+            $table        = "user";
+            $rows         = "id, email, first_name";
+            $where        = "";
+            if(isset($type))
+            $where .= "user_type = ".$type;
+
+            if(isset($status))
+            $where .= " AND status = ".$status;
+
+            $db->selectJson($table, $rows, $where);
+            $results      = $db->getJson();
+            if($results){
+                return  $results;
+            }
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+             return false;
         }
     }
 }

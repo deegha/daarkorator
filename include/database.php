@@ -127,16 +127,19 @@ private $numrows;
 	}
 	
 	
-	function insert($table,$values,$rows){
+	function insert($table,$values,$rows,$multiple=null){
 		try{
 			$insert = "insert into ".$table;
 			if($rows != ""){
 				$insert .= " (".$rows.")";
 			}
-			if($values != ""){
-				$insert .= " values (".$values.");";
+			if($values != "" && $multiple == true){
+				$insert .= " values ".$values.";";
+			}else{
+			    $insert .= " values (".$values.");";
 			}
-			// echo $insert;
+			 //echo $insert;
+			 //echo $multiple;
 			$ins = mysqli_query($this->con,$insert);
 			$this->insertid = mysqli_insert_id($this->con);
 			if($ins){
