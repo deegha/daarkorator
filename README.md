@@ -419,7 +419,7 @@ Payment
 
 - URL     : /package/:id`
 - Method  : get 
-- Respose with no errors
+- Response with no errors
 `{"error":false,"message":"Request successful","price":"23"}`
 
 #### Payment
@@ -453,7 +453,7 @@ Payment
     "website": "test.com"
 }
           }`
-- Respose with no errors
+- Response with no errors
 `{
     "error": false,
     "message": "User updated Successfully"
@@ -470,8 +470,11 @@ Payment
 - `/project(/:limit(/:bidding(/:status)))`
 - Method  : get
 - headers : Authorization
-- Respose with no errors
-`{
+- Response with no errors
+- :limit (0,30)(31,30)
+- :bidding (yes/ no) yes for all projects open for submission, no for projects belongs to user or admin
+- :status 1 - paid and open for bidding, 2 - saved as draft, etc...
+{
    "error":false,
    "projects": [
            {
@@ -490,4 +493,43 @@ Payment
            .......
            }
        ]
+}
+
+
+#### notification count
+
+- `/notificationcount`
+- Method  : get
+- headers : Authorization
+- Response with no errors
+{
+    "error": false,
+    "count": 3
+}
+
+#### notification list
+
+- `/notifications(/:limit(/:status))`
+- Method  : get
+- headers : Authorization
+- Response with no errors
+{
+    "error": false,
+    "notifications": [
+        {
+            "id": "171",
+            "notification_text": "d;fl,s;dlf ,;sdlf;l",
+            "url": "s;/d,.f;sl,df;l,s;ldf",
+            "notification_type": "3"
+        },
+        {
+            "id": "172",
+            "notification_text": ";lsd,f;ls,d;lf,;sld,f ;lsfjkndjfkgnjdkf",
+            "url": "lkmslfkmskmdfklsmldf",
+            "notification_type": "3"
+        },
+        {
+            ......
+        }
+    ]
 }
