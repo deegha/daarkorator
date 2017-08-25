@@ -690,11 +690,94 @@ class DbHandler {
             $db->selectJson($table, $rows, $where);
             $results      = $db->getJson();
             if($results){
-                return  $results;
+                return  json_decode($results);
             }
         }catch(Exception $e){
              $this->callErrorLog($e);
              return false;
+        }
+    }
+
+    public function getProjectDetails($project_id, $logged_user_type=null, $user_id=null){
+        try{
+
+            $db         = new database();
+            $table      = "project p inner join project_details pd on pd.project_id = p.id";
+            $table     .= " left outer join resources_table rt on rt.project_id = p.id";
+            //$table     .= " left outer join project_styleboard psb on psb.project_id = p.id";
+            $rows       = " p.id,";
+            $rows      .= "any_value(pd.title) as title, any_value(pd.room_types) as room_types, any_value(pd.desing_styles) as design_styles, any_value(pd.color_palettes) as color_palettes, any_value(pd.color_exceptions) as color_excemption, any_value(pd.dimensions) as dimensions, any_value(pd.description) as description, any_value(pd.social_media_links) as social_media_links, any_value(pd.budget) as budget, ";
+            $rows      .= "group_concat(if(rt.recource_type = '3', rt.image_url, null)) as room_images, group_concat(if(rt.recource_type = '4', rt.image_url, null)) as furniture_images";
+            //$rows      .= "group_concat(distinct psb.styleboard) as style_boards";
+            $where      = "p.id = ".$project_id;
+
+            if($logged_user_type == 2)
+            $where .= " AND p.customer_id = ".$user_id;
+
+            $groupby    = "p.id";
+            $db->selectJson($table, $rows, $where, '', $groupby);
+            $results = $db->getJson();
+
+            $table  = "project_styleboard psb left outer join user u on u.id = psb.daarkorator_id";
+            $rows   = "psb.styleboard as styleboard, psb.daarkorator_id as daarkorator_id, psb.status as status, psb.added_time as added_time, CONCAT_WS(' ', u.first_name, u.last_name) as daakor";
+            $where  = "project_id = ".$project_id;
+
+            if($logged_user_type == 3)
+            $where .= " AND daarkorator_id = ".$user_id;
+
+            $db         = new database();
+            $db->selectJson($table, $rows, $where);
+            $styleBoards = $db->getJson();
+
+            $tmp = json_decode($results);
+            foreach($tmp as $tmp){
+                $title              = $tmp->title;
+                $room_types         = json_decode($tmp->room_types, true);
+                $design_styles      = json_decode($tmp->design_styles, true);
+                $color_palettes     = json_decode($tmp->color_palettes, true);
+                $color_excemption   = $tmp->color_excemption;
+                $dimensions         = json_decode($tmp->dimensions);
+                $description        = $tmp->description;
+                $social_media_links = $tmp->social_media_links;
+                $budget             = $tmp->budget;
+                $room_images        = explode(',', $tmp->room_images);
+                $furniture_images   = explode(',', $tmp->furniture_images);
+            }
+            $tmpStyles = array();
+            foreach($design_styles as $design_styles){
+                $db = new database();
+                $table = "resources_table";
+                $rows = "image_url";
+                $where = "id = ".$design_styles;
+                $db->select($table, $rows, $where);
+                array_push($tmpStyles, $db->getResults());
+            }
+            $tmpPalattes = array();
+            foreach($color_palettes as $color_palettes){
+                $db = new database();
+                $table = "resources_table";
+                $rows = "image_url";
+                $where = "id = ".$color_palettes;
+                $db->select($table, $rows, $where);
+                array_push($tmpPalattes, $db->getResults());
+            }
+            //print_r($tmpStyles);
+            $response['title'] = $title;
+            $response['about'] = array('room_types'=>$room_types, 'design_styles'=>$tmpStyles, 'color_palettes'=>$tmpPalattes, 'color_excemption'=>$color_excemption);
+            $response['details'] = array('dimensions'=>$dimensions, 'room_images'=>$room_images, 'budget'=>$budget, 'furniture_images'=>$furniture_images);
+            $response['inspire'] = array('social_media_links'=>$social_media_links, 'description'=>$description);
+            $response['style_boards'] = json_decode($styleBoards);
+
+            if($results){
+                //return array_merge($tmp,$response);
+                //return json_decode($results);
+                return $response;
+            }else{
+                return false;
+            }
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
         }
     }
 }

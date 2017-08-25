@@ -1076,7 +1076,7 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getProjects($user_id, $logged_user_type, $limit, $status, $bidding);
-	if ($result != NULL) {
+	if ($result) {
 		$response["error"] = false;
 		$response['projects'] = $result;
 		echoRespnse(200	, $response);
@@ -1126,7 +1126,7 @@ $app->get('/notificationcount', 'authenticate', function() use ($app) {
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getNotificationCount($user_id);
-	if ($result != NULL) {
+	if ($result) {
 		$response["error"] = false;
 		$response['count'] = $result;
 		echoRespnse(200	, $response);
@@ -1149,7 +1149,7 @@ $app->get('/notifications(/:limit(/:status))', 'authenticate', function($limit=n
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getNotifications($user_id, $limit, $status);
-	if ($result != NULL) {
+	if ($result) {
 		$response["error"] = false;
 		$response['notifications'] = $result;
 		echoRespnse(200	, $response);
@@ -1188,6 +1188,30 @@ $app->get('/notifications(/:limit(/:status))', 'authenticate', function($limit=n
 	}
 
 });*/
+
+
+/**
+ * get Project details
+ * url - /projectdetails/:project_id
+ * method - GET
+ */
+$app->get('/projectdetails/:project_id', 'authenticate',function($project_id) use ($app) {
+	global $user_id;
+	global $logged_user_type;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getProjectDetails($project_id, $logged_user_type, $user_id);
+	if ($result) {
+		$response["error"] = false;
+		$response['Project_Detail'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
 
 
 $app->run();
