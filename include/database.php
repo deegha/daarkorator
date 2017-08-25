@@ -43,7 +43,7 @@ private $numrows;
 	}
 	
 	
-	function select($table,$rows,$where,$order,$limit){
+	function select($table,$rows,$where=null,$order=null,$limit=null){
 		$q = 'select '.$rows.' from '.$table;
 		if($where!=""){
 			$q .= ' where '.$where;
@@ -54,7 +54,7 @@ private $numrows;
 		if($limit!=""){
 			$q .= ' limit '.$limit;
 		}
-		// echo $q;
+		 //echo $q;
 		$query = mysqli_query($this->con,$q);
 		$numRows = mysqli_num_rows($query);
 

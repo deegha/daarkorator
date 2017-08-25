@@ -72,3 +72,172 @@ Undefined variable: limit
 Undefined variable: limit
 Undefined variable: limit
 Undefined variable: where
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+Missing argument 4 for database::select(), called in F:\wamp64\www\daarkorator\include\DbHandler.php on line 707 and defined
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Use of undefined constant p - assumed 'p'
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Undefined variable: results
+Undefined variable: results
+Undefined variable: results
+Undefined variable: results
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Illegal string offset 'room_images'
+Illegal string offset 'room_images'
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+Undefined index: style_boards
+Undefined index: style_boards
+Undefined index: style_boards
+Illegal string offset 'test'
+Illegal string offset 'test'
+Illegal string offset 'test'
+Undefined index: About
+Undefined index: About
+Object of class stdClass could not be converted to string
+json_decode() expects parameter 1 to be string, array given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, string given
+json_decode() expects parameter 1 to be string, array given
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+Undefined variable: results
+json_decode() expects parameter 1 to be string, array given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Undefined variable: results
+Undefined variable: results
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_query(): Couldn't fetch mysqli
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Illegal string offset 'id'
+Illegal string offset 'id'
+Use of undefined constant id - assumed 'id'
+array_merge(): Argument #1 is not an array
+array_merge(): Argument #1 is not an array
+json_decode() expects parameter 1 to be string, object given
+Undefined index: id
+Trying to get property of non-object
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+json_decode() expects parameter 1 to be string, array given
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()
+json_decode() expects parameter 1 to be string, array given
+json_decode() expects parameter 1 to be string, array given
+Invalid argument supplied for foreach()
+json_decode() expects parameter 1 to be string, array given
