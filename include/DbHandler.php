@@ -747,19 +747,19 @@ class DbHandler {
             foreach($design_styles as $design_styles){
                 $db = new database();
                 $table = "resources_table";
-                $rows = "image_url";
+                $rows = "image_url, title";
                 $where = "id = ".$design_styles;
-                $db->select($table, $rows, $where);
-                array_push($tmpStyles, $db->getResults());
+                $db->selectJson($table, $rows, $where);
+                array_push($tmpStyles, json_decode($db->getJson()));
             }
             $tmpPalattes = array();
             foreach($color_palettes as $color_palettes){
                 $db = new database();
                 $table = "resources_table";
-                $rows = "image_url";
+                $rows = "image_url, title";
                 $where = "id = ".$color_palettes;
-                $db->select($table, $rows, $where);
-                array_push($tmpPalattes, $db->getResults());
+                $db->selectJson($table, $rows, $where);
+                array_push($tmpPalattes, json_decode($db->getJson()));
             }
             //print_r($tmpStyles);
             $response['title'] = $title;
