@@ -556,7 +556,7 @@ Payment
                     }
                 ],
                 [
-                    ...
+                    ....
                 ]
             ],
             "color_palettes": [
