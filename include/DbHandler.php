@@ -749,8 +749,8 @@ class DbHandler {
                 $table = "resources_table";
                 $rows = "image_url, title";
                 $where = "id = ".$design_styles;
-                $db->selectJson($table, $rows, $where);
-                array_push($tmpStyles, json_decode($db->getJson()));
+                $db->select($table, $rows, $where);
+                array_push($tmpStyles, $db->getResults());
             }
             $tmpPalattes = array();
             foreach($color_palettes as $color_palettes){
@@ -758,8 +758,8 @@ class DbHandler {
                 $table = "resources_table";
                 $rows = "image_url, title";
                 $where = "id = ".$color_palettes;
-                $db->selectJson($table, $rows, $where);
-                array_push($tmpPalattes, json_decode($db->getJson()));
+                $db->select($table, $rows, $where);
+                array_push($tmpPalattes, $db->getResults());
             }
             //print_r($tmpStyles);
             $response['title'] = $title;

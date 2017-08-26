@@ -61,7 +61,7 @@ private $numrows;
 		$this->numrows = $numRows;
 		if($numRows){
 			for($i=0; $i<$numRows; $i++){
-				$r= mysqli_fetch_array($query);
+				$r= mysqli_fetch_assoc($query);
 				$key = array_keys($r);
 				for($x=0; $x<count($key); $x++){
 					if($numRows > 1){

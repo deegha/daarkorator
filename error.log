@@ -243,3 +243,6 @@ Invalid argument supplied for foreach()
 json_decode() expects parameter 1 to be string, array given
 array_values() expects parameter 1 to be array, string given
 array_merge(): Argument #1 is not an array
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()

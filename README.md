@@ -545,68 +545,48 @@ Payment
 {
     "error": false,
     "Project_Detail": {
-        "title": "test",
+        "title": "asd",
         "about": {
             "room_types": "1",
             "design_styles": [
-                [
-                    {
-                        "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/stock-photo-3084330-living-room.jpg",
-                        "title": "design 1"
-                    }
-                ],
-                [
-                    ....
-                ]
+                {
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/stock-photo-3084330-living-room.jpg",
+                    "title": "design 1"
+                },
+                {
+                    ...
+                }
             ],
             "color_palettes": [
-                [
-                    {
-                        "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/Blues.png",
-                        "title": "Blues"
-                    }
-                ],
-                [
+                {
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/Blues.png",
+                    "title": "Blues"
+                },
+                {
                     ...
-                ]
+                }
             ],
             "color_excemption": "\"\""
         },
         "details": {
             "dimensions": {
-                "length": "sdf",
-                "width": "sdf",
-                "height": "sdf",
+                "length": "asd",
+                "width": "asd",
+                "height": "asd",
                 "unit": "ft/inch"
             },
             "room_images": [
-                "9FDDBE2F8149B9C7715D99CD4899FF62.png",
-                ...
+                ""
             ],
             "budget": "0",
             "furniture_images": [
-                "BC553AEBD18E08E30EAB3C174BF1547F.jpg",
-                ...
+                ""
             ]
         },
         "inspire": {
             "social_media_links": "null",
             "description": ""
         },
-        "style_boards": [
-            {
-                "styleboard": "slkmlskdmf",
-                "daarkorator_id": "55",
-                "status": "0",
-                "added_time": "2017-08-24 21:38:53",
-                "daakor": "Dhammika Gunaratne"
-            },
-            {
-                ...
-            },
-            {
-                ....
-            }
-        ]
+        "style_boards": null
     }
 }
