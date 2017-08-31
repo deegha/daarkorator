@@ -688,7 +688,8 @@ $app->post('/project', 'authenticate', function() use ($app) {
         echoRespnse(401, $response);
 	}
 
-	if(isset($_FILES['room_images']) && $_FILES['room_images'] != null && $_FILES['room_images'] != ""){
+
+	/*if(isset($_FILES['room_images']) && $_FILES['room_images'] != null && $_FILES['room_images'] != ""){
 		$room_images = $_FILES['room_images'];
 		$has_room_images = true;
 	}
@@ -696,7 +697,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 	if(isset($_FILES['furniture_images']) && $_FILES['furniture_images'] != null && $_FILES['furniture_images'] != "")	{
 		$furniture_images = $_FILES['furniture_images'];
 		$has_furniture_images = true;
-	}
+	}*/
 
 	if(isset($_POST['draft']) && $_POST['draft'] == true)
 		$draft = true;
@@ -708,14 +709,13 @@ $app->post('/project', 'authenticate', function() use ($app) {
 
 	$result = $DbHandler->createProject($params, $user_id, $draft);
 
-	if($has_room_images) {
-		$inc = 0;
-		foreach ($room_images['name'] as $key => $value) {
-			$file['name'] = $room_images['name'][$inc];
-			$file['type'] = $room_images['type'][$inc];
-			$file['tmp_name'] = $room_images['tmp_name'][$inc];
-			$file['error'] = $room_images['error'][$inc];
-			$file['size'] = $room_images['size'][$inc];
+	if(! empty($_FILES['room_images'])) {
+		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
+			$file['name'] = $_FILES['room_images']['name'][$key];
+			$file['type'] = $_FILES['room_images']['type'][$key];
+			$file['tmp_name'] = $_FILES['room_images']['tmp_name'][$key];
+			$file['error'] = $_FILES['room_images']['error'][$key];
+			$file['size'] = $_FILES['room_images']['size'][$key];
 
 			$generated_name = uploadProjectImages($file);
 
@@ -730,18 +730,16 @@ $app->post('/project', 'authenticate', function() use ($app) {
 				$response["message"] = "An error occurred while saving images";
 				echoRespnse(500, $response);
 			}
-			$inc++;
 		}
 	}
 
-	if($has_furniture_images) {
-		$inc = 0;
-		foreach ($furniture_images['name'] as $key => $value) {
-			$file['name'] = $furniture_images['name'][$inc];
-			$file['type'] = $furniture_images['type'][$inc];
-			$file['tmp_name'] = $furniture_images['tmp_name'][$inc];
-			$file['error'] = $furniture_images['error'][$inc];
-			$file['size'] = $furniture_images['size'][$inc];
+	if(! empty($_FILES['furniture_images'])) {
+		foreach ($_FILES['furniture_images']['tmp_name'] as $key => $tmp_name) {
+			$file['name'] = $_FILES['furniture_images']['name'][$key];
+            $file['type'] = $_FILES['furniture_images']['type'][$key];
+            $file['tmp_name'] = $_FILES['furniture_images']['tmp_name'][$key];
+            $file['error'] = $_FILES['furniture_images']['error'][$key];
+            $file['size'] = $_FILES['furniture_images']['size'][$key];
 
 			$generated_name = uploadProjectImages($file);
 
@@ -756,10 +754,8 @@ $app->post('/project', 'authenticate', function() use ($app) {
 				$response["message"] = "An error occurred while saving images";
 				echoRespnse(500, $response);
 			}
-			$inc++;
 		}
 	}
-
 	if (!$result) {
 		$response["error"] = true;
 		$response["message"] = "An error occurred while create the project";
@@ -1085,33 +1081,6 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
-});
-
-$app->post('/send', function() use ($app) {
-
-    $uploadDir = 'uploads/';
-    $error = false;
-
-    if (empty($_FILES)) {
-        echo 'No files included';
-        $app->stop();
-    }
-    $tmp = $_FILES['test'];
-    print_r( $tmp);
-
-	/*if($app->request() && $app->request()->getBody()){
-
-		$response 	= array();
-		$DbHandler 	= new DbHandler();
-		$params 	= $app->request()->getBody();
-		//print_r($params);
-
-	}else {
-		$response["error"] = true;
-		$response["message"] = "An error occurred. No request body";
-		echoRespnse(500, $response);
-	}*/
-
 });
 
 

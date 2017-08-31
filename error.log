@@ -246,3 +246,53 @@ array_merge(): Argument #1 is not an array
 Invalid argument supplied for foreach()
 Invalid argument supplied for foreach()
 Invalid argument supplied for foreach()
+mysqli_connect(): (HY000/1045): Access denied for user 'dhammi5_daakor_user'@'localhost' (using password: YES)
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+Undefined property: stdClass::$room_types
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Undefined index: description
+Array to string conversion
+Illegal string offset 'tmp_name'
+Illegal string offset 'tmp_name'
+Invalid argument supplied for foreach()
+Array to string conversion
+Array to string conversion
+Array to string conversion
+Array to string conversion
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()
+Invalid argument supplied for foreach()
+Array to string conversion
+Array to string conversion
