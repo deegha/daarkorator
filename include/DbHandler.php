@@ -444,13 +444,13 @@ class DbHandler {
             $db->insert($project_table,$values,$rows);
 
             if($project_id = $db->getInsertId()) {
-
+            //print_r('start');
                 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
-                $insert_params['room_types']     = json_encode($params['room']);
+                $insert_params['room_types']     = $params['room'];
                 $insert_params['desing_styles']  = json_encode($params['designStyle']);
                 $insert_params['color_palettes'] = json_encode($params['colorChoice']['likeColors']);
-                $insert_params['color_exceptions'] = json_encode($params['colorChoice']['dislikeColors']);
+                $insert_params['color_exceptions'] = $params['colorChoice']['dislikeColors'];
                 $insert_params['dimensions']     = json_encode( array(
                     "length" => $params['roomDetails']['length'],
                     "width"  => $params['roomDetails']['width'],
@@ -459,7 +459,7 @@ class DbHandler {
                 ));
                 $insert_params['description']        = $params['inspirations']['description'];
                 $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
-
+                $insert_params['budget']        = $params['roomDetails']['budget'];
                 $result = $this->getInsertSting($insert_params); 
 
                 $rows_detials   = $result['rows'];
@@ -475,7 +475,13 @@ class DbHandler {
                                 "'".$insert_params['dimensions'] ."',".
                                 "'".$insert_params['description'] ."',".
                                 "'".$insert_params['social_media_links'] ."',".
+                                "'".$insert_params['budget'] ."', ".
                                 "'".$project_id."'";
+
+                //print_r( $insert_params);
+                //print_r($params['roomDetails']['budget']);
+
+                 //echo "insert into project_details (".$rows_detials." ) values (".$values_details.")";
                                 
                 if($db->insert($project_table,$values_details,$rows_detials)) {
                     $id =  $db->getInsertId();
@@ -705,8 +711,9 @@ class DbHandler {
             $table      = "project p inner join project_details pd on pd.project_id = p.id";
             $table     .= " left outer join resources_table rt on rt.project_id = p.id";
             //$table     .= " left outer join project_styleboard psb on psb.project_id = p.id";
+            $table     .= " left outer join room_types rty on rty.id = pd.room_types";
             $rows       = " p.id,";
-            $rows      .= "any_value(pd.title) as title, any_value(pd.room_types) as room_types, any_value(pd.desing_styles) as design_styles, any_value(pd.color_palettes) as color_palettes, any_value(pd.color_exceptions) as color_excemption, any_value(pd.dimensions) as dimensions, any_value(pd.description) as description, any_value(pd.social_media_links) as social_media_links, any_value(pd.budget) as budget, ";
+            $rows      .= "MAX(pd.title) as title, MAX(pd.room_types) as room_types, MAX(rty.title) as room_type_name, MAX(pd.desing_styles) as design_styles, MAX(pd.color_palettes) as color_palettes, MAX(pd.color_exceptions) as color_excemption, MAX(pd.dimensions) as dimensions, MAX(pd.description) as description, MAX(pd.social_media_links) as social_media_links, MAX(pd.budget) as budget, ";
             $rows      .= "group_concat(if(rt.recource_type = '3', rt.image_url, null)) as room_images, group_concat(if(rt.recource_type = '4', rt.image_url, null)) as furniture_images";
             //$rows      .= "group_concat(distinct psb.styleboard) as style_boards";
             $where      = "p.id = ".$project_id;
@@ -732,13 +739,14 @@ class DbHandler {
             $tmp = json_decode($results);
             foreach($tmp as $tmp){
                 $title              = $tmp->title;
-                $room_types         = json_decode($tmp->room_types, true);
+                $room_types         = ($tmp->room_types);
+                $room_type_name     = ($tmp->room_type_name);
                 $design_styles      = json_decode($tmp->design_styles, true);
                 $color_palettes     = json_decode($tmp->color_palettes, true);
                 $color_excemption   = $tmp->color_excemption;
                 $dimensions         = json_decode($tmp->dimensions);
                 $description        = $tmp->description;
-                $social_media_links = $tmp->social_media_links;
+                $social_media_links = json_decode($tmp->social_media_links, true);
                 $budget             = $tmp->budget;
                 $room_images        = explode(',', $tmp->room_images);
                 $furniture_images   = explode(',', $tmp->furniture_images);
@@ -763,7 +771,7 @@ class DbHandler {
             }
             //print_r($tmpStyles);
             $response['title'] = $title;
-            $response['about'] = array('room_types'=>$room_types, 'design_styles'=>$tmpStyles, 'color_palettes'=>$tmpPalattes, 'color_excemption'=>$color_excemption);
+            $response['about'] = array('room_types'=>$room_types, 'room_type_name'=>$room_type_name, 'design_styles'=>$tmpStyles, 'color_palettes'=>$tmpPalattes, 'color_excemption'=>$color_excemption);
             $response['details'] = array('dimensions'=>$dimensions, 'room_images'=>$room_images, 'budget'=>$budget, 'furniture_images'=>$furniture_images);
             $response['inspire'] = array('social_media_links'=>$social_media_links, 'description'=>$description);
             $response['style_boards'] = json_decode($styleBoards);
