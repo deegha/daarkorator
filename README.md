@@ -545,47 +545,65 @@ Payment
 {
     "error": false,
     "Project_Detail": {
-        "title": "asd",
+        "title": "Test Project by dhammika 1",
         "about": {
-            "room_types": "1",
+            "room_types": "4",
+            "room_type_name": "Master Bedroom",
             "design_styles": [
                 {
                     "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/stock-photo-3084330-living-room.jpg",
                     "title": "design 1"
                 },
                 {
-                    ...
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/stock-photo-34687716-modern-living-room.jpg",
+                    "title": "design 2"
+                },
+                {
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/stock-photo-60408058-scandinavian-living-room.jpg",
+                    "title": "design 4"
+                },
+                {
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/stock-photo-64224157-luxurious-living-room-with-fireplace.jpg",
+                    "title": "design 3"
                 }
             ],
             "color_palettes": [
                 {
-                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/Blues.png",
-                    "title": "Blues"
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/Reds.png",
+                    "title": "Reds"
                 },
                 {
-                    ...
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/Yellows.png",
+                    "title": "Yellows"
+                },
+                {
+                    "image_url": "http://www.daakor.com/dev/wp-content/uploads/2016/03/Oranges.png",
+                    "title": "Oranges"
                 }
             ],
-            "color_excemption": "\"\""
+            "color_excemption": "blue, green"
         },
         "details": {
             "dimensions": {
-                "length": "asd",
-                "width": "asd",
-                "height": "asd",
-                "unit": "ft/inch"
+                "length": "12",
+                "width": "34",
+                "height": "21",
+                "unit": "m/cm"
             },
             "room_images": [
                 ""
             ],
-            "budget": "0",
+            "budget": "23445",
             "furniture_images": [
                 ""
             ]
         },
         "inspire": {
-            "social_media_links": "null",
-            "description": ""
+            "social_media_links": [
+                "https://sites.google.com/zone24x7.com/scientia24x7/home?authuser=1",
+                "https://sites.google.com/zone24x7.com/scientia24x7/home?authuser=1"
+            ],
+            "description": "test description to test the file uploader work"
         },
         "style_boards": null
     }
