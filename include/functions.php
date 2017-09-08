@@ -110,10 +110,7 @@ function uploadProjectImages($file) {
     $generatedFileName = $unique . '.' . $ext;
     
     $image->save($path.$generatedFileName);
-    return $generatedFileName;
-
-   
+    return $generatedFileName;   
 }
-
 
 ?>

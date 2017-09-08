@@ -1183,6 +1183,7 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 });
 
 
+
 $app->run();
 		
 ?>

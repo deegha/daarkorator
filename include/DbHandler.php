@@ -788,6 +788,30 @@ class DbHandler {
             return false;
         }
     }
+
+    public function createNotifications($data){
+        try{
+            if($data['user_id'] == "" || $data['notification_text'] == "" 
+                || $data['url'] == "" || $data['notification_type'] == "" ) {
+                    $this->callErrorLog("missing arguments to create notification");
+                    return false;
+            }
+            $table  = "notifications" ;
+            $values = $data['user_id'].", ".$data['notification_text'].", ".$data['url'].", ".$data['notification_type'];
+            $rows   = " user_id, notification_text, url, notification_type ";
+
+            if($db->insert($table, $values, $rows)){
+                return  true;
+            }else{
+                $this->callErrorLog("Error while creating the notification");
+                return false;
+            }    
+
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>
