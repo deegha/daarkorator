@@ -935,7 +935,12 @@ $app->post('/payment','authenticate', function() use ($app) {
 		$DbHandler 	= new DbHandler();	
 		$params 	= $app->request()->getBody();
 
-		if( $params["project_id"] == "" || $params["amount"] == "" ) {
+		if( $params["project_id"] == "" 
+			|| $params["amount"] == "" 
+			|| $params["first_name"] == "" 
+			|| $params["last_name"] == ""
+			|| $params["payment_method"] == ""
+			) {
 			$response["error"] = true;
 	        $response["message"] = "Validation faild, all feilds are required";
 	        echoRespnse(400, $response);
@@ -954,7 +959,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
 		}	
-
+	
 		$response["error"] = false;
 	    $response["message"] = "Payment successful";
 		echoRespnse(200	, $response);
@@ -1181,8 +1186,6 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 		echoRespnse(404, $response);
 	}
 });
-
-
 
 $app->run();
 		
