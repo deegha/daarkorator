@@ -935,6 +935,17 @@ $app->post('/payment','authenticate', function() use ($app) {
 		$DbHandler 	= new DbHandler();	
 		$params 	= $app->request()->getBody();
 
+		if(!isset($params['project_id'])  || 
+			!isset($params['amount']) || 
+			!isset($params['first_name']) || 
+			!isset($params['last_name']) || 
+			!isset($params['payment_method']))
+		{
+			$response["error"] = true;
+	        $response["message"] = "required parameters are missing";
+	        echoRespnse(400, $response);
+		}
+
 		if( $params["project_id"] == "" 
 			|| $params["amount"] == "" 
 			|| $params["first_name"] == "" 
