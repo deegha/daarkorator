@@ -425,11 +425,21 @@ Payment
 #### Payment
 
 - URL     : `/payment`
-- Method  : PUT 
+- Method  : POST 
 -Request  : 
-`{  
-   "project_id":123,
-   "amount":230
+`{
+	"project_id" : 1,
+	"amount"	: 2000,
+	"first_name"	: "name",
+	"last_name"	: "lname",
+	"phone"	: "0711129349",
+	"street_address"	: "address",
+	"address_line_2"	: "address",
+	"city"	: "city",
+	"state_province_region"	: "region",
+	"zip_code"	: "6100",
+	"country"	: "srilanka",
+	"payment_method"	: "1"
 }`
 - Respose with no errors
 {"error":false,"message":"Payment successful"}
