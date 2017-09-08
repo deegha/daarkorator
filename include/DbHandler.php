@@ -537,10 +537,46 @@ class DbHandler {
     public function payment($params , $user_id, $transaction_id){
         try{
             $db           = new database();
-            $rows         = "user_id, project_id, amount, transaction_id, payment_status";
             $table        = "payment_table";
-            $values       =  "'".$user_id."', '".$params['project_id']."', '"
-                            .$params['amount']."', '".$transaction_id."', '0'";
+            $rows         = "user_id, 
+                            project_id, amount, 
+                            transaction_id, 
+                            first_name,
+                            last_name,
+                            phone,
+                            street_address,
+                            address_line_2,
+                            city,
+                            state_province_region,
+                            zip_code,
+                            country,
+                            payment_method,
+                            payment_status";
+
+            $phone = (!isset($params['phone']) || $params['phone'] == "")? "" : $params['phone'] ;
+            $street_address = (!isset($params['street_address']) || $params['street_address'] == "")? "" : $params['street_address'] ;
+            $address_line_2 = (!isset($params['address_line_2']) || $params['address_line_2'] == "")? "" : $params['address_line_2'] ;
+            $state_province_region = (!isset($params['state_province_region']) || $params['state_province_region'] == "")? "" : $params['state_province_region'] ;
+            $zip_code = (!isset($params['zip_code']) || $params['zip_code'] == "")? "" : $params['zip_code'] ;
+            $city = (!isset($params['city']) || $params['city'] == "")? "" : $params['city'] ;
+            $country = (!isset($params['country']) || $params['country'] == "")? "" : $params['country'] ;
+            
+            $values       =  "'".$user_id."', 
+                             '".$params['project_id']."', 
+                             '".$params['amount']."', 
+                             '".$transaction_id."',
+                             '".$params['first_name']."',
+                             '".$params['last_name']."',
+                             '".$phone."',
+                             '".$street_address."',
+                             '".$address_line_2."',
+                             '".$city."',
+                             '".$state_province_region."',
+                             '".$zip_code."',
+                             '".$country."',
+                             '".$params['payment_method']."',
+                              '0'";
+
             if(!$db->insert($table,$values,$rows)){
                 return false;
             }
@@ -783,6 +819,30 @@ class DbHandler {
             }else{
                 return false;
             }
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function createNotifications($data){ 
+        try{ 
+            if($data['user_id'] == "" || $data['notification_text'] == "" 
+                || $data['url'] == "" || $data['notification_type'] == "" ) {
+                    
+                    return false;
+            }
+            $db         = new database();
+            $table  = "notifications" ;
+            $values = "'".$data['user_id']."', '".$data['notification_text']."', '".$data['url']."', '".$data['notification_type']."'";
+            $rows   = " user_id, notification_text, url, notification_type ";
+
+            if($db->insert($table, $values, $rows)){
+                return  true;
+            }else{
+                return false;
+            }    
+
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
