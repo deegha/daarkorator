@@ -700,7 +700,7 @@ class DbHandler {
         }
     }
 
-    private function createNotification($values=null ){
+    public function createNotification($values=null ){
         try{
             $db           = new database();
             $table        = "notifications";
@@ -852,16 +852,18 @@ class DbHandler {
     public function getAllDaarkorators(){
         try{
             $db     = new database();
-            $table  = "users" ;
+            $table  = "user" ;
             $rows   = "id";
-            $where  = "user_type = 3 and status =1";
-    
-            if(!$db->selectJson($table, $rows, $where)) {
+            $where  = "user_type = 3 and status = 1";
+
+            $db->select($table, $rows, $where);
+            $daarkos =  $db->getResults();
+
+            if(!$daarkos) {
                 return false;
             }
-
-            $daarkos =  $db-> getJson();
-            return json_decode($daarkos);
+            
+            return $daarkos;
 
         }catch(Exception $e){
             $this->callErrorLog($e);
