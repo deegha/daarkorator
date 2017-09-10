@@ -848,6 +848,26 @@ class DbHandler {
             return false;
         }
     }
+
+    public function getAllDaarkorators(){
+        try{
+            $db     = new database();
+            $table  = "users" ;
+            $rows   = "id";
+            $where  = "user_type = 3 and status =1";
+    
+            if(!$db->selectJson($table, $rows, $where)) {
+                return false;
+            }
+
+            $daarkos =  $db-> getJson();
+            return json_decode($daarkos);
+
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>
