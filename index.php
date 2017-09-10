@@ -1207,24 +1207,6 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 	}
 });
 
-$app->get('/daar',function() use ($app) {
-	$DbHandler = new DbHandler();
-	$daa = $DbHandler->getAllDaarkorators();
-
-	
-	$values = notificationToDaarkoratorsOnPayment($daa);
-	if($DbHandler->createNotification($values)){
-		$response["error"] = false;
-		$response['message'] = "notifications created";
-		echoRespnse(200	, $response);
-	}
-
-	$response["error"] = true;
-	$response["message"] = "notifications creating faild";
-	echoRespnse(404, $response);
-
-});
-
 $app->run();
 		
 ?>
