@@ -700,7 +700,7 @@ class DbHandler {
         }
     }
 
-    private function createNotification($values=null ){
+    public function createNotification($values=null ){
         try{
             $db           = new database();
             $table        = "notifications";
@@ -842,6 +842,28 @@ class DbHandler {
             }else{
                 return false;
             }    
+
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function getAllDaarkorators(){
+        try{
+            $db     = new database();
+            $table  = "user" ;
+            $rows   = "id";
+            $where  = "user_type = 3 and status = 1";
+
+            $db->select($table, $rows, $where);
+            $daarkos =  $db->getResults();
+
+            if(!$daarkos) {
+                return false;
+            }
+            
+            return $daarkos;
 
         }catch(Exception $e){
             $this->callErrorLog($e);

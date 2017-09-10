@@ -113,4 +113,15 @@ function uploadProjectImages($file) {
     return $generatedFileName;   
 }
 
+
+function prepareBulkNotifications($daarkors, $notificationsText) {
+    $values = array();
+    $inc = 0;
+    foreach ($daarkors as $daarkor) {
+        $values[$inc] = "(".$daarkor['id'].", '".$notificationsText."', 'some url', '3')";
+        $inc++;
+    }
+    
+    return implode(",",$values);
+}
 ?>

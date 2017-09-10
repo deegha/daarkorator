@@ -970,7 +970,16 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
 		}	
-	
+
+		//Sending notifications to daarkorators on new project
+		$daa = $DbHandler->getAllDaarkorators();
+		$values = prepareBulkNotifications($daa, "new project");
+		if(!$DbHandler->createNotification($values)){
+			$response["error"] = false;
+			$response['message'] = "Payment successful error in creating notifications";
+			echoRespnse(200	, $response);
+		}
+
 		$response["error"] = false;
 	    $response["message"] = "Payment successful";
 		echoRespnse(200	, $response);
@@ -1196,6 +1205,24 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
+});
+
+$app->get('/daar',function() use ($app) {
+	$DbHandler = new DbHandler();
+	$daa = $DbHandler->getAllDaarkorators();
+
+	
+	$values = notificationToDaarkoratorsOnPayment($daa);
+	if($DbHandler->createNotification($values)){
+		$response["error"] = false;
+		$response['message'] = "notifications created";
+		echoRespnse(200	, $response);
+	}
+
+	$response["error"] = true;
+	$response["message"] = "notifications creating faild";
+	echoRespnse(404, $response);
+
 });
 
 $app->run();
