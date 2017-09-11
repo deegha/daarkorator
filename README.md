@@ -618,3 +618,21 @@ Payment
         "style_boards": null
     }
 }
+
+#### Create message
+
+- `/Message`
+- Method  : POST
+- headers : Authorization
+- params  : {
+            	"project_id": 97,
+            	"reciever_email":"dhammikag@zone24x7.com",
+            	"message_subject":"Want to change the wall colors",
+            	"message_text": "test msg",
+            	"reference":10  --------- If reply only - previous msg id needs to be passed
+            }
+- Response with no errors
+{
+    "error": false,
+    "message": "Message sent successfully!"
+}

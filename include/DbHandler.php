@@ -538,9 +538,9 @@ class DbHandler {
         try{
             $db           = new database();
             $table        = "payment_table";
-            $rows         = "user_id, 
-                            project_id, amount, 
-                            transaction_id, 
+            $rows         = "user_id,
+                            project_id, amount,
+                            transaction_id,
                             first_name,
                             last_name,
                             phone,
@@ -560,10 +560,10 @@ class DbHandler {
             $zip_code = (!isset($params['zip_code']) || $params['zip_code'] == "")? "" : $params['zip_code'] ;
             $city = (!isset($params['city']) || $params['city'] == "")? "" : $params['city'] ;
             $country = (!isset($params['country']) || $params['country'] == "")? "" : $params['country'] ;
-            
-            $values       =  "'".$user_id."', 
-                             '".$params['project_id']."', 
-                             '".$params['amount']."', 
+
+            $values       =  "'".$user_id."',
+                             '".$params['project_id']."',
+                             '".$params['amount']."',
                              '".$transaction_id."',
                              '".$params['first_name']."',
                              '".$params['last_name']."',
@@ -813,8 +813,6 @@ class DbHandler {
             $response['style_boards'] = json_decode($styleBoards);
 
             if($results){
-                //return array_merge($tmp,$response);
-                //return json_decode($results);
                 return $response;
             }else{
                 return false;
@@ -825,11 +823,11 @@ class DbHandler {
         }
     }
 
-    public function createNotifications($data){ 
-        try{ 
-            if($data['user_id'] == "" || $data['notification_text'] == "" 
+    public function createNotifications($data){
+        try{
+            if($data['user_id'] == "" || $data['notification_text'] == ""
                 || $data['url'] == "" || $data['notification_type'] == "" ) {
-                    
+
                     return false;
             }
             $db         = new database();
@@ -841,7 +839,7 @@ class DbHandler {
                 return  true;
             }else{
                 return false;
-            }    
+            }
 
         }catch(Exception $e){
             $this->callErrorLog($e);
@@ -862,12 +860,87 @@ class DbHandler {
             if(!$daarkos) {
                 return false;
             }
-            
+
             return $daarkos;
 
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
+        }
+    }
+
+    public function createMessage($params){
+        try{
+            $db = new database();
+            $table = "messages";
+            if(isset($params["message_reff"])){
+                $rows  = "project_id, sender_id, reciever_id, message_subject, 	message_text, message_reff";
+                            $values = '"'.$params["project_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'","'.$params["message_reff"].'"';
+            }else{
+                $rows  = "project_id, sender_id, reciever_id, message_subject, 	message_text";
+                $values = '"'.$params["project_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'"';
+            }
+
+            if($db->insert($table, $values, $rows)){
+                return  true;
+            }else{
+                return false;
+            }
+
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function getMessageList($user_id, $limit=null, $status=null){
+    try{
+        $db     = new database();
+        $table  = "messages m left outer join user u on u.id = m.sender_id";
+        $table .= " left outer join project_details pd on pd.project_id = m.project_id";
+        $rows   = "m.id as id, pd.title as project_name, u.email as sender, m.message_reff as previous_id, m.message_subject as subject, m.date_time as date, m.status as status";
+        $where  = "m.reciever_id = ".$user_id;
+        if(isset($status))
+        $where .= " AND m.status = ".$status;
+        $order  = "date_time desc";
+
+        $db->selectJson($table, $rows, $where, $order, '', $limit);
+        $results = json_decode($db->getJson());
+        if($results){
+            return $results;
+        }else{
+            return false;
+        }
+
+      }catch(Exception $e){
+          $this->callErrorLog($e);
+          return false;
+      }
+    }
+
+    public function getMessageDetail($user_id, $message_id){
+        try{
+            $results = $this->messageDetail($message_id);
+            return $results;
+          }catch(Exception $e){
+              $this->callErrorLog($e);
+              return false;
+          }
+    }
+
+    private function messageDetail($message_id){
+        $db         = new database();
+        $table      = "messages";
+        $rows       = "*";
+        $where      = "id = ".$message_id;
+        $db->select($table, $rows, $where);
+        $results = $db->getResults();
+        if($results['message_reff']!=0){
+            $tmp[0] = $results;
+            $tmp[1] = $this->messageDetail($results['message_reff']);
+            return $tmp;
+        }else{
+            return $results;
         }
     }
 }
