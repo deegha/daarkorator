@@ -128,7 +128,7 @@ private $numrows;
 	
 	
 	function insert($table,$values,$rows,$multiple=null){
-		try{
+		//try{
 			$insert = "insert into ".$table;
 			if($rows != ""){
 				$insert .= " (".$rows.")";
@@ -148,10 +148,10 @@ private $numrows;
 				return false;	
 			}
 			$this->disconnect();
-		}catch (Exception $e) {
+		/*}catch (Exception $e) {
 			$this->callErrorLog($e);
             return false;
-		}
+		}*/
 		
 	}
 	

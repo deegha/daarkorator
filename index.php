@@ -1182,6 +1182,93 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 	}
 });
 
+/**
+ * create message
+ * url - /message
+ * method - POST
+ * params -message object
+ */
+$app->post('/message', 'authenticate', function() use ($app){
+    global $user_id;
+
+    $response 	= array();
+	if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+
+        $db = new DbHandler();
+        $reciever = $db->getUserByEmail($params['reciever_email']);
+        $tmp['project_id']      = $params['project_id'];
+        $tmp['sender_id']       = $user_id;
+        $tmp['reciever_id']     = $reciever['id'];
+        $tmp['message_subject'] = $params['message_subject'];
+        $tmp['message_text']    = $params['message_text'];
+        if(isset($params['reference']))
+        $tmp['message_reff']    = $params['reference'];
+
+		$DbHandler 	= new DbHandler();
+		$result = $DbHandler->createMessage($tmp);
+		if(!$result) {
+          		$response["error"] = true;
+          		$response["message"] = "An error occurred while sending message";
+          		echoRespnse(500, $response);
+          	} else {
+          		$response["error"] = false;
+          		$response["message"] = "Message sent successfully!";
+          		echoRespnse(200	, $response);
+            }
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(400, $response);
+	}
+});
+
+
+/**
+ * get message list
+ * url - /message(/:limit(/:status))
+ * method - GET
+ */
+$app->get('/message(/:limit(/:status))', 'authenticate', function($limit=null, $status=null) use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getMessageList($user_id, $limit, $status);
+	if ($result) {
+		$response["error"] = false;
+		$response['messages'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
+
+/**
+ * get message detail
+ * url - /messagedetail(/:message_id)
+ * method - GET
+ */
+$app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getMessageDetail($user_id, $message_id);
+	if ($result) {
+		$response["error"] = false;
+		$response['message'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
 
 $app->run();
 		
