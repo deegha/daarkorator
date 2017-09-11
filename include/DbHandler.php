@@ -28,7 +28,7 @@ class DbHandler {
     }
 
     public function callErrorLog($e){
-        error_log($e->getMessage(). "\n", 3, "./error.log");
+        error_log(date('Y-M-D  h:i A')." - ".$e->getMessage(). "\n", 3, "./error.log");
     }
 
     public function getAccessToken($user_id) {
@@ -868,6 +868,32 @@ class DbHandler {
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
+        }
+    }
+
+    public function saveStyleBoard($params,$generated_name) {
+        try{
+            $db     = new database();
+            $table  = "project_styleboard";
+            $rows   = "project_id, styleboard, daarkorator_id, note, style_board_name";
+            $note = "";
+            if(isset($params['note']))
+                $note = isset($params['note']);
+
+            $values = "'".$params['project_id']."', 
+                        '".$generated_name."',
+                        '".$params['daarkorator_id']."', 
+                        '".$note."', 
+                        '".$params['style_board_name']."'";
+
+            if($db->insert($table, $values, $rows)){
+                return  true;
+            }else{
+                return false;
+            }
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+             return false;
         }
     }
 }

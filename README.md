@@ -618,3 +618,19 @@ Payment
         "style_boards": null
     }
 }
+
+#### create Styleboard
+
+- URL     : `/styleboard`
+- Method  : POST 
+- Request  : 
+    - Post Feilds
+        project_id
+        daarkorator_id
+        style_board_name
+
+    - File (PDF)
+        style_board
+
+- Respose with no errors
+`{"error":false,"message":"Style board successfully attached"}`

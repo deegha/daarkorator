@@ -101,7 +101,7 @@ function gnerateTransactionId($user_id) {
 }
 
 function uploadProjectImages($file) {
-    //print_r( $file);
+    // print_r( $file);
     $path = 'uploads/';
     $unique = strtoupper(md5(uniqid(rand(), true)));
     $image = new SimpleImage();
