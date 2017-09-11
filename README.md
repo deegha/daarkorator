@@ -621,7 +621,7 @@ Payment
 
 #### Create message
 
-- `/Message`
+- `/message`
 - Method  : POST
 - headers : Authorization
 - params  : {
@@ -635,4 +635,109 @@ Payment
 {
     "error": false,
     "message": "Message sent successfully!"
+}
+
+
+#### Message List
+
+- `/message(/0,30(/status))`
+- Method  : GET
+- headers : Authorization
+- Response with no errors
+{
+    "error": false,
+    "messages": [
+        {
+            "id": "13",
+            "project_name": "Test Project by dhammika 1",
+            "sender": "dhammikam@zone24x7.com",
+            "previous_id": "12",
+            "subject": "Want to check with you the budget details",
+            "date": "2017-09-09 00:11:06",
+            "status": "0"
+        },
+        {
+            "id": "11",
+            "project_name": "Test Project by dhammika 1",
+            "sender": "dhammikam@zone24x7.com",
+            "previous_id": "10",
+            "subject": "Want to check with you the budget details",
+            "date": "2017-09-09 00:09:47",
+            "status": "0"
+        }
+    ]
+}
+
+
+#### Message detail
+
+- `/messagedetail/14`
+- Method  : GET
+- headers : Authorization
+- Response with no errors
+{
+    "error": false,
+    "message": [
+        {
+            "id": "14",
+            "message_reff": "13",
+            "project_id": "97",
+            "sender_id": "60",
+            "reciever_id": "55",
+            "message_subject": "Want to check with you the budget details",
+            "message_text": "Love red, blue and green mix",
+            "date_time": "2017-09-09 00:11:50",
+            "status": "0"
+        },
+        [
+            {
+                "id": "13",
+                "message_reff": "12",
+                "project_id": "97",
+                "sender_id": "55",
+                "reciever_id": "60",
+                "message_subject": "Want to check with you the budget details",
+                "message_text": "Can arrange color change, What are the preferances?",
+                "date_time": "2017-09-09 00:11:06",
+                "status": "0"
+            },
+            [
+                {
+                    "id": "12",
+                    "message_reff": "11",
+                    "project_id": "97",
+                    "sender_id": "60",
+                    "reciever_id": "55",
+                    "message_subject": "Want to check with you the budget details",
+                    "message_text": "I don't like the colors",
+                    "date_time": "2017-09-09 00:10:27",
+                    "status": "0"
+                },
+                [
+                    {
+                        "id": "11",
+                        "message_reff": "10",
+                        "project_id": "97",
+                        "sender_id": "55",
+                        "reciever_id": "60",
+                        "message_subject": "Want to check with you the budget details",
+                        "message_text": "Find some details",
+                        "date_time": "2017-09-09 00:09:47",
+                        "status": "0"
+                    },
+                    {
+                        "id": "10",
+                        "message_reff": "0",
+                        "project_id": "97",
+                        "sender_id": "60",
+                        "reciever_id": "55",
+                        "message_subject": "Want to check with you the budget details",
+                        "message_text": "Want to check with you the budget details",
+                        "date_time": "2017-09-09 00:08:48",
+                        "status": "0"
+                    }
+                ]
+            ]
+        ]
+    ]
 }
