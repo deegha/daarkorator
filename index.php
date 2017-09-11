@@ -935,7 +935,23 @@ $app->post('/payment','authenticate', function() use ($app) {
 		$DbHandler 	= new DbHandler();	
 		$params 	= $app->request()->getBody();
 
-		if( $params["project_id"] == "" || $params["amount"] == "" ) {
+		if(!isset($params['project_id'])  ||
+			!isset($params['amount']) ||
+			!isset($params['first_name']) ||
+			!isset($params['last_name']) ||
+			!isset($params['payment_method']))
+		{
+			$response["error"] = true;
+	        $response["message"] = "required parameters are missing";
+	        echoRespnse(400, $response);
+		}
+
+		if( $params["project_id"] == ""
+			|| $params["amount"] == ""
+			|| $params["first_name"] == ""
+			|| $params["last_name"] == ""
+			|| $params["payment_method"] == ""
+			) {
 			$response["error"] = true;
 	        $response["message"] = "Validation faild, all feilds are required";
 	        echoRespnse(400, $response);
@@ -954,6 +970,15 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
 		}	
+
+		//Sending notifications to daarkorators on new project
+		$daa = $DbHandler->getAllDaarkorators();
+		$values = prepareBulkNotifications($daa, "new project");
+		if(!$DbHandler->createNotification($values)){
+			$response["error"] = false;
+			$response['message'] = "Payment successful error in creating notifications";
+			echoRespnse(200	, $response);
+		}
 
 		$response["error"] = false;
 	    $response["message"] = "Payment successful";

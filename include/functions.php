@@ -110,10 +110,18 @@ function uploadProjectImages($file) {
     $generatedFileName = $unique . '.' . $ext;
     
     $image->save($path.$generatedFileName);
-    return $generatedFileName;
-
-   
+    return $generatedFileName;   
 }
 
 
+function prepareBulkNotifications($daarkors, $notificationsText) {
+    $values = array();
+    $inc = 0;
+    foreach ($daarkors as $daarkor) {
+        $values[$inc] = "(".$daarkor['id'].", '".$notificationsText."', 'some url', '3')";
+        $inc++;
+    }
+    
+    return implode(",",$values);
+}
 ?>
