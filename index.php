@@ -1291,6 +1291,57 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 		$response["error"] = true;
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
+
+	}
+}
+
+/*
+* Stles boards
+* Url : /styleboard
+* method - POST
+*/
+
+$app->post('/styleboard', function() use ($app) {
+	global $user_id;
+	$response 	= array();
+	$DbHandler 	= new DbHandler();	
+	$params 	= $_POST;
+	if(!isset($params['project_id']) ||  $params['project_id'] == ""
+		|| !isset($params['daarkorator_id']) ||  $params['daarkorator_id'] == ""
+		|| !isset($params['style_board_name']) ||  $params['style_board_name'] == "" )
+	{
+		$response["error"] = true;
+		$response["message"] = "Required Feilds are missing";
+		echoRespnse(400, $response);
+	}
+	if(!empty($_FILES['style_board'])) {	
+		$file['name'] = $_FILES['style_board']['name'];
+		$file['type'] = $_FILES['style_board']['type'];
+		$file['tmp_name'] = $_FILES['style_board']['tmp_name'];
+		$file['error'] = $_FILES['style_board']['error'];
+		$file['size'] = $_FILES['style_board']['size'];
+
+		$generated_name = uploadProjectImages($file);
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading images";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveStyleBoard($params,$generated_name)){
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving images";
+			echoRespnse(500, $response);
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Style board successfully attached";
+		echoRespnse(200, $response);
+		
+	}else{
+		$response["error"] = true;
+		$response["message"] = "No styleboard attached";
+		echoRespnse(400, $response);
 	}
 });
 

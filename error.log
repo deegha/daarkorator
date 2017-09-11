@@ -1,1 +1,4 @@
-mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+
+2017-Sep-Mon  08:13 PM - Undefined index: styleboard
+2017-Sep-Mon  08:14 PM - Undefined index: note
+2017-Sep-Mon  08:14 PM - Undefined index: note
