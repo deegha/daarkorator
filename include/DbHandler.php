@@ -879,6 +879,13 @@ class DbHandler {
                 $rows  = "project_id, sender_id, reciever_id, message_subject, 	message_text";
                 $values = '"'.$params["project_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'"';
             }
+
+            if($db->insert($table, $values, $rows)){
+                return  true;
+            }else{
+                return false;
+            }
+            
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
