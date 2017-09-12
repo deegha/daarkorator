@@ -873,11 +873,11 @@ class DbHandler {
             $db = new database();
             $table = "messages";
             if(isset($params["message_reff"])){
-                $rows  = "project_id, sender_id, reciever_id, message_subject, 	message_text, message_reff";
-                            $values = '"'.$params["project_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'","'.$params["message_reff"].'"';
+                $rows  = "project_id, styleboard_id, sender_id, reciever_id, message_subject, 	message_text, message_reff";
+                $values = '"'.$params["project_id"].'","'.$params["styleboard_id"].'", "'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'","'.$params["message_reff"].'"';
             }else{
-                $rows  = "project_id, sender_id, reciever_id, message_subject, 	message_text";
-                $values = '"'.$params["project_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'"';
+                $rows  = "project_id, styleboard_id, sender_id, reciever_id, message_subject, 	message_text";
+                $values = '"'.$params["project_id"].'","'.$params["styleboard_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'"';
             }
 
             if($db->insert($table, $values, $rows)){
@@ -959,9 +959,11 @@ class DbHandler {
         $where      = "id = ".$message_id;
         $db->select($table, $rows, $where);
         $results = $db->getResults();
+        $tmp = array();
+        array_push($tmp, $results);
         if($results['message_reff']!=0){
-            $tmp[0] = $results;
-            $tmp[1] = $this->messageDetail($results['message_reff']);
+            //$tmp = $results;
+            array_push($tmp, $this->getHistory($results['id'], $results['styleboard_id']));
             return $tmp;
         }else{
             return $results;
@@ -969,6 +971,18 @@ class DbHandler {
              $this->callErrorLog($e);
              return false;
         }
+    }
+
+
+    private function getHistory($message_id, $styleboard_id){
+        $db = new database();
+        $table = "messages";
+        $rows = "*";
+        $order = "date_time desc";
+        $where = "id <> ".$message_id." AND styleboard_id = ".$styleboard_id;
+        $db->select($table, $rows, $where, $order);
+        $results = $db->getResults();
+        return $results;
     }
 }
 
