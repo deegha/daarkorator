@@ -1294,7 +1294,7 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 		echoRespnse(404, $response);
 
 	}
-}
+});
 
 /*
 * Stles boards
