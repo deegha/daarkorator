@@ -28,7 +28,7 @@ class DbHandler {
     }
 
     public function callErrorLog($e){
-        error_log($e->getMessage(). "\n", 3, "./error.log");
+        error_log(date('Y-M-D  h:i A')." - ".$e->getMessage(). "\n", 3, "./error.log");
     }
 
     public function getAccessToken($user_id) {
@@ -840,7 +840,6 @@ class DbHandler {
             }else{
                 return false;
             }
-
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
@@ -886,7 +885,33 @@ class DbHandler {
             }else{
                 return false;
             }
+            
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 
+    public function saveStyleBoard($params,$generated_name) {
+        try{
+            $db     = new database();
+            $table  = "project_styleboard";
+            $rows   = "project_id, styleboard, daarkorator_id, note, style_board_name";
+            $note = "";
+            if(isset($params['note']))
+                $note = isset($params['note']);
+
+            $values = "'".$params['project_id']."', 
+                        '".$generated_name."',
+                        '".$params['daarkorator_id']."', 
+                        '".$note."', 
+                        '".$params['style_board_name']."'";
+
+            if($db->insert($table, $values, $rows)){
+                return  true;
+            }else{
+                return false;
+            }
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
@@ -894,38 +919,37 @@ class DbHandler {
     }
 
     public function getMessageList($user_id, $limit=null, $status=null){
-    try{
-        $db     = new database();
-        $table  = "messages m left outer join user u on u.id = m.sender_id";
-        $table .= " left outer join project_details pd on pd.project_id = m.project_id";
-        $rows   = "m.id as id, pd.title as project_name, u.email as sender, m.message_reff as previous_id, m.message_subject as subject, m.date_time as date, m.status as status";
-        $where  = "m.reciever_id = ".$user_id;
-        if(isset($status))
-        $where .= " AND m.status = ".$status;
-        $order  = "date_time desc";
+        try{
+            $db     = new database();
+            $table  = "messages m left outer join user u on u.id = m.sender_id";
+            $table .= " left outer join project_details pd on pd.project_id = m.project_id";
+            $rows   = "m.id as id, pd.title as project_name, u.email as sender, m.message_reff as previous_id, m.message_subject as subject, m.date_time as date, m.status as status";
+            $where  = "m.reciever_id = ".$user_id;
+            if(isset($status))
+            $where .= " AND m.status = ".$status;
+            $order  = "date_time desc";
 
-        $db->selectJson($table, $rows, $where, $order, '', $limit);
-        $results = json_decode($db->getJson());
-        if($results){
-            return $results;
-        }else{
+            $db->selectJson($table, $rows, $where, $order, '', $limit);
+            $results = json_decode($db->getJson());
+            if($results){
+                return $results;
+            }else{
+                return false;
+            }
+        }catch(Exception $e){
+            $this->callErrorLog($e);
             return false;
         }
-
-      }catch(Exception $e){
-          $this->callErrorLog($e);
-          return false;
-      }
     }
 
     public function getMessageDetail($user_id, $message_id){
         try{
             $results = $this->messageDetail($message_id);
             return $results;
-          }catch(Exception $e){
+        }catch(Exception $e){
               $this->callErrorLog($e);
               return false;
-          }
+        }
     }
 
     private function messageDetail($message_id){
@@ -943,6 +967,9 @@ class DbHandler {
             return $tmp;
         }else{
             return $results;
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+             return false;
         }
     }
 
