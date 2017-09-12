@@ -953,20 +953,22 @@ class DbHandler {
     }
 
     private function messageDetail($message_id){
-        $db         = new database();
-        $table      = "messages";
-        $rows       = "*";
-        $where      = "id = ".$message_id;
-        $db->select($table, $rows, $where);
-        $results = $db->getResults();
-        $tmp = array();
-        array_push($tmp, $results);
-        if($results['message_reff']!=0){
-            //$tmp = $results;
-            array_push($tmp, $this->getHistory($results['id'], $results['styleboard_id']));
-            return $tmp;
-        }else{
-            return $results;
+        try{
+            $db         = new database();
+            $table      = "messages";
+            $rows       = "*";
+            $where      = "id = ".$message_id;
+            $db->select($table, $rows, $where);
+            $results = $db->getResults();
+            $tmp = array();
+            array_push($tmp, $results);
+            if($results['message_reff']!=0){
+                //$tmp = $results;
+                array_push($tmp, $this->getHistory($results['id'], $results['styleboard_id']));
+                return $tmp;
+            }else{
+                return $results;
+            }
         }catch(Exception $e){
              $this->callErrorLog($e);
              return false;
@@ -979,7 +981,7 @@ class DbHandler {
         $table = "messages";
         $rows = "*";
         $order = "date_time desc";
-        $where = "id <> ".$message_id." AND styleboard_id = ".$styleboard_id;
+        $where = "id < ".$message_id." AND styleboard_id = ".$styleboard_id;
         $db->select($table, $rows, $where, $order);
         $results = $db->getResults();
         return $results;
