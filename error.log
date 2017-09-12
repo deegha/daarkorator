@@ -1,1 +1,7 @@
 mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+array_push() expects parameter 1 to be array, null given
+array_push() expects parameter 1 to be array, null given
+Undefined variable: parms
+Undefined variable: parms
+Undefined variable: parms
+json_decode() expects parameter 1 to be string, array given

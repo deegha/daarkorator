@@ -1223,6 +1223,7 @@ $app->post('/message', 'authenticate', function() use ($app){
         $db = new DbHandler();
         $reciever = $db->getUserByEmail($params['reciever_email']);
         $tmp['project_id']      = $params['project_id'];
+        $tmp['styleboard_id']   = $params['styleboard_id'];
         $tmp['sender_id']       = $user_id;
         $tmp['reciever_id']     = $reciever['id'];
         $tmp['message_subject'] = $params['message_subject'];
