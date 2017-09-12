@@ -973,7 +973,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 
 		//Sending notifications to daarkorators on new project
 		$daa = $DbHandler->getAllDaarkorators();
-		$values = prepareBulkNotifications($daa, "new project");
+		$values = prepareBulkNotifications($daa, "new project", "some_url", "3");
 		if(!$DbHandler->createNotification($values)){
 			$response["error"] = false;
 			$response['message'] = "Payment successful error in creating notifications";
@@ -1297,12 +1297,11 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 });
 
 /*
-* Stles boards
+* Style boards
 * Url : /styleboard
 * method - POST
 */
-
-$app->post('/styleboard', function() use ($app) {
+$app->post('/styleboard','authenticate' , function() use ($app) {
 	global $user_id;
 	$response 	= array();
 	$DbHandler 	= new DbHandler();	
@@ -1345,6 +1344,51 @@ $app->post('/styleboard', function() use ($app) {
 		echoRespnse(400, $response);
 	}
 });
+
+/**
+ * get All style boards
+ * url - /styleboard
+ * method - GET
+ */
+ $app->get('/styleboard', 'authenticate', function() use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getAllStyleboards();
+	if ($result) {
+		$response["error"] = false;
+		$response['styleboards'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
+/**
+ * get All style board by id
+ * url - /styleboard
+ * method - GET
+ */
+ $app->get('/styleboard/:id', 'authenticate', function($id) use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getAllStyleboards($id);
+	if ($result) {
+		$response["error"] = false;
+		$response['styleboard'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
 
 
 $app->run();

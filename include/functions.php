@@ -114,11 +114,11 @@ function uploadProjectImages($file) {
 }
 
 
-function prepareBulkNotifications($daarkors, $notificationsText) {
+function prepareBulkNotifications($daarkors, $notificationsText, $url=null, $type=null) {
     $values = array();
     $inc = 0;
     foreach ($daarkors as $daarkor) {
-        $values[$inc] = "(".$daarkor['id'].", '".$notificationsText."', 'some url', '3')";
+        $values[$inc] = "(".$daarkor['id'].", '".$notificationsText."', '".$url."', '".$type."')";
         $inc++;
     }
     
