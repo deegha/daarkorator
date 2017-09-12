@@ -986,6 +986,24 @@ class DbHandler {
         $results = $db->getResults();
         return $results;
     }
+
+    public function getAllStyleboards($id=null) {
+        try{
+            $db = new database();
+            $table = "project_styleboard";
+            $rows = "*";
+            $order = "added_time desc";
+            $where = "";
+            if($id != null) 
+                $where = " id=".$id;
+            $db->select($table, $rows, $where, $order);
+            $results = $db->getResults();
+            return $results;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+       }
+    }
 }
 
 ?>

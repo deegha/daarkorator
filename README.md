@@ -619,8 +619,6 @@ Payment
     }
 }
 
-<<<<<<< HEAD
-#### Create message
 
 - `/message`
 - Method  : POST
@@ -742,8 +740,9 @@ Payment
         ]
     ]
 }
-=======
-#### create Styleboard
+
+
+#### Create style boards
 
 - URL     : `/styleboard`
 - Method  : POST 
@@ -752,10 +751,61 @@ Payment
         project_id
         daarkorator_id
         style_board_name
+        note
 
     - File (PDF)
         style_board
 
 - Respose with no errors
 `{"error":false,"message":"Style board successfully attached"}`
->>>>>>> feature/styleboard
+
+#### Get Style boards
+
+- URL : `/styleboard`
+- Method : GET
+- Sample Response
+`{  
+   "error":false,
+   "styleboards":[  
+      {  
+         "id":"2",
+         "project_id":"1",
+         "styleboard":"D011F27C71D201A59620653B6FC86611.jpg",
+         "daarkorator_id":"2",
+         "note":"",
+         "style_board_name":"test",
+         "status":"0",
+         "added_time":"2017-09-13 00:18:40"
+      },
+      {  
+         "id":"1",
+         "project_id":"1",
+         "styleboard":"4031059F7F3D130A80B5831F97B9549B.jpg",
+         "daarkorator_id":"2",
+         "note":"",
+         "style_board_name":"test",
+         "status":"0",
+         "added_time":"2017-09-13 00:18:26"
+      }
+   ]
+}`
+
+#### Get Style board with ID
+
+- URL : `/styleboard/id`
+- Method : GET
+- Sample Response
+`{  
+   "error":false,
+   "styleboard":{  
+      "id":"1",
+      "project_id":"1",
+      "styleboard":"4031059F7F3D130A80B5831F97B9549B.jpg",
+      "daarkorator_id":"2",
+      "note":"",
+      "style_board_name":"test",
+      "status":"0",
+      "added_time":"2017-09-13 00:18:26"
+   }
+}`
+
