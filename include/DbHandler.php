@@ -987,15 +987,24 @@ class DbHandler {
         return $results;
     }
 
-    public function getAllStyleboards($id=null) {
+    public function getAllStyleboards($id=null, $project_id=null) {
         try{
             $db = new database();
             $table = "project_styleboard";
-            $rows = "*";
+            $rows  = "*";
             $order = "added_time desc";
             $where = "";
-            if($id != null) 
-                $where = " id=".$id;
+            
+            if($project_id != null) 
+                $where = "project_id =".$project_id;
+
+            if($id != null){
+                if($project_id != null) 
+                    $where = $where." and ";
+
+                $where = $where." id=".$id;
+            } 
+                
             $db->select($table, $rows, $where, $order);
             $results = $db->getResults();
             return $results;

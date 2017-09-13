@@ -1354,15 +1354,15 @@ $app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 
 /**
  * get All style boards
- * url - /styleboard
+ * url - /styleboard/project_id
  * method - GET
  */
- $app->get('/styleboard', 'authenticate', function() use ($app) {
+ $app->get('/styleboards/:project_id', 'authenticate', function($project_id) use ($app) {
 	global $user_id;
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getAllStyleboards();
+	$result = $DbHandler->getAllStyleboards(null,$project_id);
 	if ($result) {
 		$response["error"] = false;
 		$response['styleboards'] = $result;
