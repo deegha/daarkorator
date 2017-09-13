@@ -915,7 +915,7 @@ $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
         }
         $response["error"] 	 = false;
         $response["message"] = "Request successful";
-        $response["price"]	 = $package[0];
+        $response["price"]	 = $package['price'];
         echoRespnse(200, $response);
 });
 
@@ -1300,11 +1300,20 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 * Url : /styleboard
 * method - POST
 */
-$app->post('/styleboard' , function() use ($app) {
+$app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 	global $user_id;
+	global $features;
 	$response 	= array();
 	$DbHandler 	= new DbHandler();	
 	$params 	= $_POST;
+
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->addStyleBoard) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
 	if(!isset($params['project_id']) ||  $params['project_id'] == ""
 		|| !isset($params['style_board_name']) ||  $params['style_board_name'] == "" )
 	{
