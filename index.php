@@ -917,7 +917,6 @@ $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
         $response["message"] = "Request successful";
         $response["price"]	 = $package[0];
         echoRespnse(200, $response);
-    	
 });
 
 /*
@@ -1301,13 +1300,12 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 * Url : /styleboard
 * method - POST
 */
-$app->post('/styleboard','authenticate' , function() use ($app) {
+$app->post('/styleboard' , function() use ($app) {
 	global $user_id;
 	$response 	= array();
 	$DbHandler 	= new DbHandler();	
 	$params 	= $_POST;
 	if(!isset($params['project_id']) ||  $params['project_id'] == ""
-		|| !isset($params['daarkorator_id']) ||  $params['daarkorator_id'] == ""
 		|| !isset($params['style_board_name']) ||  $params['style_board_name'] == "" )
 	{
 		$response["error"] = true;
@@ -1321,14 +1319,14 @@ $app->post('/styleboard','authenticate' , function() use ($app) {
 		$file['error'] = $_FILES['style_board']['error'];
 		$file['size'] = $_FILES['style_board']['size'];
 
-		$generated_name = uploadProjectImages($file);
+		$generated_name = uploadPdf($file);
 		if($generated_name == "") {
 			$response["error"] = true;
 			$response["message"] = "An error occurred while uploading images";
 			echoRespnse(500, $response);
 		}
 
-		if(!$DbHandler->saveStyleBoard($params,$generated_name)){
+		if(!$DbHandler->saveStyleBoard($params,$generated_name,  $user_id)){
 			$response["error"] = true;
 			$response["message"] = "An error occurred while saving images";
 			echoRespnse(500, $response);

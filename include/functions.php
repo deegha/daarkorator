@@ -124,4 +124,17 @@ function prepareBulkNotifications($daarkors, $notificationsText, $url=null, $typ
     
     return implode(",",$values);
 }
+
+function uploadPdf($file) {
+    $path = 'uploads/';
+    $unique = strtoupper(md5(uniqid(rand(), true)));
+
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $generatedFileName = $unique . '.' . $ext;
+
+    if(move_uploaded_file($file['tmp_name'], $path.$generatedFileName)) {
+        return true;
+    }
+    return false;
+}
 ?>

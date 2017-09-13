@@ -892,7 +892,7 @@ class DbHandler {
         }
     }
 
-    public function saveStyleBoard($params,$generated_name) {
+    public function saveStyleBoard($params,$generated_name, $user_id) {
         try{
             $db     = new database();
             $table  = "project_styleboard";
@@ -903,7 +903,7 @@ class DbHandler {
 
             $values = "'".$params['project_id']."', 
                         '".$generated_name."',
-                        '".$params['daarkorator_id']."', 
+                        '".$user_id."', 
                         '".$note."', 
                         '".$params['style_board_name']."'";
 
