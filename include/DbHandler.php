@@ -211,13 +211,13 @@ class DbHandler {
             $table = 'user u left join daarkorator_details du on u.id = du.user_id join user_type ut on u.user_type = ut.id';
             $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id, ut.type_name, case u.status WHEN 1 then "Active" when 2 then "Inactive"   END AS status_title';
             $where = ' u.status<>3';
-
+           
             if($id!=null)
                 $where = $where." and u.id=".$id;
 
             $db->selectJson($table, $rows, $where, '', '');
             $users = $db->getJson();
- 
+
             return json_decode($users);
         
         }catch(Exception $e) {
@@ -987,24 +987,42 @@ class DbHandler {
         return $results;
     }
 
-    public function getAllStyleboards($id=null, $project_id=null) {
+    public function getAllStyleboards($id=null, $project_id=null, $user_id=null) {
         try{
             $db = new database();
-            $table = "project_styleboard";
-            $rows  = "*";
+            $table = "project_styleboard sb
+            join project p 
+            on sb.project_id = p.id";
+            $rows = "sb.*" ;
             $order = "added_time desc";
             $where = "";
-            
+
+            $user = $this->getUser($user_id);
+            $userType = $user[0]->user_type;
+
             if($project_id != null) 
                 $where = "project_id =".$project_id;
-
-            if($id != null){
+     
+            if($id != null) {
                 if($project_id != null) 
                     $where = $where." and ";
 
                 $where = $where." id=".$id;
             } 
-                
+
+            if($userType == 3) {
+                if($project_id != null) 
+                    $where = $where." and ";
+
+                $where = $where."  sb.daarkorator_id=".$user_id;
+            }
+            if($userType == 2) {
+                if($project_id != null) 
+                    $where = $where." and ";
+
+                $where = $where."  p.customer_id=".$user_id;
+            }
+            
             $db->select($table, $rows, $where, $order);
             $results = $db->getResults();
             return $results;

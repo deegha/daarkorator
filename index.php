@@ -1300,19 +1300,19 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 * Url : /styleboard
 * method - POST
 */
-$app->post('/styleboard' ,'authenticate' ,function() use ($app) {
+$app->post('/styleboard','authenticate'  ,function() use ($app) {
 	global $user_id;
 	global $features;
 	$response 	= array();
 	$DbHandler 	= new DbHandler();	
 	$params 	= $_POST;
 
-	$capabilities = json_decode($features);
-	if(!$capabilities->manageProjects->addStyleBoard) {
-		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
-        echoRespnse(401, $response);
-	}
+	// $capabilities = json_decode($features);
+	// if(!$capabilities->manageProjects->addStyleBoard) {
+	// 	$response["error"] = true;
+    //     $response["message"] = "Unauthorized access";
+    //     echoRespnse(401, $response);
+	// }
 
 	if(!isset($params['project_id']) ||  $params['project_id'] == ""
 		|| !isset($params['style_board_name']) ||  $params['style_board_name'] == "" )
@@ -1335,9 +1335,9 @@ $app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
-		if(!$DbHandler->saveStyleBoard($params,$generated_name,  $user_id)){
+		if(!$DbHandler->saveStyleBoard($params,$generated_name,$user_id)){
 			$response["error"] = true;
-			$response["message"] = "An error occurred while saving images";
+			$response["message"] = "An error occurred while saving Styleboard";
 			echoRespnse(500, $response);
 		}
 
@@ -1353,16 +1353,16 @@ $app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 });
 
 /**
- * get All style boards
+ * get All style boards for all projects 
  * url - /styleboard/project_id
  * method - GET
  */
- $app->get('/styleboards/:project_id', 'authenticate', function($project_id) use ($app) {
+ $app->get('/styleboards', 'authenticate', function() use ($app) {
 	global $user_id;
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getAllStyleboards(null,$project_id);
+	$result = $DbHandler->getAllStyleboards(null,null, $user_id);
 	if ($result) {
 		$response["error"] = false;
 		$response['styleboards'] = $result;
@@ -1375,6 +1375,29 @@ $app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 });
 
 /**
+ * get All style boards
+ * url - /styleboard/project_id
+ * method - GET
+ */
+ $app->get('/styleboards/:project_id', 'authenticate', function($project_id) use ($app) {
+	global $user_id;
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getAllStyleboards(null,$project_id, $user_id);
+	if ($result) {
+		$response["error"] = false;
+		$response['styleboards'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
+
+
+/**
  * get All style board by id
  * url - /styleboard
  * method - GET
@@ -1384,7 +1407,7 @@ $app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getAllStyleboards($id);
+	$result = $DbHandler->getAllStyleboards($id, null, $user_id);
 	if ($result) {
 		$response["error"] = false;
 		$response['styleboard'] = $result;
@@ -1396,6 +1419,43 @@ $app->post('/styleboard' ,'authenticate' ,function() use ($app) {
 	}
 });
 
+/**
+ * Update messages 
+ * url - /message/:id
+ * method - PUT
+ * params - */
+ $app->put('/message/:id', 'authenticate', function($mgs_id) use ($app) {
+	global $features;
+	$capabilities = json_decode($features);
+
+	if(!$capabilities->manageProjects->priceSetup) {
+		$response["error"] = true;
+		$response["message"] = "Unauthorized access";
+		echoRespnse(401, $response);
+	}
+
+	if($app->request() && $app->request()->getBody()){
+		$request = $app->request();
+		$DbHandler = new DbHandler();
+		$response = array();
+		$pkg =  $request->getBody();
+
+		$results = $DbHandler->updatePackage($pkg, $pkg_id);
+		if($results) {
+			$response["error"] = false;
+			$response['message'] = "Package updated successfully";
+			echoRespnse(200	, $response);
+		}else{
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
+			echoRespnse(500, $response);
+		}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}
+});
 
 
 $app->run();
