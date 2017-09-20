@@ -71,8 +71,8 @@ function send_email ($template, $message=null) {
 
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=iso-8859-1';
-        $headers[] = 'From: daakorinc@gmail.com ' ;
-        $headers[] = 'Reply-To: daakorinc@gmail.com ';
+        $headers[] = 'From: info@daakor.com' ;
+        $headers[] = 'Reply-To: info@daakor.com';
         $headers[] = 'X-Mailer: PHP/' . phpversion();
 
         if(!mail($message['to'],$message['subject'],$msg_body, implode("\r\n", $headers))) {
