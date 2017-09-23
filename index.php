@@ -401,7 +401,7 @@ $app->post('/forgotPassword', function() use ($app) {
 			$user_id = $user->id;
 			if(!$user_id){
 				$response["error"] = true;
-				$response["message"] = "Email does not exist";
+				$response["message"] = "Invalid email address";
 				echoRespnse(404, $response);
 			}
 			$resetKey = $DbHandler->generateResetKey($user_id);
