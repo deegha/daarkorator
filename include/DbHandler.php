@@ -141,7 +141,7 @@ class DbHandler {
             $user_values  = [];
             $daarkorator_details = [];
             $is_daarkorator = false; 
-
+            
             if(array_key_exists("daarkorator_details", $params) ){
                 $daarkorator_details = $params['daarkorator_details'];
                 
@@ -158,7 +158,6 @@ class DbHandler {
             $result = $this->getInsertSting($params);
             $rows   = $result['rows'];
             $values = '"'.$result['values'].'"';
-
             $db->insert($user_table,$values,$rows);
             $id = $db->getInsertId();
             if(!$id) {
@@ -457,7 +456,7 @@ class DbHandler {
                     "height" => $params['roomDetails']['height'],
                     "unit"   => $params['roomDetails']['unit']  
                 ));
-                $insert_params['description']        = $params['inspirations']['description'];
+               
                 $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
                 $insert_params['budget']        = $params['roomDetails']['budget'];
                 $result = $this->getInsertSting($insert_params); 
@@ -473,7 +472,6 @@ class DbHandler {
                                 "'".$insert_params['color_palettes'] ."',".
                                 "'".$insert_params['color_exceptions'] ."',".
                                 "'".$insert_params['dimensions'] ."',".
-                                "'".$insert_params['description'] ."',".
                                 "'".$insert_params['social_media_links'] ."',".
                                 "'".$insert_params['budget'] ."', ".
                                 "'".$project_id."'";
