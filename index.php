@@ -180,7 +180,7 @@ $app->post('/user', 'authenticate', function() use ($app){
         }
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Email already exist";
+			$response["message"] = "Email already exists";
 			echoRespnse(400, $response);
 		}
 		$result = $DbHandler->createUser($params);
@@ -449,7 +449,7 @@ $app->post('/userSignUp',  function() use ($app){
 		$DbHandler 	= new DbHandler();
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Email already exist";
+			$response["message"] = "Email already exists";
 			echoRespnse(400, $response);
 		}
 		$user_type = 2;
