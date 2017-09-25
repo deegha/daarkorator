@@ -456,7 +456,7 @@ class DbHandler {
                     "height" => $params['roomDetails']['height'],
                     "unit"   => $params['roomDetails']['unit']  
                 ));
-               
+                $insert_params['description']        = $params['inspirations']['description'];
                 $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
                 $insert_params['budget']        = $params['roomDetails']['budget'];
                 $result = $this->getInsertSting($insert_params); 
@@ -472,6 +472,7 @@ class DbHandler {
                                 "'".$insert_params['color_palettes'] ."',".
                                 "'".$insert_params['color_exceptions'] ."',".
                                 "'".$insert_params['dimensions'] ."',".
+                                "'".$insert_params['description'] ."',".
                                 "'".$insert_params['social_media_links'] ."',".
                                 "'".$insert_params['budget'] ."', ".
                                 "'".$project_id."'";
@@ -637,20 +638,14 @@ class DbHandler {
                 }
             }else{
                 if($logged_user_type == 3 ){
-                    $where = "";
-                    if(isset($status))
-                    $where .= " status = ".$status;
+                    $table        = "project p join project_styleboard ps on p.id = ps.project_id";
+                    $rows         = "p.*" ;
+                    $where = "ps.daarkorator_id=".$user_id." and p.status = 1";
+                  
                 }elseif($logged_user_type == 2){
-                    $where = "customer_id=".$user_id;
-                    if(isset($status))
-                        $where .= " AND status = ".$status;
-                }else{
-                    $where = "";
-                    if(isset($status))
-                    $where .= " status = ".$status;
+                    $where = "customer_id=".$user_id." and status = 1";
                 }
             }
-
 
             $db->selectJson($table, $rows, $where, '', '', $limit);
             $projects = $db->getJson();
