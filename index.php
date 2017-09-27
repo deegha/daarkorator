@@ -1532,8 +1532,8 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	$result = $DbHandler->updateUser($params, $id);
 	
 	if($result) {
-		$email = $DbHandler->getUser($id);
-		if(!$email) {
+		$user = $DbHandler->getUser($id);
+		if(!$user[0]->email) {
 			$response["error"] = true;
 			$response["message"] = "User approved successfully, Coundn't find the email address";
 			echoRespnse(500, $response);	
@@ -1542,7 +1542,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$url = 'http://daakor.dhammika.me/#/set-password;k='.$resetKey;
 
 		$message['text'] = $url;
-		$message['to']	 = $email;
+		$message['to']	 = $user[0]->email;
 		$message['subject']	= 'Set your password';
 
 		if(!send_email ('new_user_set_password', $message)) {
