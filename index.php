@@ -1457,6 +1457,57 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	}
 });
 
+/**
+ * Daarkorator Signup
+ * url - /daarkoratorSignUp
+ * method - POST
+ * params -user object
+ */	
+ $app->post('/daarkoratorSignUp',  function() use ($app){
+	
+		$response 	= array();
+		if($app->request() && $app->request()->getBody()){
+			$params 	=  $app->request()->getBody();
+			$DbHandler 	= new DbHandler();
+			if($DbHandler->getUserByEmail($params['email'])) {
+				$response["error"] = true;
+				$response["message"] = "Email already exists";
+				echoRespnse(400, $response);
+			}
+			$user_type = 3;
+			
+			if(!$DbHandler->validate($params)) {
+				$response["error"] = false;
+				$response["message"] = "Validation failed";
+				echoRespnse(400	, $response);
+			}
+	
+			$result = $DbHandler->createUser($params, $user_type, 5);
+	
+			if($result) {
+				$message['to']	 = $params['email'];
+				$message['subject']	= 'Yor account has been created';
+	
+				if(!send_email ('new_daarkorator_created', $message)) {
+					$response["error"] = true;
+					$response["message"] = "User created, Coundn't send an email";
+					echoRespnse(500, $response);	
+				}
+				$response["error"] = false;
+				$response["message"] = "User created successfully";
+				echoRespnse(200	, $response);
+			}else{
+				$response["error"] = true;
+				$response["message"] = "An error occurred. Please try again";
+				echoRespnse(500, $response);
+			}
+		}else {
+			$response["error"] = true;
+			$response["message"] = "An error occurred. No request body";
+			echoRespnse(500, $response);
+		}	
+	});
+
 
 $app->run();
 		

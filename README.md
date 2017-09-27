@@ -809,3 +809,27 @@ Payment
    }
 }`
 
+#### Daarkorator Signup
+
+-daarkoratorSignUp
+-method : post
+-headers: non
+-request: 
+`{
+  "first_name": "Shirvin",
+  "last_name": "Janze",
+  "email": "scss@gmail.com",
+  "user_type": 3,
+  "contact_number": "0711129349",
+  "daarkorator_details": {
+    "company_name": "testcompany",
+    "about": "test about",
+    "tranings": "test trainings",
+    "tools": "test tools",
+    "instagrame": "test insta",
+    "website": "test web"
+  }
+}`
+- response with no errors
+`{"error": false,"message": "User created successfully"}`
+

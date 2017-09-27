@@ -133,7 +133,7 @@ class DbHandler {
         return $logged_User;
     }
 
-    public function createUser($params, $user_type=null) {
+    public function createUser($params, $user_type=null, $status=null) {
         try{ 
             $db           = new database();
             $user_table   = "user";
@@ -154,6 +154,8 @@ class DbHandler {
             }
             if($user_type!=null)
                 $params['user_type'] = $user_type;
+            if($status!=null)
+                $params['status'] = $status;
 
             $result = $this->getInsertSting($params);
             $rows   = $result['rows'];
