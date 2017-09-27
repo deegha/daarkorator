@@ -835,7 +835,7 @@ Payment
 
 #### Approve Daarkorator
 
-- /approveDaarkoratorer
+- /approveDaarkoratorer/:id
 - method : PUT
 - headers: Autherization
 - request: non
