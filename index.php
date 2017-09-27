@@ -1119,7 +1119,7 @@ $app->get('/notificationcount', 'authenticate', function() use ($app) {
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getNotificationCount($user_id);
-	if ($result) {
+	if ($result || $result == 0) {
 		$response["error"] = false;
 		$response['count'] = $result;
 		echoRespnse(200	, $response);
