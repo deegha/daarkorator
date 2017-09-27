@@ -1465,48 +1465,101 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
  */	
  $app->post('/daarkoratorSignUp',  function() use ($app){
 	
-		$response 	= array();
-		if($app->request() && $app->request()->getBody()){
-			$params 	=  $app->request()->getBody();
-			$DbHandler 	= new DbHandler();
-			if($DbHandler->getUserByEmail($params['email'])) {
-				$response["error"] = true;
-				$response["message"] = "Email already exists";
-				echoRespnse(400, $response);
-			}
-			$user_type = 3;
-			
-			if(!$DbHandler->validate($params)) {
-				$response["error"] = false;
-				$response["message"] = "Validation failed";
-				echoRespnse(400	, $response);
-			}
-	
-			$result = $DbHandler->createUser($params, $user_type, 5);
-	
-			if($result) {
-				$message['to']	 = $params['email'];
-				$message['subject']	= 'Yor account has been created';
-	
-				if(!send_email ('new_daarkorator_created', $message)) {
-					$response["error"] = true;
-					$response["message"] = "User created, Coundn't send an email";
-					echoRespnse(500, $response);	
-				}
-				$response["error"] = false;
-				$response["message"] = "User created successfully";
-				echoRespnse(200	, $response);
-			}else{
-				$response["error"] = true;
-				$response["message"] = "An error occurred. Please try again";
-				echoRespnse(500, $response);
-			}
-		}else {
+	$response 	= array();
+	if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+		$DbHandler 	= new DbHandler();
+		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "An error occurred. No request body";
+			$response["message"] = "Email already exists";
+			echoRespnse(400, $response);
+		}
+		$user_type = 3;
+		
+		if(!$DbHandler->validate($params)) {
+			$response["error"] = false;
+			$response["message"] = "Validation failed";
+			echoRespnse(400	, $response);
+		}
+
+		$result = $DbHandler->createUser($params, $user_type, 5);
+
+		if($result) {
+			$message['to']	 = $params['email'];
+			$message['subject']	= 'Yor account has been created';
+
+			if(!send_email ('new_daarkorator_created', $message)) {
+				$response["error"] = true;
+				$response["message"] = "User created successfully, Coundn't send an email";
+				echoRespnse(500, $response);	
+			}
+			$response["error"] = false;
+			$response["message"] = "User created successfully";
+			echoRespnse(200	, $response);
+		}else{
+			$response["error"] = true;
+			$response["message"] = "An error occurred. Please try again";
 			echoRespnse(500, $response);
-		}	
-	});
+		}
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}	
+});
+
+/**
+ * Approve Darrkorator
+ * url - /approveDaarkoratorer
+ * method - PUT
+ * params - non
+ */	
+ $app->put('/approveDaarkorator/:id', 'authenticate', function($id) use ($app){
+	global $features;
+	
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->update) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response 	= array();
+	
+	$params 	=  array('status' => 0);
+	$DbHandler 	= new DbHandler();
+
+	$result = $DbHandler->updateUser($params, $id);
+	
+	if($result) {
+		$email = $DbHandler->getUser($id);
+		if(!$email) {
+			$response["error"] = true;
+			$response["message"] = "User approved successfully, Coundn't find the email address";
+			echoRespnse(500, $response);	
+		}
+		$resetKey = $DbHandler->generateResetKey($id);
+		$url = 'http://daakor.dhammika.me/#/set-password;k='.$resetKey;
+
+		$message['text'] = $url;
+		$message['to']	 = $email;
+		$message['subject']	= 'Set your password';
+
+		if(!send_email ('new_user_set_password', $message)) {
+			$response["error"] = true;
+			$response["message"] = "User approved successfully, Could not sent an email";
+			echoRespnse(400, $response);
+		}
+		$response["error"] = false;
+		$response['message'] = "User approved Successfully";
+		echoRespnse(200	, $response);
+	}else{
+		$response["error"] = true;
+		$response["message"] = "An error occurred. Please try again";
+		echoRespnse(500, $response);
+	}
+	
+});
 
 
 $app->run();

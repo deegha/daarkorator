@@ -811,10 +811,10 @@ Payment
 
 #### Daarkorator Signup
 
--daarkoratorSignUp
--method : post
--headers: non
--request: 
+- daarkoratorSignUp
+- method : post
+- headers: non
+- request: 
 `{
   "first_name": "Shirvin",
   "last_name": "Janze",
@@ -832,4 +832,13 @@ Payment
 }`
 - response with no errors
 `{"error": false,"message": "User created successfully"}`
+
+#### Approve Daarkorator
+
+- /approveDaarkoratorer
+- method : PUT
+- headers: Autherization
+- request: non
+- response with no errors
+`{"error": false,"message": "User approved Successfully"}`
 
