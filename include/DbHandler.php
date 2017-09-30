@@ -219,6 +219,9 @@ class DbHandler {
             $db->selectJson($table, $rows, $where, '', '');
             $users = $db->getJson();
 
+            if(!$users || $users == "") {
+                return false;
+            }
             return json_decode($users);
         
         }catch(Exception $e) {
@@ -629,9 +632,11 @@ class DbHandler {
     public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
         try{
             $db           = new database();
-            $table        = "project";
-            $rows         = "*";
-            $where        = "";
+            $table        = "project p join project_details pd on p.id = pd.project_id";
+            $rows         = "p.*, 
+                                case p.status WHEN 1 then 'Inprogress' WHEN 2 then 'Draft' WHEN 3 then 'Inprogress' WHEN 4 then 'Completed' WHEN 5 then 'Canceled' END AS status_title, 
+                                pd.title";
+            $where        = ""; 
             if($bidding == "yes"){
                 if($logged_user_type == 3 || $logged_user_type == 1){
                     $where .= "status = 1";
@@ -640,12 +645,14 @@ class DbHandler {
                 }
             }else{
                 if($logged_user_type == 3 ){
-                    $table        = "project p join project_styleboard ps on p.id = ps.project_id";
-                    $rows         = "p.*" ;
-                    $where = "ps.daarkorator_id=".$user_id." and p.status = 1";
+                    $table        = "project p join project_styleboard ps on p.id = ps.project_id join project_details pd on p.id = pd.project_id";
+                    $rows         = "p.*, 
+                                        case p.status WHEN 1 then 'Inprogress' WHEN 2 then 'Draft' WHEN 3 then 'Inprogress' WHEN 4 then 'Completed' WHEN 5 then 'Canceled' END AS status_title, 
+                                        pd.title" ;
+                    $where = "ps.daarkorator_id=".$user_id." and p.status <> 3";
                   
                 }elseif($logged_user_type == 2){
-                    $where = "customer_id=".$user_id." and status = 1";
+                    $where = "p.customer_id=".$user_id;
                 }
             }
 

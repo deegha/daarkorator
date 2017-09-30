@@ -1530,9 +1530,10 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	$DbHandler 	= new DbHandler();
 
 	$result = $DbHandler->updateUser($params, $id);
-	
+	// die($result);
 	if($result) {
 		$user = $DbHandler->getUser($id);
+		// print_r($user)
 		if(!$user[0]->email) {
 			$response["error"] = true;
 			$response["message"] = "User approved successfully, Coundn't find the email address";
@@ -1558,9 +1559,38 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "An error occurred. Please try again";
 		echoRespnse(500, $response);
 	}
-	
 });
 
+
+/**
+ * List new projects
+ * url - /newProject
+ * method - GET
+ */
+ $app->get('/newProjects(/:limit)', 'authenticate', function($limit=null) use ($app) {
+	global $features;
+	global $user_id;
+	global $logged_user_type;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->view) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->getProjects($user_id, 3, $limit, null, "yes");
+	if ($result) {
+		$response["error"] = false;
+		$response['projects'] = $result;
+		echoRespnse(200	, $response);
+	} else {
+		$response["error"] = true;
+		$response["message"] = "The requested resource doesn't exists";
+		echoRespnse(404, $response);
+	}
+});
 
 $app->run();
 		

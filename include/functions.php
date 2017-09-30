@@ -68,7 +68,7 @@ function send_email ($template, $message=null) {
         ob_start();
         include 'email/'.$template.'.php';
         $msg_body = ob_get_clean();
-
+      
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=iso-8859-1';
         $headers[] = 'From: info@daakor.com' ;
