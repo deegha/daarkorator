@@ -448,6 +448,7 @@ class DbHandler {
             $db->insert($project_table,$values,$rows);
 
             if($project_id = $db->getInsertId()) {
+                echo $project_id;die();
             //print_r('start');
                 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
@@ -634,7 +635,7 @@ class DbHandler {
             $db           = new database();
             $table        = "project p join project_details pd on p.id = pd.project_id";
             $rows         = "p.*, 
-                                case p.status WHEN 1 then 'Inprogress' WHEN 2 then 'Draft' WHEN 3 then 'Inprogress' WHEN 4 then 'Completed' WHEN 5 then 'Canceled' END AS status_title, 
+                                case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
             if($bidding == "yes"){
@@ -647,7 +648,7 @@ class DbHandler {
                 if($logged_user_type == 3 ){
                     $table        = "project p join project_styleboard ps on p.id = ps.project_id join project_details pd on p.id = pd.project_id";
                     $rows         = "p.*, 
-                                        case p.status WHEN 1 then 'Inprogress' WHEN 2 then 'Draft' WHEN 3 then 'Inprogress' WHEN 4 then 'Completed' WHEN 5 then 'Canceled' END AS status_title, 
+                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
                     $where = "ps.daarkorator_id=".$user_id." and p.status <> 3";
                   
@@ -1028,6 +1029,23 @@ class DbHandler {
             $db->select($table, $rows, $where, $order);
             $results = $db->getResults();
             return $results;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+       }
+    }
+
+    public function getCustomerByProject($project_id) {
+        try{
+            $db = new database();
+            $table = "project";
+            $rows = "customer_id" ;
+            $where = "id =".$project_id;
+
+            $db->select($table, $rows, $where);
+            $results = $db->getResults();
+            return $results;
+
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;

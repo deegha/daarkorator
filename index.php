@@ -708,7 +708,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 	$result 	= false;
 
 	$result = $DbHandler->createProject($params, $user_id, $draft);
-
+	
 	if(! empty($_FILES['room_images'])) {
 		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
 			$file['name'] = $_FILES['room_images']['name'][$key];
@@ -762,9 +762,17 @@ $app->post('/project', 'authenticate', function() use ($app) {
 		echoRespnse(500, $response);
 	} else {
 
+		$payment = $DbHandler->getPackage(1);
+		if(!$payment) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred Couldn't get the package";
+			echoRespnse(500, $response);
+		}
+
 		$response["error"] = false;
 		$response["message"] = "Project successfully created.";
 		$response["project_id"] = $result;
+		$response["price"] = $payment['price'];
 		echoRespnse(200	, $response);
 	}
 });
@@ -1341,6 +1349,16 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
+		// Sending notifications to customer on new project
+		
+		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
+		$values = $customer['customer_id'].', "Style board added to project", "project", 2';
+		if(!$DbHandler->createNotification($values)){
+			$response["error"] = false;
+			$response['message'] = "Error in sending notifications to the customer ";
+			echoRespnse(200	, $response);
+		}
+
 		$response["error"] = false;
 		$response["message"] = "Style board successfully attached";
 		echoRespnse(200, $response);
@@ -1486,7 +1504,8 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 
 		if($result) {
 			$message['to']	 = $params['email'];
-			$message['subject']	= 'Yor account has been created';
+			$message['first_name'] = $params['first_name'];
+			$message['subject']	= 'Your Daakor application has been received ';
 
 			if(!send_email ('new_daarkorator_created', $message)) {
 				$response["error"] = true;
@@ -1590,6 +1609,16 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
+});
+
+$app->get('/testdb', function() use ($app) {
+	$DbHandler = new DbHandler();
+	$customer = $DbHandler->getCustomerByProject(97);
+//	print_r($customer);die();
+	// echoRespnse(200, $response);
+	echo $customer['customer_id'];
+
+	// echo $values = '61, "Style board added to project", "project", 2';
 });
 
 $app->run();
