@@ -648,7 +648,7 @@ class DbHandler {
                 if($logged_user_type == 3 ){
                     $table        = "project p join project_styleboard ps on p.id = ps.project_id join project_details pd on p.id = pd.project_id";
                     $rows         = "p.*, 
-                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
+                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
                     $where = "ps.daarkorator_id=".$user_id." and p.status <> 3";
                   
@@ -657,10 +657,10 @@ class DbHandler {
                 }
             }
 
-            $db->selectJson($table, $rows, $where, '', '', $limit);
-            $projects = $db->getJson();
-
-            return json_decode($projects);
+            $db->select($table, $rows, $where, '', '', $limit);
+            $projects = $db->getResults();
+       
+            return $projects;
 
         }catch(Exception $e){
              $this->callErrorLog($e);

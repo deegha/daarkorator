@@ -1104,6 +1104,12 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getProjects($user_id, $logged_user_type, $limit, $status, $bidding);
+
+	if(count($result) == 0 ) {
+		$response["error"] = false;
+		$response['message'] = "No projects found";
+		echoRespnse(200	, $response);
+	}
 	if ($result) {
 		$response["error"] = false;
 		$response['projects'] = $result;
@@ -1610,6 +1616,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		echoRespnse(404, $response);
 	}
 });
+
 
 $app->get('/testdb', function() use ($app) {
 	$DbHandler = new DbHandler();
