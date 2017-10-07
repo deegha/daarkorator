@@ -1107,13 +1107,13 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 
 	if(count($result) == 0 ) {
 		$response["error"] = false;
-		$response['message'] = "No projects found";
+		$response['projects'] = $result;
 		echoRespnse(200	, $response);
 	}
 	if ($result) {
 		$response["error"] = false;
 		$response['projects'] = $result;
-		echoRespnse(200	, $response);
+		echoRespnse(200	, $response);		
 	} else {
 		$response["error"] = true;
 		$response["message"] = "The requested resource doesn't exists";
@@ -1615,6 +1615,48 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
+});
+
+/**
+ * Add to my projects
+ * url - /addToMyProjects
+ * method - POST
+ * params - NA
+ */
+ $app->post('/addToMyProjects', 'authenticate', function() use ($app){
+	global $features;
+	global $user_id;
+
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->update) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	if($app->request() && $app->request()->getBody()){
+		$params 	= $app->request()->getBody();
+		$project_id = $params['project_id'];
+		$response 	= array();
+		$DbHandler 	= new DbHandler();
+		if($DbHandler->checkProjectExcist($project_id, $user_id)) {
+			$response["error"] = true;
+			$response["message"] = "Project already exist on my projects";
+			echoRespnse(400, $response);
+		}
+		if(!$DbHandler->addToMyProjects($project_id, $user_id)) {
+			$response["error"] = true;
+			$response["message"] = "Something went wrong while adding the project";
+			echoRespnse(500, $response);
+		}
+		$response["error"] = false;
+		$response["message"] = "Added to my projects successfully";
+		echoRespnse(500, $response);
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}	
 });
 
 

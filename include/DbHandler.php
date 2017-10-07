@@ -1051,6 +1051,45 @@ class DbHandler {
             return false;
        }
     }
+
+    public function addToMyProjects($project_id, $daakor_id) {
+        try {
+            $db = new database();
+            $table = "daakor_project";
+            $rows  = "project_id, daakor_id";
+            $values = $project_id.", ".$daakor_id;
+
+            $result = $db->insert($table,$values,$rows);
+
+            if(!$result) {
+                return false;
+            }
+            return true;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+       }
+    }
+
+    public function checkProjectExcist($project_id, $user_id) {
+        try {
+            $db = new database();
+            $table = "daakor_project";
+            $rows  = "id";
+            $where = "project_id=".$project_id." and daakor_id =".$user_id;
+
+            $db->select($table, $rows, $where);
+            $result = $db->getResults();
+            
+            if(!$result) {
+                return false;
+            }
+            return true;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+       }
+    }
 }
 
 ?>
