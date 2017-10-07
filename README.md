@@ -835,10 +835,24 @@ Payment
 
 #### Approve Daarkorator
 
-- /approveDaarkoratorer/:id
+- `/approveDaarkoratorer/:id`
 - method : PUT
 - headers: Autherization
 - request: non
 - response with no errors
 `{"error": false,"message": "User approved Successfully"}`
+
+#### Add project to my project 
+
+- `/addToMyProjects`
+- method : post
+- headers: Autherization
+- request : `{
+  "project_id": 111
+}`
+- response wuth no errors
+`{
+    "error": false,
+    "message": "Added to my projects successfully"
+}`
 
