@@ -815,11 +815,8 @@ class DbHandler {
             $response['inspire'] = array('social_media_links'=>$social_media_links, 'description'=>$description);
             $response['style_boards'] = json_decode($styleBoards);
 
-            if($results){
-                return $response;
-            }else{
-                return false;
-            }
+            return $response;
+           
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
@@ -1006,12 +1003,6 @@ class DbHandler {
             if($project_id != null) 
                 $where = "project_id =".$project_id;
      
-            if($id != null) {
-                if($project_id != null) 
-                    $where = $where." and ";
-
-                $where = $where." id=".$id;
-            } 
 
             if($userType == 3) {
                 if($project_id != null) 
@@ -1026,9 +1017,20 @@ class DbHandler {
                 $where = $where."  p.customer_id=".$user_id;
             }
             
-            $db->select($table, $rows, $where, $order);
-            $results = $db->getResults();
-            return $results;
+            if($id != null) {
+                if($project_id != null) 
+                    $where = $where." and ";
+
+                $where = $where." sb.id=".$id;
+
+                $db->select($table, $rows, $where, $order);
+                $results = $db->getResults();
+                return $results;
+            } 
+            
+            $db->selectJson($table, $rows, $where, $order);
+            $results = $db->getJson();
+            return json_decode($results);
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;

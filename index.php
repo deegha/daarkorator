@@ -1209,6 +1209,11 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getProjectDetails($project_id, $logged_user_type, $user_id);
+	if(count($result) == 0 ) {
+		$response["error"] = false;
+		$response['Project_Detail'] = $result;
+		echoRespnse(200	, $response);
+	}
 	if ($result) {
 		$response["error"] = false;
 		$response['Project_Detail'] = $result;
@@ -1383,13 +1388,20 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
  */
  $app->get('/styleboards', 'authenticate', function() use ($app) {
 	global $user_id;
-
+	
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getAllStyleboards(null,null, $user_id);
-	if ($result) {
+	if(count($result) == 0 ) { 
+		$arr = array();
 		$response["error"] = false;
 		$response['styleboards'] = $result;
+		echoRespnse(200	, $response);
+	}
+
+	if ($result) { 
+		$response['styleboards'] = $result;
+		$response["error"] 		 = false;
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
@@ -1409,6 +1421,11 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getAllStyleboards(null,$project_id, $user_id);
+	if(count($result) == 0 ) {
+		$response["error"] = false;
+		$response['styleboard'] = $result;
+		echoRespnse(200	, $response);
+	}
 	if ($result) {
 		$response["error"] = false;
 		$response['styleboards'] = $result;
@@ -1432,6 +1449,11 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getAllStyleboards($id, null, $user_id);
+	if(count($result) == 0 ) {
+		$response["error"] = false;
+		$response['styleboard'] = $result;
+		echoRespnse(200	, $response);
+	}
 	if ($result) {
 		$response["error"] = false;
 		$response['styleboard'] = $result;
