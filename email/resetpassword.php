@@ -10,7 +10,7 @@ echo    '<div style="text-align:center; background: #ffffff url(https://ci5.goog
 echo    '<h2 style="text-align: center; font-size:18px; margin-bottom:40px;">Request for Password Change </h2>';
 echo    '<div style="width:600px; margin:auto;">';
 echo    '<p>Hi '.$message_first_name.', </p>';
-echo    '<p>You recently made a request to reset your password. Please click the link below to complete the process.</p>';
+echo    '<p>You recently made a request to reset your password. Please click on the link below to complete the process.</p>';
 echo    '<a href="'.$message_text.'" style="color:#00add8">Reset now</a>';
 echo    '<p>If you did not make this request, you can safely ignore this email.</p>';
 echo    '<p>Regards,<br/>Your friends at Daakor</p><br/><br/>';

@@ -983,7 +983,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 		$values = prepareBulkNotifications($daa, "new project", "some_url", "3");
 		if(!$DbHandler->createNotification($values)){
 			$response["error"] = false;
-			$response['message'] = "Payment successful error in creating notifications";
+			$response['message'] = "Payment successful, error in creating notifications";
 			echoRespnse(200	, $response);
 		}
 
@@ -1107,7 +1107,7 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 
 	if(count($result) == 0 ) {
 		$response["error"] = false;
-		$response['projects'] = $result;
+		$response['projects'] = [];
 		echoRespnse(200	, $response);
 	}
 	if ($result) {
@@ -1395,7 +1395,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	if(count($result) == 0 ) { 
 		$arr = array();
 		$response["error"] = false;
-		$response['styleboards'] = $result;
+		$response['styleboards'] = [];
 		echoRespnse(200	, $response);
 	}
 
@@ -1423,7 +1423,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	$result = $DbHandler->getAllStyleboards(null,$project_id, $user_id);
 	if(count($result) == 0 ) {
 		$response["error"] = false;
-		$response['styleboard'] = $result;
+		$response['styleboards'] = [];
 		echoRespnse(200	, $response);
 	}
 	if ($result) {
@@ -1664,7 +1664,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		if($DbHandler->checkProjectExcist($project_id, $user_id)) {
 			$response["error"] = true;
 			$response["message"] = "Project already exist on my projects";
-			echoRespnse(400, $response);
+			echoRespnse(200, $response);
 		}
 		if(!$DbHandler->addToMyProjects($project_id, $user_id)) {
 			$response["error"] = true;
@@ -1673,7 +1673,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		}
 		$response["error"] = false;
 		$response["message"] = "Added to my projects successfully";
-		echoRespnse(500, $response);
+		echoRespnse(200, $response);
 	}else {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. No request body";
@@ -1681,6 +1681,71 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	}	
 });
 
+/**
+ * Cancel project
+ * url - /projectCancel
+ * method - PUT
+ * params - NA
+ */
+ $app->put('/projectCancel/:id', 'authenticate', function($id) use ($app){
+	global $features;
+	global $user_id;
+
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->remove) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+
+	$updateArr = array(
+		'status' => 4
+	);
+	$result = $DbHandler->checkProjectStatus($id);
+	if(!$result) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred, You cannot cancel this project";
+		echoRespnse(400, $response);
+	}
+
+	if(!$DbHandler->updateProject($updateArr, $id)){
+		$response["error"] = true;
+		$response["message"] = "An error occurred while canceling project";
+		echoRespnse(500, $response);
+	}
+
+	$response["error"] = false;
+	$response["message"] = "Project successfully canceled";
+	echoRespnse(200, $response);
+});
+
+/**
+ * read notifications
+ * url - /readNotifications
+ * method - PUT
+ * params - 
+ */
+ $app->post('/sendEmail', function() use ($app) {
+	
+				$url = 'http://daakor.dhammika.me/#/reset-password;k=';
+	
+				$message['text'] = $url;
+				$message['to']	 = "dhammika97@gmail.com";
+				$message['subject']	= 'Testing emails';
+	
+				if(!send_email ('signup-complete', $message)) {
+					$response["error"] = true;
+					$response["message"] = "An error occurred. Please try again";
+					echoRespnse(500, $response);
+				}else{
+				$response["error"] = false;
+				$response["message"] = "Email sent Successfully";
+				echoRespnse(200	, $response);
+				}
+	});
+	
 
 $app->get('/testdb', function() use ($app) {
 	$DbHandler = new DbHandler();
@@ -1695,3 +1760,4 @@ $app->get('/testdb', function() use ($app) {
 $app->run();
 		
 ?>
+

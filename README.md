@@ -856,3 +856,16 @@ Payment
     "message": "Added to my projects successfully"
 }`
 
+
+#### Cancel project 
+
+- `/projectCancel/:project_id`
+- method : put
+- headers: Autherization
+- request : -
+- response wuth no errors
+`{
+   {"error":false,"message":"Project successfully canceled"}
+}`
+
+

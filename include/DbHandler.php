@@ -433,7 +433,7 @@ class DbHandler {
 
             $status = 1;
             if($draft && $draft != null)
-                $status = 2;
+                $status = 0;
 
             if(isset($params['save_project']) && $params['save_project'] == true)
                 $status = 0;
@@ -448,7 +448,7 @@ class DbHandler {
             $db->insert($project_table,$values,$rows);
 
             if($project_id = $db->getInsertId()) {
-                echo $project_id;die();
+              
             //print_r('start');
                 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
@@ -646,7 +646,9 @@ class DbHandler {
                 }
             }else{
                 if($logged_user_type == 3 ){
-                    $table        = "project p join project_styleboard ps on p.id = ps.project_id join project_details pd on p.id = pd.project_id";
+                    $table        = "project p 
+                                    join project_details pd 
+                                    on p.id = pd.project_id";
                     $rows         = "p.*, 
                                     case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
@@ -657,10 +659,10 @@ class DbHandler {
                 }
             }
 
-            $db->select($table, $rows, $where, '', '', $limit);
-            $projects = $db->getResults();
+            $db->selectJson($table, $rows, $where, '', '', $limit);
+            $projects = $db->getJson();
        
-            return $projects;
+            return json_decode($projects);
 
         }catch(Exception $e){
              $this->callErrorLog($e);
@@ -992,8 +994,10 @@ class DbHandler {
             $db = new database();
             $table = "project_styleboard sb
             join project p 
-            on sb.project_id = p.id";
-            $rows = "sb.*" ;
+            on sb.project_id = p.id 
+            join user u
+            on sb.daarkorator_id = u.id";
+            $rows = "sb.*, u.first_name as daarkorator_name" ;
             $order = "added_time desc";
             $where = "";
 
@@ -1016,20 +1020,21 @@ class DbHandler {
 
                 $where = $where."  p.customer_id=".$user_id;
             }
-            
+       
             if($id != null) {
                 if($project_id != null) 
                     $where = $where." and ";
 
-                $where = $where." sb.id=".$id;
-
-                $db->select($table, $rows, $where, $order);
-                $results = $db->getResults();
+                $where = $where." and sb.id=".$id;
+               
+                $db->select($table, $rows, $where, $order); 
+                $results = $db->getResults(); 
                 return $results;
             } 
             
             $db->selectJson($table, $rows, $where, $order);
             $results = $db->getJson();
+            
             return json_decode($results);
         }catch(Exception $e){
             $this->callErrorLog($e);
@@ -1092,6 +1097,43 @@ class DbHandler {
             return false;
        }
     }
+
+    public function updateProject($updateArr, $project_id) {
+        try {
+            $db = new database();
+            $table = "project";
+            $where = " id = ".$project_id;
+
+            if(!$db->update($table,$updateArr,$where)) {
+                return false;
+            }
+
+            return true;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function checkProjectStatus($id) {
+        try { 
+            $db = new database();
+            $table = "project";
+            $rows  = "*";
+            $where = " id = ".$id;
+
+            $db->select($table,$rows,$where);
+            $results = $db->getResults();
+            if($results['status'] > 2) {
+                return false;
+            }
+            return  true;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
 }
 
 ?>
