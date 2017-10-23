@@ -506,7 +506,7 @@ class DbHandler {
 
             $db = new database();
             $table = "password_reset_table";
-            $rows = "user_id as id, expiry";
+            $rows = "user_id as id, expiry, status";
             $where = "reset_key = '".$changeRequestCode."'";
             $db->select($table, $rows, $where, '', '');
             $user = $db->getResults();
@@ -639,20 +639,21 @@ class DbHandler {
                                 pd.title";
             $where        = ""; 
             if($bidding == "yes"){
-                if($logged_user_type == 3 || $logged_user_type == 1){
-                    $where .= "status = 1";
-                }else{
-                    return false;
-                }
-            }else{
+                $table      = "project p join project_details pd on p.id = pd.project_id";
+                $where      = "p.id NOT IN (select project_id from daakor_project) and status = 1";
+                $rows       = "p.* ";
+        
+            }else{ 
                 if($logged_user_type == 3 ){
                     $table        = "project p 
+                                    join daakor_project dp
+                                    on p.id = dp.project_id
                                     join project_details pd 
                                     on p.id = pd.project_id";
                     $rows         = "p.*, 
                                     case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
-                    $where = "ps.daarkorator_id=".$user_id." and p.status <> 3";
+                    $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
                   
                 }elseif($logged_user_type == 2){
                     $where = "p.customer_id=".$user_id;
@@ -705,17 +706,22 @@ class DbHandler {
         }
     }
 
-    public function createNotification($values=null ){
+    public function createNotification($values=null, $multivalue=null ){
         try{
             $db           = new database();
             $table        = "notifications";
             $rows         = "user_id, notification_text, url, notification_type";
+            $mv = "true";
+            if($multivalue != null) {
+                $mv = "";
+            }
 
-            if($db->insert($table, $values, $rows, "true")){
+            if($db->insert($table, $values, $rows, $mv)){
                 return  true;
             }else{
                 return false;
             }
+    
         }catch(Exception $e){
              $this->callErrorLog($e);
              return false;
@@ -1134,6 +1140,22 @@ class DbHandler {
         }
     }
 
+    public function updateResetKeyStates($activtionKey) {
+        try{   
+            $db = new database();
+            $table = "password_reset_table";
+            $rows = array("status" => 1);
+            $where = "reset_key='".$activtionKey."'";
+            if(!$db->update($table,$rows,$where)) {
+                return false;
+            }
+
+            return true;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>

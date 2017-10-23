@@ -136,4 +136,8 @@ function uploadPdf($file) {
     }
     return false;
 }
+
+function getBaseUrl() {
+    return "http://daakor.dhammika.me/#/";
+}
 ?>

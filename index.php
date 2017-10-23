@@ -644,17 +644,27 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
             echoRespnse(200, $response);
 		}else{
 		    $result = $DbHandler->getPasswordChangeUser($resetKey);
-		    if($result){
+		    if($result){ 
 		    	if($result['expiry'] <= date('Y-m-d H:i:s')) {
 		    		$response["error"] = true;
 	                $response["message"] = "Password reset request has been expired!";
 	                echoRespnse(400, $response);
-		    	}
+				}
+				if($result['status'] == 1) {
+		    		$response["error"] = true;
+	                $response["message"] = "This link has already been used";
+	                echoRespnse(400, $response);
+				}
 				$update_params = array('password' => $params['password']);
 				if(isset($params['new_user']) && $params['new_user'] == true){
 					$update_params['status'] = 1;
 				}
                 if($DbHandler->updateUser($update_params, $result['id'])){
+					if(!$DbHandler->updateResetKeyStates($resetKey)) {
+						$response["error"] = true;
+						$response["message"] = "Couldnt update the reset the key";
+						echoRespnse(500, $response);
+					}
                     $response["error"] = false;
                     $response['message'] = "Password updated Successfully";
                     echoRespnse(200	, $response);
@@ -778,30 +788,6 @@ $app->post('/project', 'authenticate', function() use ($app) {
 });
 
 /**
- * send email
- * url - /sendEmail
- * method - POST
- * params - */
-$app->post('/sendEmail', function() use ($app) {
-
-            $url = 'http://daakor.dhammika.me/#/reset-password;k=';
-
-            $message['text'] = $url;
-            $message['to']	 = "dhammika97@gmail.com";
-            $message['subject']	= 'Testing emails';
-
-            if(!send_email ('signup-complete', $message)) {
-                $response["error"] = true;
-                $response["message"] = "An error occurred. Please try again";
-                echoRespnse(500, $response);
-            }else{
-            $response["error"] = false;
-            $response["message"] = "Email sent Successfully";
-            echoRespnse(200	, $response);
-            }
-});
-
-/**
  * Activte User
  * url - /activateUser/
  * method - GET
@@ -815,13 +801,23 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
         $response["message"] = "The requested activation key does not exist";
         echoRespnse(404, $response);
 	}	
+	if($user_id['status'] == 1) {
+		$response["error"] = true;
+		$response["message"] = "This link has already been used";
+		echoRespnse(400, $response);
+	}
 
 	$params = array("status" => 1);
 
-	if(!$DbHandler->updateUser($params, $user_id['id'])){
+	if(!$DbHandler->updateUser($params, $user_id['id'])) {
 		$response["error"] = true;
         $response["message"] = "something went wrong while updating user";
         echoRespnse(500, $response);
+	}
+	if(!$DbHandler->updateResetKeyStates($changeRequestCode)) {
+		$response["error"] = true;
+		$response["message"] = "Couldnt update the reset the key";
+		echoRespnse(500, $response);
 	}
 	$user = $DbHandler->getUser($id=null)[0];
 	$message['to']	 = $user->email;
@@ -833,6 +829,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 		$response["message"] = "User created, Coundn't send an activation email";
 		echoRespnse(500, $response);
 	}
+	
 
 	$response["error"] = false;
     $response["message"] = "Account was successfully activated";
@@ -979,8 +976,9 @@ $app->post('/payment','authenticate', function() use ($app) {
 		}	
 
 		//Sending notifications to daarkorators on new project
+		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
-		$values = prepareBulkNotifications($daa, "new project", "some_url", "3");
+		$values = prepareBulkNotifications($daa, "new project","project-details/".$params["project_id"]."/true/false" , "3");
 		if(!$DbHandler->createNotification($values)){
 			$response["error"] = false;
 			$response['message'] = "Payment successful, error in creating notifications";
@@ -1105,7 +1103,7 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getProjects($user_id, $logged_user_type, $limit, $status, $bidding);
 
-	if(count($result) == 0 ) {
+	if(count($result) == null ) {
 		$response["error"] = false;
 		$response['projects'] = [];
 		echoRespnse(200	, $response);
@@ -1351,7 +1349,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		if($generated_name == "") {
 			$response["error"] = true;
 			$response["message"] = "An error occurred while uploading images";
-			echoRespnse(500, $response);
+			echoRespnse(500, $response);		
 		}
 
 		if(!$DbHandler->saveStyleBoard($params,$generated_name,$user_id)){
@@ -1361,10 +1359,12 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		}
 
 		// Sending notifications to customer on new project
-		
+		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
-		$values = $customer['customer_id'].', "Style board added to project", "project", 2';
-		if(!$DbHandler->createNotification($values)){
+		$values = $customer['customer_id'].', 
+				 "Style board added to project", "project-details/'.$params["project_id"].'/false/false", 
+				 "2"';
+		if(!$DbHandler->createNotification($values, "true")){
 			$response["error"] = false;
 			$response['message'] = "Error in sending notifications to the customer ";
 			echoRespnse(200	, $response);
@@ -1628,6 +1628,11 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getProjects($user_id, 3, $limit, null, "yes");
+	if(count($result) == 0 ) {
+		$response["error"] = false;
+		$response['projects'] = [];
+		echoRespnse(200	, $response);
+	}
 	if ($result) {
 		$response["error"] = false;
 		$response['projects'] = $result;
@@ -1735,7 +1740,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 				$message['to']	 = "dhammika97@gmail.com";
 				$message['subject']	= 'Testing emails';
 	
-				if(!send_email ('signup-complete', $message)) {
+				if(!send_email ('resetpassword', $message)) {
 					$response["error"] = true;
 					$response["message"] = "An error occurred. Please try again";
 					echoRespnse(500, $response);
@@ -1745,6 +1750,10 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 				echoRespnse(200	, $response);
 				}
 	});
+
+
+
+
 	
 
 $app->get('/testdb', function() use ($app) {

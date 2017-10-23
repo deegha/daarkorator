@@ -95,7 +95,7 @@ private $numrows;
 			$q .= ' limit '.$limit;
 		}
 		
-		// echo $q;die();
+		// echo $q;
 		$query = mysqli_query($this->con,$q);
 		$numRows = mysqli_num_rows($query);
 		$this->numrows = $numRows;
@@ -138,7 +138,7 @@ private $numrows;
 			}else{
 			    $insert .= " values (".$values.");";
 			}
-			 echo $insert;
+			//  echo $insert;
 			 //echo $multiple;
 			$ins = mysqli_query($this->con,$insert);
 			$this->insertid = mysqli_insert_id($this->con);

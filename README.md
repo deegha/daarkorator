@@ -415,7 +415,7 @@
 }`
 
 #### Get package
-Payment
+Package
 
 - URL     : /package/:id`
 - Method  : get 

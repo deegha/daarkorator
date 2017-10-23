@@ -3,3 +3,10 @@
 2017-Sep-Mon  08:14 PM - Undefined index: note
 2017-Sep-Mon  08:14 PM - Undefined index: note
 2017-Sep-Tue  11:47 AM - Undefined index: message_reff
+2017-Oct-Sat  04:51 PM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+2017-Oct-Sat  04:51 PM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+2017-Oct-Sat  04:52 PM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+2017-Oct-Sat  04:53 PM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()
+mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()
+mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()
