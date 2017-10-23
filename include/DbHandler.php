@@ -631,20 +631,20 @@ class DbHandler {
     }
 
     public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
-        try{
+        try{ 
             $db           = new database();
             $table        = "project p join project_details pd on p.id = pd.project_id";
             $rows         = "p.*, 
                                 case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
-            if($bidding == "yes"){
+            if($bidding == "yes"){ 
                 $table      = "project p join project_details pd on p.id = pd.project_id";
                 $where      = "p.id NOT IN (select project_id from daakor_project) and status = 1";
-                $rows       = "p.* ";
+                $rows       = "p.*, case p.status WHEN 1 then 'Inprogress' END AS status_title, pd.title ";
         
             }else{ 
-                if($logged_user_type == 3 ){
+                if($logged_user_type == 3 ){  
                     $table        = "project p 
                                     join daakor_project dp
                                     on p.id = dp.project_id
@@ -659,7 +659,7 @@ class DbHandler {
                     $where = "p.customer_id=".$user_id;
                 }
             }
-
+            
             $db->selectJson($table, $rows, $where, '', '', $limit);
             $projects = $db->getJson();
        

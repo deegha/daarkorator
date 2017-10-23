@@ -653,18 +653,19 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 				if($result['status'] == 1) {
 		    		$response["error"] = true;
 	                $response["message"] = "This link has already been used";
-	                echoRespnse(400, $response);
+	                echoRespnse(200, $response);
 				}
 				$update_params = array('password' => $params['password']);
 				if(isset($params['new_user']) && $params['new_user'] == true){
 					$update_params['status'] = 1;
 				}
+				if(!$DbHandler->updateResetKeyStates($resetKey)) {
+					$response["error"] = true;
+					$response["message"] = "Couldnt update the reset the key";
+					echoRespnse(200, $response);
+				}
                 if($DbHandler->updateUser($update_params, $result['id'])){
-					if(!$DbHandler->updateResetKeyStates($resetKey)) {
-						$response["error"] = true;
-						$response["message"] = "Couldnt update the reset the key";
-						echoRespnse(500, $response);
-					}
+					
                     $response["error"] = false;
                     $response['message'] = "Password updated Successfully";
                     echoRespnse(200	, $response);
@@ -804,21 +805,22 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 	if($user_id['status'] == 1) {
 		$response["error"] = true;
 		$response["message"] = "This link has already been used";
-		echoRespnse(400, $response);
+		echoRespnse(200, $response);
 	}
 
 	$params = array("status" => 1);
 
+	if(!$DbHandler->updateResetKeyStates($changeRequestCode)) {
+		$response["error"] = true;
+		$response["message"] = "Couldnt update the reset the key";
+		echoRespnse(200, $response);
+	}
 	if(!$DbHandler->updateUser($params, $user_id['id'])) {
 		$response["error"] = true;
         $response["message"] = "something went wrong while updating user";
         echoRespnse(500, $response);
 	}
-	if(!$DbHandler->updateResetKeyStates($changeRequestCode)) {
-		$response["error"] = true;
-		$response["message"] = "Couldnt update the reset the key";
-		echoRespnse(500, $response);
-	}
+	
 	$user = $DbHandler->getUser($id=null)[0];
 	$message['to']	 = $user->email;
 	$message['subject']	= 'Your account activated successfully';
