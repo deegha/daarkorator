@@ -907,7 +907,7 @@ class DbHandler {
             $rows   = "project_id, styleboard, daarkorator_id, note, style_board_name";
             $note = "";
             if(isset($params['note']))
-                $note = isset($params['note']);
+                $note = $params['note'];
 
             $values = "'".$params['project_id']."', 
                         '".$generated_name."',
