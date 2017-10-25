@@ -187,7 +187,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 		if($result) {
 			$resetKey = $DbHandler->generateResetKey($result);
-			$url = 'http://daakor.dhammika.me/#/set-password;k='.$resetKey;
+			$url = 'http://app.daakor.com/#/set-password;k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
@@ -411,7 +411,7 @@ $app->post('/forgotPassword', function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://daakor.dhammika.me/#/reset-password;k='.$resetKey;
+			$url = 'http://app.daakor.com/#/reset-password;k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
@@ -469,7 +469,7 @@ $app->post('/userSignUp',  function() use ($app){
 				$response["message"] = "An error occurred while generating reset key Please try again";
 				echoRespnse(500, $response);
 			}
-			$url = 'http://daakor.dhammika.me/#/activate-user;key='.$activationKey;
+			$url = 'http://app.daakor.com/#/activate-user;key='.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -1589,7 +1589,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 			echoRespnse(500, $response);	
 		}
 		$resetKey = $DbHandler->generateResetKey($id);
-		$url = 'http://daakor.dhammika.me/#/set-password;k='.$resetKey;
+		$url = 'http://app.daakor.com/#/set-password;k='.$resetKey;
 
 		$message['text'] = $url;
 		$message['to']	 = $user[0]->email;
@@ -1736,7 +1736,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
  */
  $app->post('/sendEmail', function() use ($app) {
 	
-				$url = 'http://daakor.dhammika.me/#/reset-password;k=';
+				$url = 'http://app.daakor.com/#/reset-password;k=';
 	
 				$message['text'] = $url;
 				$message['to']	 = "dhammika97@gmail.com";
