@@ -1270,15 +1270,15 @@ $app->post('/message', 'authenticate', function() use ($app){
 
 /**
  * get message list
- * url - /message(/:limit(/:status))
+ * url - /message/:styleboard(/:limit(/:status))
  * method - GET
  */
-$app->get('/message(/:limit(/:status))', 'authenticate', function($limit=null, $status=null) use ($app) {
+$app->get('/message/:styleboard(/:limit(/:status))', 'authenticate', function($styleboard, $limit=null, $status=null) use ($app) {
 	global $user_id;
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getMessageList($user_id, $limit, $status);
+	$result = $DbHandler->getMessageList($user_id, $limit, $status, $styleboard);
 	if ($result) {
 		$response["error"] = false;
 		$response['messages'] = $result;
