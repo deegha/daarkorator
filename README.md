@@ -869,3 +869,23 @@ Package
 }`
 
 
+#### get messages
+
+- url    : /message/:styleboardId(/:limit(/:status))
+- method : GET
+- response without errors
+`{
+    "error": false,
+    "messages": [
+        {
+            "id": "1",
+            "project_name": "s",
+            "sender": "shuboothi4353ds@gmail.com",
+            "previous_id": "0",
+            "message_subject": "test subject",
+            "message_text": "message text",
+            "date_time": "2017-10-25 13:29:42",
+            "status": "0"
+        }
+    ]
+}`
