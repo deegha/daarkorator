@@ -821,7 +821,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
         echoRespnse(500, $response);
 	}
 	
-	$user = $DbHandler->getUser($id=null)[0];
+	$user = $DbHandler->getUser($user_id['id'])[0];
 	$message['to']	 = $user->email;
 	$message['subject']	= 'Your account activated successfully';
 	$message['first_name']	 = $user->first_name;
