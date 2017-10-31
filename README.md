@@ -637,36 +637,6 @@ Package
 }
 
 
-#### Message List
-
-- `/message(/0,30(/status))`
-- Method  : GET
-- headers : Authorization
-- Response with no errors
-{
-    "error": false,
-    "messages": [
-        {
-            "id": "13",
-            "project_name": "Test Project by dhammika 1",
-            "sender": "dhammikam@zone24x7.com",
-            "previous_id": "12",
-            "subject": "Want to check with you the budget details",
-            "date": "2017-09-09 00:11:06",
-            "status": "0"
-        },
-        {
-            "id": "11",
-            "project_name": "Test Project by dhammika 1",
-            "sender": "dhammikam@zone24x7.com",
-            "previous_id": "10",
-            "subject": "Want to check with you the budget details",
-            "date": "2017-09-09 00:09:47",
-            "status": "0"
-        }
-    ]
-}
-
 
 #### Message detail
 
