@@ -138,6 +138,12 @@ function uploadPdf($file) {
 }
 
 function getBaseUrl() {
+    //production
+    // return "http://app.daakor.com/#/";
+
+    //test
     return "http://daakor.dhammika.me/#/";
 }
+
+
 ?>

@@ -187,7 +187,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 		if($result) {
 			$resetKey = $DbHandler->generateResetKey($result);
-			$url = 'http://app.daakor.com/#/set-password;k='.$resetKey;
+			$url = getBaseUrl().'set-password;k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
@@ -411,7 +411,7 @@ $app->post('/forgotPassword', function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			$url = 'http://app.daakor.com/#/reset-password;k='.$resetKey;
+			$url = getBaseUrl().'reset-password;k='.$resetKey;
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
@@ -469,7 +469,7 @@ $app->post('/userSignUp',  function() use ($app){
 				$response["message"] = "An error occurred while generating reset key Please try again";
 				echoRespnse(500, $response);
 			}
-			$url = 'http://app.daakor.com/#/activate-user;key='.$activationKey;
+			$url = getBaseUrl().'activate-user;key='.$activationKey;
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
 			$message['subject']	= 'Activate your account';
@@ -905,25 +905,25 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
  * method - GET
  **/	
 $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
-		global $features;
-		$capabilities = json_decode($features);
-		$DbHandler = new DbHandler();	
-		if(!$capabilities->manageProjects->priceSetup) {
-			$response["error"] = true;
-	        $response["message"] = "Unauthorized access";
-	        echoRespnse(401, $response);
-		}
-			
-		$package = $DbHandler->getPackage($pkg_id);
-        if(!$package) {
-        	$response["error"] = true;
-	        $response["message"] = "No price set";
-	        echoRespnse(404, $response);
-        }
-        $response["error"] 	 = false;
-        $response["message"] = "Request successful";
-        $response["price"]	 = $package['price'];
-        echoRespnse(200, $response);
+	global $features;
+	$capabilities = json_decode($features);
+	$DbHandler = new DbHandler();	
+	if(!$capabilities->manageProjects->priceSetup) {
+		$response["error"] = true;
+		$response["message"] = "Unauthorized access";
+		echoRespnse(401, $response);
+	}
+		
+	$package = $DbHandler->getPackage($pkg_id);
+	if(!$package) {
+		$response["error"] = true;
+		$response["message"] = "No price set";
+		echoRespnse(404, $response);
+	}
+	$response["error"] 	 = false;
+	$response["message"] = "Request successful";
+	$response["price"]	 = $package['price'];
+	echoRespnse(200, $response);
 });
 
 /*
@@ -1589,7 +1589,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 			echoRespnse(500, $response);	
 		}
 		$resetKey = $DbHandler->generateResetKey($id);
-		$url = 'http://app.daakor.com/#/set-password;k='.$resetKey;
+		$url = getBaseUrl().'set-password;k='.$resetKey;
 
 		$message['text'] = $url;
 		$message['to']	 = $user[0]->email;
@@ -1736,10 +1736,10 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
  */
  $app->post('/sendEmail', function() use ($app) {
 	
-				$url = 'http://app.daakor.com/#/reset-password;k=';
+				$url = getBaseUrl().'reset-password;k=';
 	
 				$message['text'] = $url;
-				$message['to']	 = "dhammika97@gmail.com";
+				$message['to']	 = "shuboothi@gmail.com";
 				$message['subject']	= 'Testing emails';
 	
 				if(!send_email ('resetpassword', $message)) {
