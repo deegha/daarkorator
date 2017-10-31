@@ -926,21 +926,22 @@ class DbHandler {
         }
     }
 
-    public function getMessageList($user_id, $limit=null, $status=null, $styleboard_id=null){
+    public function getMessageList($user_id, $limit=null, $status=null){
         try{
             $db     = new database();
-            $table  = "messages m left outer join user u on u.id = m.sender_id";
+            $table  =  'messages m left outer join user u on u.id = m.sender_id';
             $table .= " left outer join project_details pd on pd.project_id = m.project_id";
             $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
             $rows   = "m.id as id, 
                         pd.title as project_name, 
                         u.email as sender, 
-                        m.message_reff as previous_id,
                         m.message_subject as message_subject,
-                        m.message_text as message_text, 
                         m.date_time as date_time, 
+                        pd.title as project_name,
+                        psb.style_board_name as styleboard_name,
                         m.status as status";
-            $where  = "m.reciever_id = ".$user_id." and psb.id=".$styleboard_id;
+            $where  = "m.reciever_id = ".$user_id;
+
             if(isset($status))
             $where .= " AND m.status = ".$status;
             $order  = "date_time desc";

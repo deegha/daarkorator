@@ -871,20 +871,28 @@ Package
 
 #### get messages
 
-- url    : /message/:styleboardId(/:limit(/:status))
+- url    : /message
 - method : GET
 - response without errors
 `{
     "error": false,
     "messages": [
         {
+            "id": "3",
+            "project_name": "s",
+            "sender": "shuboothi4353ds@gmail.com",
+            "message_subject": "first message ",
+            "date_time": "2017-10-31 21:42:40",
+            "styleboard_name": "1",
+            "status": "0"
+        },
+        {
             "id": "1",
             "project_name": "s",
             "sender": "shuboothi4353ds@gmail.com",
-            "previous_id": "0",
             "message_subject": "test subject",
-            "message_text": "message text",
             "date_time": "2017-10-25 13:29:42",
+            "styleboard_name": "1",
             "status": "0"
         }
     ]

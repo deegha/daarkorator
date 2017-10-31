@@ -1273,12 +1273,12 @@ $app->post('/message', 'authenticate', function() use ($app){
  * url - /message/:styleboard(/:limit(/:status))
  * method - GET
  */
-$app->get('/message/:styleboard(/:limit(/:status))', 'authenticate', function($styleboard, $limit=null, $status=null) use ($app) {
+$app->get('/message(/:limit(/:status))', 'authenticate', function($limit=null, $status=null) use ($app) {
 	global $user_id;
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getMessageList($user_id, $limit, $status, $styleboard);
+	$result = $DbHandler->getMessageList($user_id, $limit, $status);
 	if ($result) {
 		$response["error"] = false;
 		$response['messages'] = $result;
