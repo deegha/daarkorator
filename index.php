@@ -1301,7 +1301,7 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->getMessageDetail($user_id, $message_id);
+	$result = $DbHandler->messageDetail($message_id);
 	if ($result) {
 		$response["error"] = false;
 		$response['message'] = $result;

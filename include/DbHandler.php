@@ -969,25 +969,35 @@ class DbHandler {
         }
     }
 
-    private function messageDetail($message_id){
+    public function messageDetail($message_id){
         try{
-            $db         = new database();
-            $table      = "messages";
-            $rows       = "*";
-            $where      = "id = ".$message_id;
-            $db->select($table, $rows, $where);
-            $results = $db->getResults();
-            $tmp = array();
-            array_push($tmp, $results);
-            if($results['message_reff']!=0){
-                //$tmp = $results;
-                array_push($tmp, $this->getHistory($results['id'], $results['styleboard_id']));
-                return $tmp;
-            }else{
-                return $results;
-            }
+            $db     = new database();
+            $table  =  'messages m left outer join user u on u.id = m.sender_id';
+            $table .= " left outer join project_details pd on pd.project_id = m.project_id";
+            $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
+            $rows   = "m.id as id, 
+                        pd.title as project_name, 
+                        u.email as sender, 
+                        m.message_subject as message_subject,
+                        m.date_time as date_time, 
+                        pd.title as project_name,
+                        psb.style_board_name as styleboard_name,
+                        m.status as status";
+            $where  = "m.project_id = (
+                            SELECT m.project_id FROM messages m where m.id = ".$message_id."
+                            ) and m.styleboard_id = (
+                            SELECT m.styleboard_id FROM messages m where m.id = ".$message_id."
+                            )";
+            
+            $order = 'date_time DESC';
+
+            $db->selectJson($table, $rows, $where, $order);
+            $results = $db->getJson();
+          
+            return json_decode($results);
+                                
         }catch(Exception $e){
-             $this->callErrorLog($e);
+             $this->callErrorLog($e);               
              return false;
         }
     }

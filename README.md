@@ -636,82 +636,6 @@ Package
     "message": "Message sent successfully!"
 }
 
-
-
-#### Message detail
-
-- `/messagedetail/14`
-- Method  : GET
-- headers : Authorization
-- Response with no errors
-{
-    "error": false,
-    "message": [
-        {
-            "id": "14",
-            "message_reff": "13",
-            "project_id": "97",
-            "sender_id": "60",
-            "reciever_id": "55",
-            "message_subject": "Want to check with you the budget details",
-            "message_text": "Love red, blue and green mix",
-            "date_time": "2017-09-09 00:11:50",
-            "status": "0"
-        },
-        [
-            {
-                "id": "13",
-                "message_reff": "12",
-                "project_id": "97",
-                "sender_id": "55",
-                "reciever_id": "60",
-                "message_subject": "Want to check with you the budget details",
-                "message_text": "Can arrange color change, What are the preferances?",
-                "date_time": "2017-09-09 00:11:06",
-                "status": "0"
-            },
-            [
-                {
-                    "id": "12",
-                    "message_reff": "11",
-                    "project_id": "97",
-                    "sender_id": "60",
-                    "reciever_id": "55",
-                    "message_subject": "Want to check with you the budget details",
-                    "message_text": "I don't like the colors",
-                    "date_time": "2017-09-09 00:10:27",
-                    "status": "0"
-                },
-                [
-                    {
-                        "id": "11",
-                        "message_reff": "10",
-                        "project_id": "97",
-                        "sender_id": "55",
-                        "reciever_id": "60",
-                        "message_subject": "Want to check with you the budget details",
-                        "message_text": "Find some details",
-                        "date_time": "2017-09-09 00:09:47",
-                        "status": "0"
-                    },
-                    {
-                        "id": "10",
-                        "message_reff": "0",
-                        "project_id": "97",
-                        "sender_id": "60",
-                        "reciever_id": "55",
-                        "message_subject": "Want to check with you the budget details",
-                        "message_text": "Want to check with you the budget details",
-                        "date_time": "2017-09-09 00:08:48",
-                        "status": "0"
-                    }
-                ]
-            ]
-        ]
-    ]
-}
-
-
 #### Create style boards
 
 - URL     : `/styleboard`
@@ -847,6 +771,46 @@ Package
 `{
     "error": false,
     "messages": [
+        {
+            "id": "3",
+            "project_name": "s",
+            "sender": "shuboothi4353ds@gmail.com",
+            "message_subject": "first message ",
+            "date_time": "2017-10-31 21:42:40",
+            "styleboard_name": "1",
+            "status": "0"
+        },
+        {
+            "id": "1",
+            "project_name": "s",
+            "sender": "shuboothi4353ds@gmail.com",
+            "message_subject": "test subject",
+            "date_time": "2017-10-25 13:29:42",
+            "styleboard_name": "1",
+            "status": "0"
+        }
+    ]
+}`
+
+
+#### Message detail
+
+- `/messagedetail/14`
+- Method  : GET
+- headers : Authorization
+- Response with no errors
+`{
+    "error": false,
+    "message": [
+        {
+            "id": "2",
+            "project_name": "s",
+            "sender": "shirvinjanze@gmail.com",
+            "message_subject": "previous message",
+            "date_time": "2017-10-31 21:42:40",
+            "styleboard_name": "1",
+            "status": "0"
+        },
         {
             "id": "3",
             "project_name": "s",
