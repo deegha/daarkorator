@@ -807,6 +807,7 @@ Package
             "project_name": "s",
             "sender": "shirvinjanze@gmail.com",
             "message_subject": "previous message",
+            "message_text": "previous message text",
             "date_time": "2017-10-31 21:42:40",
             "styleboard_name": "1",
             "status": "0"
@@ -816,6 +817,7 @@ Package
             "project_name": "s",
             "sender": "shuboothi4353ds@gmail.com",
             "message_subject": "first message ",
+            "message_text": "first mesasage text",
             "date_time": "2017-10-31 21:42:40",
             "styleboard_name": "1",
             "status": "0"
@@ -825,6 +827,7 @@ Package
             "project_name": "s",
             "sender": "shuboothi4353ds@gmail.com",
             "message_subject": "test subject",
+            "message_text": "message text",
             "date_time": "2017-10-25 13:29:42",
             "styleboard_name": "1",
             "status": "0"

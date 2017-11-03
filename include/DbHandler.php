@@ -979,6 +979,7 @@ class DbHandler {
                         pd.title as project_name, 
                         u.email as sender, 
                         m.message_subject as message_subject,
+                        m.message_text as message_text,
                         m.date_time as date_time, 
                         pd.title as project_name,
                         psb.style_board_name as styleboard_name,
