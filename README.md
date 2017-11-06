@@ -834,3 +834,45 @@ Package
         }
     ]
 }`
+
+
+
+#### Get new projects
+
+- `newProjects` 
+- Method : get
+- Headers : Authorization
+- Response with no errors
+`{
+    "error": false,
+    "projects": [
+        {
+            "id": "97",
+            "customer_id": "60",
+            "published_date": "2017-09-01 11:11:20",
+            "status": "1",
+            "title": "Test Project by dhammika 1",
+            "status_title": "Inprogress",
+            "image": "http://www.daakor.com/dev/wp-content/uploads/2017/09/master-bedroom.jpg"
+        },
+        {
+            "id": "99",
+            "customer_id": "61",
+            "published_date": "2017-09-01 15:13:23",
+            "status": "1",
+            "title": "qwqweqwe",
+            "status_title": "Inprogress",
+            "image": "http://www.daakor.com/dev/wp-content/uploads/2017/09/living-room.jpg"
+        },
+        {
+            "id": "100",
+            "customer_id": "60",
+            "published_date": "2017-09-07 14:07:44",
+            "status": "1",
+            "title": "Test Project",
+            "status_title": "Inprogress",
+            "image": "http://www.daakor.com/dev/wp-content/uploads/2017/09/living-room.jpg"
+        }
+    ]
+}`
+
