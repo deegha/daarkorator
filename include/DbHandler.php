@@ -633,15 +633,17 @@ class DbHandler {
     public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
         try{ 
             $db           = new database();
-            $table        = "project p join project_details pd on p.id = pd.project_id";
-            $rows         = "p.*, 
+            $table        = "project p join project_details pd on p.id = pd.project_id 
+                             join room_types rt on pd.room_types = rt.id";
+            $rows         = "p.*, rt.image, 
                                 case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
             if($bidding == "yes"){ 
-                $table      = "project p join project_details pd on p.id = pd.project_id";
-                $where      = "p.id NOT IN (select project_id from daakor_project) and status = 1";
-                $rows       = "p.*, case p.status WHEN 1 then 'Inprogress' END AS status_title, pd.title ";
+                $table      = "project p join project_details pd on p.id = pd.project_id
+                                join room_types rt on pd.room_types = rt.id";
+                $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
+                $rows       = "p.*, case p.status WHEN 1 then 'Inprogress' END AS status_title, pd.title, rt.image ";
         
             }else{ 
                 if($logged_user_type == 3 ){  
@@ -649,8 +651,9 @@ class DbHandler {
                                     join daakor_project dp
                                     on p.id = dp.project_id
                                     join project_details pd 
-                                    on p.id = pd.project_id";
-                    $rows         = "p.*, 
+                                    on p.id = pd.project_id
+                                    join room_types rt on pd.room_types = rt.id";
+                    $rows         = "p.*, rt.image,
                                     case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
                     $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
