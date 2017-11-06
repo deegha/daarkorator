@@ -852,7 +852,8 @@ Package
             "published_date": "2017-09-01 11:11:20",
             "status": "1",
             "title": "Test Project by dhammika 1",
-            "status_title": "Inprogress",
+            "budget": "23445",
+            "status_title": "In progress",
             "image": "http://www.daakor.com/dev/wp-content/uploads/2017/09/master-bedroom.jpg"
         },
         {
@@ -861,7 +862,8 @@ Package
             "published_date": "2017-09-01 15:13:23",
             "status": "1",
             "title": "qwqweqwe",
-            "status_title": "Inprogress",
+            "budget": "234234",
+            "status_title": "In progress",
             "image": "http://www.daakor.com/dev/wp-content/uploads/2017/09/living-room.jpg"
         },
         {
@@ -870,7 +872,8 @@ Package
             "published_date": "2017-09-07 14:07:44",
             "status": "1",
             "title": "Test Project",
-            "status_title": "Inprogress",
+            "budget": "23234",
+            "status_title": "In progress",
             "image": "http://www.daakor.com/dev/wp-content/uploads/2017/09/living-room.jpg"
         }
     ]

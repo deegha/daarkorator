@@ -635,15 +635,15 @@ class DbHandler {
             $db           = new database();
             $table        = "project p join project_details pd on p.id = pd.project_id 
                              join room_types rt on pd.room_types = rt.id";
-            $rows         = "p.*, rt.image, rt.title,
-                                case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
+            $rows         = "p.*, rt.image, rt.title, pd.budget,
+                                case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
             if($bidding == "yes"){ 
                 $table      = "project p join project_details pd on p.id = pd.project_id
                                 join room_types rt on pd.room_types = rt.id";
                 $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
-                $rows       = "p.*,rt.title, case p.status WHEN 1 then 'Inprogress' END AS status_title, pd.title, rt.image ";
+                $rows       = "p.*,rt.title, pd.budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
         
             }else{ 
                 if($logged_user_type == 3 ){  
@@ -653,8 +653,8 @@ class DbHandler {
                                     join project_details pd 
                                     on p.id = pd.project_id
                                     join room_types rt on pd.room_types = rt.id";
-                    $rows         = "p.*, rt.image, rt.title,
-                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'Inprogress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
+                    $rows         = "p.*, rt.image, rt.title, pd.budget,
+                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
                     $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
                   
