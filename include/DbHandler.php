@@ -662,7 +662,7 @@ class DbHandler {
                     $where = "p.customer_id=".$user_id;
                 }
             }
-
+            $order = "published_date DESC";
             $db->selectJson($table, $rows, $where, '', '', $limit);
             $projects = $db->getJson();
           
