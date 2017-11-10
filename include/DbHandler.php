@@ -949,7 +949,7 @@ class DbHandler {
             $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
             $rows   = "m.id as id, 
                         pd.title as project_name, 
-                        u.email as sender, 
+                        CONCAT(u.first_name,' ',last_name ) as sender, 
                         m.message_subject as message_subject,
                         m.date_time as date_time, 
                         pd.title as project_name,
@@ -990,7 +990,7 @@ class DbHandler {
             $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
             $rows   = "m.id as id, 
                         pd.title as project_name, 
-                        u.email as sender, 
+                        CONCAT(u.first_name,' ',last_name ) as sender, 
                         m.message_subject as message_subject,
                         m.message_text as message_text,
                         m.date_time as date_time, 
