@@ -980,7 +980,8 @@ $app->post('/payment','authenticate', function() use ($app) {
 		//Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
-		$values = prepareBulkNotifications($daa, "new project","project-details/".$params["project_id"]."/true/false" , "3");
+		$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
+		
 		if(!$DbHandler->createNotification($values)){
 			$response["error"] = false;
 			$response['message'] = "Payment successful, error in creating notifications";
@@ -1365,8 +1366,9 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
 		$values = $customer['customer_id'].', 
-				 "Style board added to project", "project-details/'.$params["project_id"].'/false/false", 
+				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'", 
 				 "2"';
+				 
 		if(!$DbHandler->createNotification($values, "true")){
 			$response["error"] = false;
 			$response['message'] = "Error in sending notifications to the customer ";
@@ -1735,24 +1737,43 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
  * method - PUT
  * params - 
  */
+ $app->put('/readNotifications/:id', 'authenticate', function($id) use ($app){
+
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+	$result = $DbHandler->updateNotifications($id);
+
+	if(!$result){
+		$response["error"] = true;
+		$response["message"] = "An error occurred while updating notifications";
+		echoRespnse(500, $response);
+	}
+	$response["error"] = false;
+	$response["message"] = "Notification updated successfully";
+	echoRespnse(200, $response);
+});
+
+
+
+
  $app->post('/sendEmail', function() use ($app) {
 	
-				$url = getBaseUrl().'reset-password;k=';
-	
-				$message['text'] = $url;
-				$message['to']	 = "shuboothi@gmail.com";
-				$message['subject']	= 'Testing emails';
-	
-				if(!send_email ('resetpassword', $message)) {
-					$response["error"] = true;
-					$response["message"] = "An error occurred. Please try again";
-					echoRespnse(500, $response);
-				}else{
-				$response["error"] = false;
-				$response["message"] = "Email sent Successfully";
-				echoRespnse(200	, $response);
-				}
-	});
+	$url = getBaseUrl().'reset-password;k=';
+
+	$message['text'] = $url;
+	$message['to']	 = "shuboothi@gmail.com";
+	$message['subject']	= 'Testing emails';
+
+	if(!send_email ('resetpassword', $message)) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. Please try again";
+		echoRespnse(500, $response);
+	}else{
+	$response["error"] = false;
+	$response["message"] = "Email sent Successfully";
+	echoRespnse(200	, $response);
+	}
+});
 
 
 

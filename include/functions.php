@@ -137,6 +137,42 @@ function uploadPdf($file) {
     return false;
 }
 
+function getNotificationText($notificationType) {
+    switch ($notificationType) {
+        case "project" :
+            return "A new room design contest has kicked off";
+        break;
+        case "styleboard" :
+            return "A new styleboard has added to your project";
+        break;
+    }    
+}
+
+function getNotificationUrl($notificationType, $projectId=null) {
+    switch ($notificationType) {
+        case "project" :
+            $data = array(
+                "id" => $projectId,
+                "showAddProject" => true,
+                "isCancelled" => false
+            );
+            
+            $ecoded = base64_encode(json_encode($data));
+            return "project-details/".$ecoded;
+        break;
+        case "styleboard" :
+            $data = array(
+                "id" => $projectId,
+                "showAddProject" => false,
+                "isCancelled" => false
+            );
+            
+            $ecoded = base64_encode(json_encode($data));
+            return "project-details/".$ecoded;
+        break;
+    }    
+}
+
 function getBaseUrl() {
     //production
     // return "http://app.daakor.com/#/";

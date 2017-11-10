@@ -879,3 +879,12 @@ Package
     ]
 }`
 
+
+#### Update notifications
+
+- `/readNotifications/:id` 
+- Method : PUT
+- Headers : Authorization
+- Response with no errors : 
+`{"error":false,"message":"Notification updated successfully"}`
+

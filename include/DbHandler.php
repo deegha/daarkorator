@@ -1178,6 +1178,22 @@ class DbHandler {
             return false;
         }
     }
+
+    public function updateNotifications($id) {
+        try{
+            $db = new database();
+            $table = "notifications";
+            $rows = array('status' => 1);
+            $where = 'id = '.$id;
+
+            $result = $db->update($table,$rows,$where);
+
+            return $result;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>
