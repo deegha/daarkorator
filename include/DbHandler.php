@@ -631,7 +631,7 @@ class DbHandler {
     }
 
     public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
-        try{ 
+        try { 
             $db           = new database();
             $table        = "project p join project_details pd on p.id = pd.project_id 
                              join room_types rt on pd.room_types = rt.id";
@@ -644,7 +644,7 @@ class DbHandler {
                                 join room_types rt on pd.room_types = rt.id";
                 $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
                 $rows       = "p.*,rt.title as room_type, pd.budget as budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
-        
+
             }else{ 
                 if($logged_user_type == 3 ){  
                     $table        = "project p 
@@ -662,13 +662,13 @@ class DbHandler {
                     $where = "p.customer_id=".$user_id;
                 }
             }
-            
+
             $db->selectJson($table, $rows, $where, '', '', $limit);
             $projects = $db->getJson();
-       
+          
             return json_decode($projects);
 
-        }catch(Exception $e){
+        } catch(Exception $e){
              $this->callErrorLog($e);
         }
     }
@@ -951,11 +951,9 @@ class DbHandler {
 
             $db->selectJson($table, $rows, $where, $order, '', $limit);
             $results = json_decode($db->getJson());
-            if($results){
-                return $results;
-            }else{
-                return false;
-            }
+           
+            return $results;
+
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
@@ -972,8 +970,8 @@ class DbHandler {
         }
     }
 
-    public function messageDetail($message_id){
-        try{
+    public function messageDetail($message_id, $user_id){
+        try{ 
             $db     = new database();
             $table  =  'messages m left outer join user u on u.id = m.sender_id';
             $table .= " left outer join project_details pd on pd.project_id = m.project_id";
@@ -986,7 +984,8 @@ class DbHandler {
                         m.date_time as date_time, 
                         pd.title as project_name,
                         psb.style_board_name as styleboard_name,
-                        m.status as status";
+                        m.status as status,
+                        IF(m.reciever_id = ".$user_id." , 'received', 'sent') as class";
             $where  = "m.project_id = (
                             SELECT m.project_id FROM messages m where m.id = ".$message_id."
                             ) and m.styleboard_id = (

@@ -1279,14 +1279,15 @@ $app->get('/message(/:limit(/:status))', 'authenticate', function($limit=null, $
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getMessageList($user_id, $limit, $status);
+
 	if ($result) {
 		$response["error"] = false;
 		$response['messages'] = $result;
 		echoRespnse(200	, $response);
 	} else {
-		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
-		echoRespnse(404, $response);
+		$response["error"] = false;
+		$response["message"] = [];
+		echoRespnse(200, $response);
 	}
 });
 
@@ -1301,15 +1302,15 @@ $app->get('/messagedetail(/:message_id)', 'authenticate', function($message_id) 
 
 	$response = array();
 	$DbHandler = new DbHandler();
-	$result = $DbHandler->messageDetail($message_id);
+	$result = $DbHandler->messageDetail($message_id, $user_id);
 	if ($result) {
 		$response["error"] = false;
 		$response['message'] = $result;
 		echoRespnse(200	, $response);
 	} else {
-		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
-		echoRespnse(404, $response);
+		$response["error"] = false;
+		$response["message"] = [];
+		echoRespnse(200, $response);
 
 	}
 });
