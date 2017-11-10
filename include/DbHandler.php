@@ -694,12 +694,24 @@ class DbHandler {
         try{
             $db           = new database();
             $table        = "notifications";
-            $rows         = "id, notification_text, url, notification_type";
+            $rows         = "id, notification_text, url, notification_type, status as status, case
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 2 then 'Today'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 3 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 2 then '2 Days ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 4 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 3 then '3 Days ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 5 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 4 then '4 Days ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 6 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 5 then '5 Days ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 7 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 14 then '1 week ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 15 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 21 then '2 weeks ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 22 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 28 then '3 weeks ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 30 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 60 then '1 Month ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 61 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 90 then '2 Months ago'
+                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 91 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 120 then '3 Months ago'
+                                                                                              end as duration";
             $where        = "user_id = ".$user_id;
             if(isset($status))
             $where .= " AND status = ".$status;
 
-            $db->selectJson($table, $rows, $where, 'datetime', '', $limit);
+            $db->selectJson($table, $rows, $where, 'datetime DESC', '', $limit);
             $results = $db->getJson();
 
             return json_decode($results);
