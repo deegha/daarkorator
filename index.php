@@ -1287,7 +1287,7 @@ $app->get('/message(/:limit(/:status))', 'authenticate', function($limit=null, $
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = false;
-		$response["message"] = [];
+		$response["messages"] = [];
 		echoRespnse(200, $response);
 	}
 });
