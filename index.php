@@ -1233,25 +1233,20 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
  * params -message object
  */
 $app->post('/message', 'authenticate', function() use ($app){
-    global $user_id;
+	global $user_id;
+	global $logged_user_type;
 
     $response 	= array();
 	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 
         $db = new DbHandler();
-        $reciever = $db->getUserByEmail($params['reciever_email']);
-        $tmp['project_id']      = $params['project_id'];
         $tmp['styleboard_id']   = $params['styleboard_id'];
         $tmp['sender_id']       = $user_id;
-        $tmp['reciever_id']     = $reciever['id'];
-        $tmp['message_subject'] = $params['message_subject'];
         $tmp['message_text']    = $params['message_text'];
-        if(isset($params['reference']))
-        $tmp['message_reff']    = $params['reference'];
 
 		$DbHandler 	= new DbHandler();
-		$result = $DbHandler->createMessage($tmp);
+		$result = $DbHandler->createMessage($tmp, $logged_user_type);
 		if(!$result) {
           		$response["error"] = true;
           		$response["message"] = "An error occurred while sending message";

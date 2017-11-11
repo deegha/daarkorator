@@ -695,18 +695,32 @@ class DbHandler {
             $db           = new database();
             $table        = "notifications";
             $rows         = "id, notification_text, url, notification_type, status as status, case
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 2 then 'Today'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 3 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 2 then '2 Days ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 4 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 3 then '3 Days ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 5 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 4 then '4 Days ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 6 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 5 then '5 Days ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 7 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 14 then '1 week ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 15 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 21 then '2 weeks ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 22 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 28 then '3 weeks ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 30 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 60 then '1 Month ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 61 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 90 then '2 Months ago'
-                                                                                              when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 91 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 120 then '3 Months ago'
-                                                                                              end as duration";
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 2 then 'Today'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 3 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 2 then '2 Days ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 4 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 3 then '3 Days ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 5 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 4 then '4 Days ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 6 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 5 then '5 Days ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 7 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 14 then '1 week ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 15 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 21 then '2 weeks ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 22 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 28 then '3 weeks ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 28 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 60 then '1 Month ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 61 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 90 then '2 Months ago'
+            
+                                                                                                          when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 91 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 120 then '3 Months ago'
+            
+                                                               when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 120 then 'more than 3 Months ago'
+            
+                                                                                                          end as duration";
             $where        = "user_id = ".$user_id;
             if(isset($status))
             $where .= " AND status = ".$status;
@@ -891,25 +905,47 @@ class DbHandler {
         }
     }
 
-    public function createMessage($params){
+    public function createMessage($params, $user_type){
         try{
             $db = new database();
-            $table = "messages";
-            if(isset($params["message_reff"])){
-                $rows  = "project_id, styleboard_id, sender_id, reciever_id, message_subject, 	message_text, message_reff";
-                $values = '"'.$params["project_id"].'","'.$params["styleboard_id"].'", "'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'","'.$params["message_reff"].'"';
-            }else{
-                $rows  = "project_id, styleboard_id, sender_id, reciever_id, message_subject, 	message_text";
-                $values = '"'.$params["project_id"].'","'.$params["styleboard_id"].'","'.$params["sender_id"].'","'.$params["reciever_id"].'","'.$params["message_subject"].'","'.$params["message_text"].'"';
+     
+            if($user_type == 2) { 
+                $tb     = 'project_styleboard ps 
+                           join  project_details pd on ps.project_id = pd.project_id';
+                $rows   = 'ps.project_id, 
+                            ps.daarkorator_id as reciever_id, 
+                            CONCAT(pd.title,"-",ps.style_board_name) as message_subject';
+            }else {
+                $tb     = 'project_styleboard ps 
+                           join project p on ps.project_id = p.id
+                           join user u on p.customer_id = u.id
+                           join  project_details pd on ps.project_id = pd.project_id';
+                $rows   = 'ps.project_id, 
+                            u.id as reciever_id, 
+                            CONCAT(pd.title,"-",ps.style_board_name) as message_subject';
             }
-
-            if($db->insert($table, $values, $rows)){
+            
+            $where = "ps.id=".$params["styleboard_id"];
+            $db->select($tb,$rows,$where);
+            $results =  $db->getResults();
+            $db = new database();
+     
+            $table = "messages";
+            $rows  = "project_id, styleboard_id, sender_id, reciever_id, message_subject, message_text";
+            $values = '"'.$results["project_id"].'",
+                    "'.$params["styleboard_id"].'",
+                    "'.$params["sender_id"].'",
+                    "'.$results["reciever_id"].'",
+                    "'.$results["message_subject"].'",
+                    "'.$params["message_text"].'"';
+       
+            if($db->insert($table, $values, $rows)){  
                 return  true;
             }else{
                 return false;
             }
             
-        }catch(Exception $e){
+        }catch(Exception $e){ 
             $this->callErrorLog($e);
             return false;
         }
