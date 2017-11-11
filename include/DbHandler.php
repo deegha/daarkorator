@@ -950,6 +950,8 @@ class DbHandler {
             $rows   = "m.id as id, 
                         pd.title as project_name, 
                         CONCAT(u.first_name,' ',last_name ) as sender, 
+                        u.email as email,
+                        m.project_id as project_id,
                         m.message_subject as message_subject,
                         m.date_time as date_time, 
                         pd.title as project_name,
