@@ -635,7 +635,7 @@ class DbHandler {
             $db           = new database();
             $table        = "project p join project_details pd on p.id = pd.project_id 
                              join room_types rt on pd.room_types = rt.id";
-            $rows         = "p.*, DATE_FORMAT(p.published_date, '%m/%d/%Y') as published_date , rt.image, rt.title room_type, pd.budget as budget,
+            $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y/%m/%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
                                 case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
@@ -643,7 +643,7 @@ class DbHandler {
                 $table      = "project p join project_details pd on p.id = pd.project_id
                                 join room_types rt on pd.room_types = rt.id";
                 $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
-                $rows       = "p.*,DATE_FORMAT(p.published_date, '%m/%d/%Y') as published_date ,rt.title as room_type, pd.budget as budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
+                $rows       = "p.*,DATE_FORMAT(p.published_date, '%Y/%m/%d') as published_date ,rt.title as room_type, pd.budget as budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
 
             }else{ 
                 if($logged_user_type == 3 ){  
@@ -653,7 +653,7 @@ class DbHandler {
                                     join project_details pd 
                                     on p.id = pd.project_id
                                     join room_types rt on pd.room_types = rt.id";
-                    $rows         = "p.*, DATE_FORMAT(p.published_date, '%m/%d/%Y') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
+                    $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y/%m/%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
                                     case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
                     $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
@@ -983,23 +983,24 @@ class DbHandler {
             $table  =  'messages m left outer join user u on u.id = m.sender_id';
             $table .= " left outer join project_details pd on pd.project_id = m.project_id";
             $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
-            $rows   = "m.id as id, 
+            $rows   = " m.id as id,  
                         pd.title as project_name, 
                         CONCAT(u.first_name,' ',last_name ) as sender, 
                         u.email as email,
                         m.project_id as project_id,
                         m.message_subject as message_subject,
                         m.date_time as date_time, 
-                        pd.title as project_name,
                         psb.style_board_name as styleboard_name,
+                        psb.id as styleboard_id,
                         m.status as status";
             $where  = "m.reciever_id = ".$user_id." OR m.sender_id = ".$user_id;
 
             if(isset($status))
             $where .= " AND m.status = ".$status;
-            $order  = "date_time desc";
 
-            $db->selectJson($table, $rows, $where, $order, '', $limit);
+          
+      
+            $db->selectJson($table, $rows, $where);
             $results = json_decode($db->getJson());
            
             return $results;

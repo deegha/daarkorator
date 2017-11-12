@@ -85,11 +85,11 @@ private $numrows;
 		if($where!=""){
 			$q .= ' where '.$where;
 		}
-		if($order!=""){
-			$q .= ' order by '.$order;
-		}
 		if($group!=""){
 			$q .= ' group by '.$group;
+		}
+		if($order!=""){
+			$q .= ' order by '.$order;
 		}
 		if($limit!=""){
 			$q .= ' limit '.$limit;
