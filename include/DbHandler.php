@@ -1021,29 +1021,20 @@ class DbHandler {
         }
     }
 
-    public function messageDetail($message_id, $user_id){
+    public function messageDetail($styleboard_id, $user_id){
         try{ 
             $db     = new database();
-            $table  =  'messages m left outer join user u on u.id = m.sender_id';
-            $table .= " left outer join project_details pd on pd.project_id = m.project_id";
-            $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
-            $rows   = "m.id as id, 
-                        pd.title as project_name, 
-                        CONCAT(u.first_name,' ',last_name ) as sender, 
-                        m.message_subject as message_subject,
-                        m.message_text as message_text,
-                        m.date_time as date_time, 
-                        pd.title as project_name,
-                        psb.style_board_name as styleboard_name,
-                        m.status as status,
-                        IF(m.reciever_id = ".$user_id." , 'received', 'sent') as class";
-            $where  = "m.project_id = (
-                            SELECT m.project_id FROM messages m where m.id = ".$message_id."
-                            ) and m.styleboard_id = (
-                            SELECT m.styleboard_id FROM messages m where m.id = ".$message_id."
-                            )";
+            $table  = "messages m left outer join user u on u.id = m.sender_id";
+            $rows   = "m.id as id,
+                               concat(u.first_name, ' ', u.last_name) as sender,
+                               m.message_subject as message_subject,
+                               m.message_text as message_text,
+                               m.date_time as date_time,
+                               m.status as status,
+                               if(m.reciever_id = $user_id, 'received', 'sent') as class";
+            $where  = "(m.reciever_id = $user_id or m.sender_id = $user_id) and m.styleboard_id = $styleboard_id";
             
-            $order = 'date_time DESC';
+            $order = 'date_time ASC';
 
             $db->selectJson($table, $rows, $where, $order);
             $results = $db->getJson();
