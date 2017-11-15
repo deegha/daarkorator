@@ -803,7 +803,7 @@ class DbHandler {
 
             $table  = "project_styleboard psb left outer join user u on u.id = psb.daarkorator_id";
             $rows   = "psb.styleboard as styleboard, psb.daarkorator_id as daarkorator_id, psb.status as status, psb.added_time as added_time, CONCAT_WS(' ', u.first_name, u.last_name) as daakor";
-            $where  = "project_id = ".$project_id;
+            $where  = "psb.status <> 3 and project_id = ".$project_id;
 
             if($logged_user_type == 3)
             $where .= " AND daarkorator_id = ".$user_id;
@@ -1095,13 +1095,16 @@ class DbHandler {
                 if($project_id != null) 
                     $where = $where." and ";
 
-                $where = $where." and sb.id=".$id;
+                $where = $where."and sb.status <> 3 and sb.id=".$id;
                
                 $db->select($table, $rows, $where, $order); 
                 $results = $db->getResults(); 
                 return $results;
             } 
             
+            
+            $where = $where." and sb.status <> 3 ";
+
             $db->selectJson($table, $rows, $where, $order);
             $results = $db->getJson();
             
