@@ -1770,7 +1770,37 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	}
 });
 
+/**
+ * delete styleboard
+ * url - /project/:id
+ * method - DELETE
+ */
+ $app->delete('/styleboard/:id', 'authenticate', function($id) use ($app) {
+	global $features;
+	global $user_id;
 
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->view) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$response = array();
+	$DbHandler = new DbHandler();
+	$result = $DbHandler->deleteStyleboard($id);
+
+	if(!$result) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. Please try again";
+		echoRespnse(500, $response);
+	}else{
+		$response["error"] = false;
+		$response["message"] = "Successfully deleted styleboard";
+		echoRespnse(200	, $response);
+	}
+	
+});
 
 
 	

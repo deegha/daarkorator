@@ -1245,6 +1245,22 @@ class DbHandler {
             return false;
         }
     }
+
+    public function deleteStyleboard($id) {
+        try{
+            $db = new database();
+            $table = "project_styleboard";
+            $rows = array('status' => 3);
+            $where = 'id = '.$id;
+
+            $result = $db->update($table,$rows,$where);
+
+            return $result;
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>
