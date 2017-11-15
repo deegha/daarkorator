@@ -503,7 +503,7 @@ class DbHandler {
 
     public function getPasswordChangeUser($changeRequestCode){
         try{
-
+            
             $db = new database();
             $table = "password_reset_table";
             $rows = "user_id as id, expiry, status";
@@ -1095,7 +1095,7 @@ class DbHandler {
                 if($project_id != null) 
                     $where = $where." and ";
 
-                $where = $where."and sb.status <> 3 and sb.id=".$id;
+                $where = $where." and sb.status <> 3 and sb.id=".$id;
                
                 $db->select($table, $rows, $where, $order); 
                 $results = $db->getResults(); 
