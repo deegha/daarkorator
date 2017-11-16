@@ -191,7 +191,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
-			$message['subject']	= 'Activate your account';
+			// $message['subject']	= 'Activate your account';
 
 			if(!send_email ('new_user_set_password', $message)) {
 				$response["error"] = true;
@@ -1780,10 +1780,10 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	global $user_id;
 
 	$capabilities = json_decode($features);
-	if(!$capabilities->manageProjects->view) {
+	if(!$capabilities->manageProjects->create) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
-        echoRespnse(401, $response);
+		$response["message"] = "Unauthorized access";
+		echoRespnse(401, $response);
 	}
 
 	$response = array();
@@ -1802,6 +1802,95 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	
 });
 
+/**
+ * Update Project
+ * url - /updateProject
+ * method - post
+ **/		
+ $app->post('/updateProject/:id', 'authenticate', function($project_id) use ($app) {
+	global $features;
+	global $user_id;
+	$has_room_images = false;
+	$has_furniture_images = false;
+	$draft  = false;
+
+	
+	if(isset($_POST['draft']) && $_POST['draft'] == true)
+		$draft = true;
+	
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+	$params 	= json_decode($_POST['project'] , True);
+	$result 	= false;
+	
+	$result = $DbHandler->updateProjectDetails($params,$project_id);
+	
+	if(! empty($_FILES['room_images'])) {
+		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
+			$file['name'] = $_FILES['room_images']['name'][$key];
+			$file['type'] = $_FILES['room_images']['type'][$key];
+			$file['tmp_name'] = $_FILES['room_images']['tmp_name'][$key];
+			$file['error'] = $_FILES['room_images']['error'][$key];
+			$file['size'] = $_FILES['room_images']['size'][$key];
+
+			$generated_name = uploadProjectImages($file);
+
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "An error occurred while uploading images";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,3)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+		}
+	}
+
+	if(! empty($_FILES['furniture_images'])) {
+		foreach ($_FILES['furniture_images']['tmp_name'] as $key => $tmp_name) {
+			$file['name'] = $_FILES['furniture_images']['name'][$key];
+            $file['type'] = $_FILES['furniture_images']['type'][$key];
+            $file['tmp_name'] = $_FILES['furniture_images']['tmp_name'][$key];
+            $file['error'] = $_FILES['furniture_images']['error'][$key];
+            $file['size'] = $_FILES['furniture_images']['size'][$key];
+
+			$generated_name = uploadProjectImages($file);
+
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "An error occurred while uploading images";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,4)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+		}
+	}
+	if (!$result) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred while updating the project";
+		echoRespnse(500, $response);
+	} else {
+
+		$payment = $DbHandler->getPackage(1);
+		if(!$payment) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred Couldn't get the package";
+			echoRespnse(500, $response);
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Project successfully Updated.";
+		$response["price"] = $payment['price'];
+		echoRespnse(200	, $response);
+	}
+});
 
 	
 

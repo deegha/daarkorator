@@ -58,7 +58,7 @@ class DbHandler {
             $db          = new database();
             $table       = "authentication_table";
             $rows        =  array("expiration" => date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day')));
-            $where       = 'access_token= "' . $user_accessToken .'"';
+            $where       = "access_token= '" . $user_accessToken ."'";
             if(!$db->update($table,$rows,$where)) {
                 return false;
             }
@@ -234,8 +234,8 @@ class DbHandler {
         try{
             $db = new database();
             $table  = 'user';
-            $rows   =  array('status' => 3);
-            $where  = 'id='.$user_id;
+            $rows   =  array("status" => 3);
+            $where  = "id=".$user_id;
             if($db->update($table,$rows,$where)) {
                 return true;
             }else{
@@ -327,9 +327,9 @@ class DbHandler {
         if(!array_key_exists("first_name", $params) || strlen(trim($params["first_name"])) <= 0  ){
             return false;
         }
-        if(!array_key_exists("last_name", $params) || strlen(trim($params["last_name"])) <= 0 ){
-            return false;
-        }
+        // if(!array_key_exists("last_name", $params) || strlen(trim($params["last_name"])) <= 0 ){
+        //     return false;
+        // }
         if(!array_key_exists("email", $params) || strlen(trim($params["email"])) <= 0 ){
             return false;
         }
@@ -635,7 +635,7 @@ class DbHandler {
             $db           = new database();
             $table        = "project p join project_details pd on p.id = pd.project_id 
                              join room_types rt on pd.room_types = rt.id";
-            $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y/%m/%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
+            $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
                                 case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
@@ -643,7 +643,7 @@ class DbHandler {
                 $table      = "project p join project_details pd on p.id = pd.project_id
                                 join room_types rt on pd.room_types = rt.id";
                 $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
-                $rows       = "p.*,DATE_FORMAT(p.published_date, '%Y/%m/%d') as published_date ,rt.title as room_type, pd.budget as budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
+                $rows       = "p.*,DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date ,rt.title as room_type, pd.budget as budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
 
             }else{ 
                 if($logged_user_type == 3 ){  
@@ -653,7 +653,7 @@ class DbHandler {
                                     join project_details pd 
                                     on p.id = pd.project_id
                                     join room_types rt on pd.room_types = rt.id";
-                    $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y/%m/%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
+                    $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
                                     case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
                                         pd.title" ;
                     $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
@@ -788,7 +788,7 @@ class DbHandler {
             $table     .= " left outer join resources_table rt on rt.project_id = p.id";
             //$table     .= " left outer join project_styleboard psb on psb.project_id = p.id";
             $table     .= " left outer join room_types rty on rty.id = pd.room_types";
-            $rows       = " p.id,";
+            $rows       = " p.id,	p.status as project_status,";
             $rows      .= "MAX(pd.title) as title, MAX(pd.room_types) as room_types, MAX(rty.title) as room_type_name, MAX(pd.desing_styles) as design_styles, MAX(pd.color_palettes) as color_palettes, MAX(pd.color_exceptions) as color_excemption, MAX(pd.dimensions) as dimensions, MAX(pd.description) as description, MAX(pd.social_media_links) as social_media_links, MAX(pd.budget) as budget, ";
             $rows      .= "group_concat(if(rt.recource_type = '3', rt.image_url, null)) as room_images, group_concat(if(rt.recource_type = '4', rt.image_url, null)) as furniture_images";
             //$rows      .= "group_concat(distinct psb.styleboard) as style_boards";
@@ -847,6 +847,8 @@ class DbHandler {
             }
             //print_r($tmpStyles);
             $response['title'] = $title;
+            $response['project_id'] = $project_id;
+            $response['status'] = $tmp->project_status;
             $response['about'] = array('room_types'=>$room_types, 'room_type_name'=>$room_type_name, 'design_styles'=>$tmpStyles, 'color_palettes'=>$tmpPalattes, 'color_excemption'=>$color_excemption);
             $response['details'] = array('dimensions'=>$dimensions, 'room_images'=>$room_images, 'budget'=>$budget, 'furniture_images'=>$furniture_images);
             $response['inspire'] = array('social_media_links'=>$social_media_links, 'description'=>$description);
@@ -1067,7 +1069,7 @@ class DbHandler {
             on sb.project_id = p.id 
             join user u
             on sb.daarkorator_id = u.id";
-            $rows = "sb.*, u.first_name as daarkorator_name" ;
+            $rows = "sb.*, DATE_FORMAT(sb.added_time, '%Y-%m-%d')  as added_time,u.first_name as daarkorator_name" ;
             $order = "added_time desc";
             $where = "";
 
@@ -1250,7 +1252,57 @@ class DbHandler {
             $result = $db->update($table,$rows,$where);
 
             return $result;
-        }catch(Exception $e){
+        }catch (Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
+    public function updateProjectDetails($params, $project_id) {
+        try{ 
+            $insert_params['title']          = $params['roomDetails']['projectName'];
+            $insert_params['room_types']     = $params['room'];
+            $insert_params['desing_styles']  = json_encode($params['designStyle']);
+            $insert_params['color_palettes'] = json_encode($params['colorChoice']['likeColors']);
+            $insert_params['color_exceptions'] = $params['colorChoice']['dislikeColors'];
+            $insert_params['dimensions']     = json_encode( array(
+                'length' => $params['roomDetails']['length'],
+                'width'  => $params['roomDetails']['width'],
+                'height' => $params['roomDetails']['height'],
+                'unit'   => $params['roomDetails']['unit']  
+            ));
+            $insert_params['description']        = $params['inspirations']['description'];
+            $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
+            $insert_params['budget']        = $params['roomDetails']['budget'];
+            $insert_params['last_updated_time'] = date('Y-m-d H:m:s');
+
+            $where = " project_id=".$project_id;
+            
+            if(isset($params['roomDetails']['removed_room_images'])) {
+                $db = new database();
+                foreach($params['roomDetails']['removed_room_images'] as $image) {
+                    try{
+                        $table     = "resources_table";
+                        $where     = 'image_url="'.$image.'"';
+                        if($db->delete($table,$where)) {
+                            return true;
+                        }
+
+                    }catch (Exception $e){
+                        $this->callErrorLog($e);
+                        return false;
+                    }
+                }
+            }
+            
+            $db = new database();
+            $table = "project_details";
+            if($db->update($table,$insert_params,$where)) {
+                return true;
+            }
+            return false;  
+
+        }catch (Exception $e){
             $this->callErrorLog($e);
             return false;
         }

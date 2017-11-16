@@ -161,6 +161,7 @@ private $numrows;
 		}else{
 			$del = 'delete '.$table;
 		}
+		// echo $del ;
 		$delete = mysqli_query($this->con,$del);
 		if($delete){
 			return true;
@@ -173,16 +174,16 @@ private $numrows;
 
 	
 	public function update($table,$rows,$where){
-        $update = 'update '.$table.' set ';
+        $update = "update ".$table." set ";
 		$keys = array_keys($rows);
 		for($i=0; $i<count($rows); $i++){
 			if(is_string($rows[$keys[$i]])){
-				$update .= $keys[$i].'="'.$rows[$keys[$i]].'"';
+				$update .= $keys[$i]."='".$rows[$keys[$i]]."'";
 			}else{
-				$update .= $keys[$i].'='.$rows[$keys[$i]];
+				$update .= $keys[$i]."=".$rows[$keys[$i]];
 			}
 			if($i != count($rows)-1){
-				$update .= ',';
+				$update .= ",";
 			}
 		}
 		$update .= ' where '.$where;
