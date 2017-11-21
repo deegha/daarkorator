@@ -164,11 +164,13 @@ private $numrows;
 		// echo $del ;
 		$delete = mysqli_query($this->con,$del);
 		if($delete){
+			$this->disconnect();
 			return true;
 		}else{
+			$this->disconnect();
 			return false;
 		}
-		$this->disconnect();
+		
 	}
 	
 

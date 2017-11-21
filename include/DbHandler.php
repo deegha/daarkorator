@@ -1276,18 +1276,17 @@ class DbHandler {
             $insert_params['budget']        = $params['roomDetails']['budget'];
             $insert_params['last_updated_time'] = date('Y-m-d H:m:s');
 
-            $where = " project_id=".$project_id;
+           
             
             if(isset($params['roomDetails']['removed_room_images']) && !empty($params['roomDetails']['removed_room_images']) ) {
-                $db = new database();
+               
                 foreach($params['roomDetails']['removed_room_images'] as $image) {
+                    $db = new database();
                     try{
                         $table     = "resources_table";
                         $where     = 'image_url="'.$image.'"';
-                        if($db->delete($table,$where)) {
-                            return true;
-                        }
-
+                        $db->delete($table,$where);
+                            
                     }catch (Exception $e){
                         $this->callErrorLog($e);
                         return false;
@@ -1296,14 +1295,13 @@ class DbHandler {
             }
 
             if(isset($params['roomDetails']['removed_furniture_images']) && !empty($params['roomDetails']['removed_furniture_images']) ) {
-                $db = new database();
+                
                 foreach($params['roomDetails']['removed_furniture_images'] as $image) {
+                    $db = new database();
                     try{
                         $table     = "resources_table";
                         $where     = 'image_url="'.$image.'"';
-                        if($db->delete($table,$where)) {
-                            return true;
-                        }
+                        $db->delete($table,$where);
 
                     }catch (Exception $e){
                         $this->callErrorLog($e);
@@ -1311,8 +1309,10 @@ class DbHandler {
                     }
                 }
             }
-            
+
+           
             $db = new database();
+            $where = " project_id=".$project_id;
             $table = "project_details";
             if($db->update($table,$insert_params,$where)) {
                 return true;

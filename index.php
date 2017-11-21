@@ -1818,7 +1818,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	
 	$result = $DbHandler->updateProjectDetails($params,$project_id);
 	
-	if(! empty($_FILES['room_images'])) {
+	if(!empty($_FILES['room_images'])) {
 		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
 			$file['name'] = $_FILES['room_images']['name'][$key];
 			$file['type'] = $_FILES['room_images']['type'][$key];
@@ -1834,7 +1834,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			if(!$DbHandler->saveImageName($result,$generated_name,3)){
+			if(!$DbHandler->saveImageName($project_id,$generated_name,3)){
 				$response["error"] = true;
 				$response["message"] = "An error occurred while saving images";
 				echoRespnse(500, $response);
@@ -1842,7 +1842,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		}
 	}
 
-	if(! empty($_FILES['furniture_images'])) {
+	if(!empty($_FILES['furniture_images'])) {
 		foreach ($_FILES['furniture_images']['tmp_name'] as $key => $tmp_name) {
 			$file['name'] = $_FILES['furniture_images']['name'][$key];
             $file['type'] = $_FILES['furniture_images']['type'][$key];
@@ -1858,7 +1858,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 				echoRespnse(500, $response);
 			}
 
-			if(!$DbHandler->saveImageName($result,$generated_name,4)){
+			if(!$DbHandler->saveImageName($project_id,$generated_name,4)){
 				$response["error"] = true;
 				$response["message"] = "An error occurred while saving images";
 				echoRespnse(500, $response);
