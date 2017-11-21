@@ -1779,13 +1779,6 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	global $features;
 	global $user_id;
 
-	$capabilities = json_decode($features);
-	if(!$capabilities->manageProjects->create) {
-		$response["error"] = true;
-		$response["message"] = "Unauthorized access";
-		echoRespnse(401, $response);
-	}
-
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->deleteStyleboard($id);

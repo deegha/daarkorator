@@ -1278,9 +1278,26 @@ class DbHandler {
 
             $where = " project_id=".$project_id;
             
-            if(isset($params['roomDetails']['removed_room_images'])) {
+            if(isset($params['roomDetails']['removed_room_images']) && !empty($params['roomDetails']['removed_room_images']) ) {
                 $db = new database();
                 foreach($params['roomDetails']['removed_room_images'] as $image) {
+                    try{
+                        $table     = "resources_table";
+                        $where     = 'image_url="'.$image.'"';
+                        if($db->delete($table,$where)) {
+                            return true;
+                        }
+
+                    }catch (Exception $e){
+                        $this->callErrorLog($e);
+                        return false;
+                    }
+                }
+            }
+
+            if(isset($params['roomDetails']['removed_furniture_images']) && !empty($params['roomDetails']['removed_furniture_images']) ) {
+                $db = new database();
+                foreach($params['roomDetails']['removed_furniture_images'] as $image) {
                     try{
                         $table     = "resources_table";
                         $where     = 'image_url="'.$image.'"';
