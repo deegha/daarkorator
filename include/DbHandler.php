@@ -74,7 +74,7 @@ class DbHandler {
         try{
             $db          = new database();
             $table       = "authentication_table a JOIN user_type t JOIN user u";
-            $rows        = 'a.user_id, a.expiration, t.features, t.type';
+            $rows        = 'a.user_id, a.expiration, t.features, t.type, u.first_name, u.last_name';
             $where       = 'a.access_token= "' . $user_accessToken .'" AND u.user_type = t.type AND a.user_id = u.id';
 
             $db->select($table, $rows, $where, '', '');
@@ -431,7 +431,7 @@ class DbHandler {
             $db            = new database();
             $project_table = 'project';
 
-            $status = 1;
+            $status = 0;
             if($draft && $draft != null)
                 $status = 0;
 
@@ -585,6 +585,12 @@ class DbHandler {
             if(!$db->insert($table,$values,$rows)){
                 return false;
             }
+
+            $db = new database();
+            $table        = "project";
+            $rows = array('status' => 1);
+            $where = 'id = '  .$params['project_id'];
+            $db->update($table,$rows,$where);
             return true;
 
         }catch(Exception $e){
@@ -636,7 +642,7 @@ class DbHandler {
             $table        = "project p join project_details pd on p.id = pd.project_id 
                              join room_types rt on pd.room_types = rt.id";
             $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
-                                case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
+                                case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, 
                                 pd.title";
             $where        = ""; 
             if($bidding == "yes"){ 
@@ -654,7 +660,7 @@ class DbHandler {
                                     on p.id = pd.project_id
                                     join room_types rt on pd.room_types = rt.id";
                     $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
-                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Canceled' END AS status_title, 
+                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, 
                                         pd.title" ;
                     $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
                   

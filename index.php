@@ -65,9 +65,13 @@ function authenticate(\Slim\Route $route) {
             global $user_id;
 			global $features;
 			global $logged_user_type;
+			global $user_fname;
+			global $user_lname;
 			$user_id = $access['user_id'];
 			$features = $access['features'];
 			$logged_user_type = $access['type'];
+			$user_fname = $access['first_name'];
+			$user_lname = $access['last_name'];
 
         }        
     } else {
@@ -133,6 +137,9 @@ $app->post('/login', function() use ($app){
 $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
 		global $logged_user_type;
+		global $user_fname;
+		global $user_lname;
+
 		$response = array();
 		$DbHandler = new DbHandler();	
 
@@ -140,6 +147,9 @@ $app->get('/userFeatures', 'authenticate', function() use ($app) {
         	$response["error"] = false;	
 			$response['features'] = json_decode($features);
 			$response['features']->logged_user_type=json_decode($logged_user_type);
+			$response['features']->user_fname = $user_fname;
+			$response['features']->user_lname = $user_lname;
+			
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
