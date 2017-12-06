@@ -1330,6 +1330,44 @@ class DbHandler {
             return false;
         }
     }
+
+    public function selectStyleboard($project_id, $styleboard_id) {
+        try {
+
+            $db = new database();
+            $table = "project_styleboard";
+            $rows  = "status";
+            $where = " project_id=".$project_id. " and  id =".$styleboard_id;
+            
+            $db->select($table,$rows,$where);
+            $results = $db->getResults();
+           
+            if(!$results) {
+                return 0;
+            }
+            
+            if($results['status'] == 1) {
+                return 1;
+            }
+            
+            if($results['status'] == 3) {
+                return 3;
+            }
+           
+            $db = new database();
+            $where = " project_id=".$project_id. " and id =".$styleboard_id;
+            $rows  = array("status" => 1);
+            $table = "project_styleboard";
+            if($db->update($table,$rows,$where)) { 
+                return 2;
+            }
+            return 0; 
+
+        }catch (Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>

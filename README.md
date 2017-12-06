@@ -914,3 +914,14 @@ Package
 - Response with no errors : 
 `{"error":false,"message":"Notification updated successfully"}`
 
+### Select styleboard
+
+- `/selectStyleboard`
+- Method : PUT
+- Body :
+`{
+	"project_id" : 242,
+	"styleboard_id" : 64
+}`
+- Response with no errors : 
+`{"error":false,"message":"Styleboard added to projects successfully"}`

@@ -1895,17 +1895,48 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	}
 });
 
+
+$app->put('/selectStyleboard', function() use ($app) {
 	
 
-$app->get('/testdb', function() use ($app) {
-	$DbHandler = new DbHandler();
-	$customer = $DbHandler->getCustomerByProject(97);
-//	print_r($customer);die();
-	// echoRespnse(200, $response);
-	echo $customer['customer_id'];
+	if($app->request() && $app->request()->getBody()){
+		$params 	= $app->request()->getBody();
+		$project_id = $params['project_id'];
+		$styleboard_id = $params['styleboard_id'];
 
-	// echo $values = '61, "Style board added to project", "project", 2';
+		$response 	= array();
+		$DbHandler 	= new DbHandler();
+
+		$result = $DbHandler->selectStyleboard($project_id, $styleboard_id);
+		
+		if(!$result || $result === 0 ) {
+			$response["error"] = true;
+			$response["message"] = "Something went wrong while adding the stlyboard to the project";
+			echoRespnse(500, $response);
+		}
+
+		if($result === 3 ) {
+			$response["error"] = true;
+			$response["message"] = "This stlyboard is deleted from the portal";
+			echoRespnse(200, $response);
+		}
+
+		if($result === 1) {
+			$response["error"] = true;
+			$response["message"] = "A styleboard is already selected";
+			echoRespnse(200, $response);
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Styleboard added to projects successfully";
+		echoRespnse(200, $response);
+	}else {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(500, $response);
+	}	
 });
+
 
 $app->run();
 		
