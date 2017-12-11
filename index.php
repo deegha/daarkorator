@@ -1763,13 +1763,16 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 
  $app->post('/sendEmail', function() use ($app) {
 	
-	$url = getBaseUrl().'reset-password;k=';
+	//$url = getBaseUrl().'reset-password;k=';
 
-	$message['text'] = $url;
-	$message['to']	 = "shuboothi@gmail.com";
-	$message['subject']	= 'Testing emails';
+	$message['text'] = "asdasdasd";
+	$message['to']	 = "dhammika97@gmail.com";
+	$message['subject']	= "Testing emails";
+	$message['first_name'] = "sdfsdf";
+	$message['last_name'] = "sdfsdf";
 
-	if(!send_email ('resetpassword', $message)) {
+
+	if(!send_email ('new_user_set_password', $message)) {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. Please try again";
 		echoRespnse(500, $response);
