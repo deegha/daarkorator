@@ -137,13 +137,13 @@ function uploadPdf($file) {
     return false;
 }
 
-function getNotificationText($notificationType) {
+function getNotificationText($notificationType, $project_name=null) {
     switch ($notificationType) {
         case "project" :
             return "A new room design contest has kicked off";
         break;
         case "styleboard" :
-            return "A new styleboard has added to your project";
+            return "A new styleboard has added to your project - ".$project_name;
         break;
     }    
 }

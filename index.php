@@ -1367,11 +1367,13 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
+		$project = $DbHandler->getProjectDetails($params['project_id']);
+
 		// Sending notifications to customer on new project
 		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
 		$values = $customer['customer_id'].', 
-				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'", 
+				 		"'.getNotificationText("styleboard", $project['title']).'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
 				 "2"';
 				 
 		if(!$DbHandler->createNotification($values, "true")){
