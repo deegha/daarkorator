@@ -948,7 +948,10 @@ class DbHandler {
                     "'.$params["message_text"].'"';
        
             if($db->insert($table, $values, $rows)){  
-                $values = $results["reciever_id"].", 'New message arrived', 'messsages', 4";
+                $msgUrl = getNotificationUrl("project", $results["project_id"]);
+                $values = $results["reciever_id"].", 'New message arrived', '".$msgUrl."', 4";
+
+
                 $this->createNotification($values, null );
                 return  true;
             }else{

@@ -1238,7 +1238,7 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 
 /**
  * create message
- * url - /message
+ * url - /messages
  * method - POST
  * params -message object
  */
@@ -1367,13 +1367,11 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
-		$project = $DbHandler->getProjectDetails($params['project_id']);
-
 		// Sending notifications to customer on new project
 		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
 		$values = $customer['customer_id'].', 
-				 		"'.getNotificationText("styleboard", $project['title']).'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
+				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'", 
 				 "2"';
 				 
 		if(!$DbHandler->createNotification($values, "true")){
@@ -1475,33 +1473,6 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
-});
-
-$app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app){
-    global $user_id;
-    $response = array();
-    $DbHandler = new DbHandler();
-    $results = $DbHandler->getAllStyleboards($styleboard_id, null, $user_id);
-
-    $result = $DbHandler->updateStyleboard($styleboard_id);
-
-    if($result) {
-        $project_id = $results['project_id'];
-        $updateArr = array(
-            'status' => 2
-        );
-        $DbHandler = new DbHandler();
-        $projectUpdate = $DbHandler->updateProject($updateArr, $results['project_id']);
-        if($projectUpdate){
-            $response["error"] = false;
-            $response["message"] = "Style board finalized successfully!";
-            echoRespnse(200	, $response);
-        }
-    }else{
-        $response["error"] = true;
-        $response["message"] = "An error occurred! Please try again";
-        echoRespnse(500	, $response);
-    }
 });
 
 /**
@@ -1792,16 +1763,13 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
  $app->post('/sendEmail', function() use ($app) {
 	
-	//$url = getBaseUrl().'reset-password;k=';
+	$url = getBaseUrl().'reset-password;k=';
 
-	$message['text'] = "asdasdasd";
-	$message['to']	 = "dhammika97@gmail.com";
-	$message['subject']	= "Testing emails";
-	$message['first_name'] = "sdfsdf";
-	$message['last_name'] = "sdfsdf";
+	$message['text'] = $url;
+	$message['to']	 = "shuboothi@gmail.com";
+	$message['subject']	= 'Testing emails';
 
-
-	if(!send_email ('new_user_set_password', $message)) {
+	if(!send_email ('resetpassword', $message)) {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. Please try again";
 		echoRespnse(500, $response);
