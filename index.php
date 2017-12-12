@@ -1477,6 +1477,33 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	}
 });
 
+$app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app){
+    global $user_id;
+    $response = array();
+    $DbHandler = new DbHandler();
+    $results = $DbHandler->getAllStyleboards($styleboard_id, null, $user_id);
+
+    $result = $DbHandler->updateStyleboard($styleboard_id);
+
+    if($result) {
+        $project_id = $results['project_id'];
+        $updateArr = array(
+            'status' => 2
+        );
+        $DbHandler = new DbHandler();
+        $projectUpdate = $DbHandler->updateProject($updateArr, $results['project_id']);
+        if($projectUpdate){
+            $response["error"] = false;
+            $response["message"] = "Style board finalized successfully!";
+            echoRespnse(200	, $response);
+        }
+    }else{
+        $response["error"] = true;
+        $response["message"] = "An error occurred! Please try again";
+        echoRespnse(500	, $response);
+    }
+});
+
 /**
  * Update messages 
  * url - /message/:id

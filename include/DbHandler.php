@@ -1264,6 +1264,23 @@ class DbHandler {
         }
     }
 
+    public function updateStyleboard($id) {
+        try{
+            $db = new database();
+            $table = "project_styleboard";
+            $rows = array('status' => 1);
+            $where = 'id = '.$id;
+
+            $result = $db->update($table,$rows,$where);
+
+            return $result;
+            //return true;
+        }catch (Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
+
     public function updateProjectDetails($params, $project_id) {
         try{ 
             $insert_params['title']          = $params['roomDetails']['projectName'];
