@@ -1880,7 +1880,6 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "An error occurred while updating the project";
 		echoRespnse(500, $response);
 	} else {
-
 		$payment = $DbHandler->getPackage(1);
 		if(!$payment) {
 			$response["error"] = true;
@@ -1897,7 +1896,6 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 
 
 $app->put('/selectStyleboard', function() use ($app) {
-	
 
 	if($app->request() && $app->request()->getBody()){
 		$params 	= $app->request()->getBody();
@@ -1936,6 +1934,150 @@ $app->put('/selectStyleboard', function() use ($app) {
 		echoRespnse(500, $response);
 	}	
 });
+
+/**
+ * Submit Deliverables
+ * url - /deliverables
+ * method - POST
+ * params - NA
+ */
+ $app->post('/deliverables', 'authenticate', function() use ($app){
+	global $features;
+	global $user_id;
+
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->deliverablesUpload) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+
+	$params = $_POST;
+
+	if(!$params) {
+		$response["error"] = true;
+		$response["message"] = "Required feilds are missing";
+		echoRespnse(300, $response);
+	}
+	$project_id 	= $_POST['project_id'];
+
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+
+	if(! empty($_FILES['deliverables_1'])) {
+	
+		$file['name'] = $_FILES['deliverables_1']['name'];
+		$file['type'] = $_FILES['deliverables_1']['type'];
+		$file['tmp_name'] = $_FILES['deliverables_1']['tmp_name'];
+		$file['error'] = $_FILES['deliverables_1']['error'];
+		$file['size'] = $_FILES['deliverables_1']['size'];
+
+		if($file['type'] == 'application/pdf') 
+			$generated_name = uploadPdf($file);	
+		else
+			$generated_name = uploadProjectImages($file);	
+
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name,1)) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+	}
+
+	if(! empty($_FILES['deliverables_2'])) {
+	
+		$file['name'] = $_FILES['deliverables_2']['name'];
+		$file['type'] = $_FILES['deliverables_2']['type'];
+		$file['tmp_name'] = $_FILES['deliverables_2']['tmp_name'];
+		$file['error'] = $_FILES['deliverables_2']['error'];
+		$file['size'] = $_FILES['deliverables_2']['size'];
+
+		if($file['type'] == 'application/pdf') 
+			$generated_name = uploadPdf($file);	
+		else
+			$generated_name = uploadProjectImages($file);	
+
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name,2)) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+	}
+
+	if(! empty($_FILES['deliverables_3'])) {
+	
+		$file['name'] = $_FILES['deliverables_3']['name'];
+		$file['type'] = $_FILES['deliverables_3']['type'];
+		$file['tmp_name'] = $_FILES['deliverables_3']['tmp_name'];
+		$file['error'] = $_FILES['deliverables_3']['error'];
+		$file['size'] = $_FILES['deliverables_3']['size'];
+
+		if($file['type'] == 'application/pdf') 
+			$generated_name = uploadPdf($file);	
+		else
+			$generated_name = uploadProjectImages($file);	
+
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name,3)) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+	}
+
+	$response["error"] = false;
+	$response["message"] = "Deliverable uploaded successfully ";
+	echoRespnse(200, $response);
+
+});
+
+ /**
+ * Get Deliverables
+ * url - /deliverables
+ * method - GET
+ * params - NA
+ */
+ $app->get('/deliverables/:project_id', 'authenticate', function($project_id) use ($app){
+
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+	$result		= $DbHandler->getDeliverables($project_id);
+
+	if(empty($result) || $result) {
+		$response["error"] = false;
+		$response["deliverables"] = [];
+		echoRespnse(200, $response);
+	}
+
+	if(!$result) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred while fetching data";
+		echoRespnse(500, $response);
+	}
+
+
+	$response["error"] = false;
+	$response["deliverables"] = $result;
+	echoRespnse(200, $response);
+});
+
 
 
 $app->run();

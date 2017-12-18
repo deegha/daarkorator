@@ -948,7 +948,7 @@ class DbHandler {
                     "'.$params["message_text"].'"';
        
             if($db->insert($table, $values, $rows)){  
-                $msgUrl = getNotificationUrl("project", $results["project_id"]);
+                $msgUrl = getNotificationUrl("styleboard", $results["project_id"]);
                 $values = $results["reciever_id"].", 'New message arrived', '".$msgUrl."', 4";
 
 
@@ -1388,6 +1388,41 @@ class DbHandler {
         }catch (Exception $e){
             $this->callErrorLog($e);
             return false;
+        }
+    }
+
+     public function saveDeliverableFile($project_id,$generatedFileNAme,$type){
+        try{
+            $db           = new database();
+            $rows         = "project_id, deliverable_url, title, deliverable_type";
+            $table        = "deliverables";
+            $values       =  "'".$project_id."', '".$generatedFileNAme."', '".$generatedFileNAme."', ".$type;
+
+            if(!$db->insert($table,$values,$rows)){
+                return false;
+            }
+
+            return true;;
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
+        }
+    }
+
+    public function getDeliverables($project_id) {
+        try {
+            $db           = new database();
+            $rows         = "*";
+            $table        = "deliverables";
+            $where        = "project_id = ".$project_id;
+
+            $db->selectJson($table,$rows,$where);
+            $results = $db->getJson();
+           
+            return json_decode($results);
+
+        }catch(Exception $e){
+             $this->callErrorLog($e);
         }
     }
 }

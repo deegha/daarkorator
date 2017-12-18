@@ -157,7 +157,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
                 "isCancelled" => false
             );
             
-            $ecoded = base64_encode(json_encode($data));
+            $ecoded = base64_encode(urlencode(json_encode($data)));
             return "project-details/".$ecoded;
         break;
         case "styleboard" :
@@ -167,7 +167,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
                 "isCancelled" => false
             );
             
-            $ecoded = base64_encode(json_encode($data));
+            $ecoded = base64_encode(urlencode(json_encode($data)));
             return "project-details/".$ecoded;
         break;
     }    
