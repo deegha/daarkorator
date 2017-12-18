@@ -1371,7 +1371,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
 		$values = $customer['customer_id'].', 
-				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'", 
+				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
 				 "2"';
 				 
 		if(!$DbHandler->createNotification($values, "true")){
@@ -1473,6 +1473,39 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "The requested resource doesn't exists";
 		echoRespnse(404, $response);
 	}
+});
+
+$app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app){
+    global $user_id;
+    $response = array();
+    $DbHandler = new DbHandler();
+    $results = $DbHandler->getAllStyleboards($styleboard_id, null, $user_id);
+
+    $result = $DbHandler->updateStyleboard($styleboard_id);
+    if(!empty($results)){
+        if($result) {
+            $project_id = $results['project_id'];
+            $updateArr = array(
+                'status' => 2
+            );
+            $DbHandler = new DbHandler();
+            $projectUpdate = $DbHandler->updateProject($updateArr, $results['project_id']);
+            if($projectUpdate){
+                $response["error"] = false;
+                $response["message"] = "Style board finalized successfully!";
+                echoRespnse(200	, $response);
+            }
+        }else{
+            $response["error"] = true;
+            $response["message"] = "An error occurred! Please try again";
+            echoRespnse(500	, $response);
+        }
+    }else{
+      $response["error"] = true;
+      $response["message"] = "An error occurred! Please try again";
+      echoRespnse(500	, $response);
+    }
+    /**/
 });
 
 /**
