@@ -747,8 +747,8 @@ class DbHandler {
             $table        = "notifications";
             $rows         = "user_id, notification_text, url, notification_type";
             $mv = "true";
-            if($multivalue != null) {
-                $mv = "";
+            if($multivalue == null) {
+                $mv = null;
             }
 
             if($db->insert($table, $values, $rows, $mv)){
@@ -948,6 +948,11 @@ class DbHandler {
                     "'.$params["message_text"].'"';
        
             if($db->insert($table, $values, $rows)){  
+                $msgUrl = getNotificationUrl("project", $results["project_id"]);
+                $values = $results["reciever_id"].", 'New message arrived', '".$msgUrl."', 4";
+
+
+                $this->createNotification($values, null );
                 return  true;
             }else{
                 return false;
