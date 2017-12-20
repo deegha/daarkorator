@@ -1185,7 +1185,7 @@ class DbHandler {
     }
 
     public function updateProject($updateArr, $project_id) {
-        try {
+        try { 
             $db = new database();
             $table = "project";
             $where = " id = ".$project_id;
@@ -1269,17 +1269,17 @@ class DbHandler {
         }
     }
 
-    public function updateStyleboard($id) {
-        try{
+    public function updateStyleboard($id, $status) {
+        try{ 
             $db = new database();
             $table = "project_styleboard";
-            $rows = array('status' => 1);
+            $rows = array('status' => $status);
             $where = 'id = '.$id;
 
             $result = $db->update($table,$rows,$where);
 
-            return $result;
-            //return true;
+            // return $result;
+            return true;
         }catch (Exception $e){
             $this->callErrorLog($e);
             return false;
@@ -1391,12 +1391,29 @@ class DbHandler {
         }
     }
 
-     public function saveDeliverableFile($project_id,$generatedFileNAme,$type){
+     public function saveDeliverableFile($project_id,$generatedFileNAme, $title, $type){
         try{
             $db           = new database();
             $rows         = "project_id, deliverable_url, title, deliverable_type";
             $table        = "deliverables";
-            $values       =  "'".$project_id."', '".$generatedFileNAme."', '".$generatedFileNAme."', ".$type;
+            $where        = "project_id = ".$project_id." and deliverable_type = ".$type;
+
+            $db->select($table , '*',  $where);
+
+            if($db->getResults()) {
+                $db   = new database();
+    
+                $rows = array(
+                        'deliverable_url' => $generatedFileNAme,
+                        'title' => $title);  
+
+                if($db->update($table,$rows,$where))
+                    return true;
+                else
+                    return false;
+            }
+
+            $values       =  "'".$project_id."', '".$generatedFileNAme."', '".$title."', ".$type;
 
             if(!$db->insert($table,$values,$rows)){
                 return false;
@@ -1424,6 +1441,18 @@ class DbHandler {
         }catch(Exception $e){
              $this->callErrorLog($e);
         }
+    }
+
+    public function getDaakorByStyleboard($styleboard_id) {
+        $db           = new database();
+        $rows         = "daarkorator_id";
+        $table        = "project_styleboard";
+        $where        = "id = ".$styleboard_id;
+
+        $db->select($table,$rows,$where);
+        $results = $db->getResults();
+       
+        return $results['daarkorator_id'];
     }
 }
 

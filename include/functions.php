@@ -145,6 +145,9 @@ function getNotificationText($notificationType, $project_name=null) {
         case "styleboard" :
             return "A new styleboard has added to your project - ".$project_name;
         break;
+        case "styleboardSelect" :
+            return "Your styleboard has been selected for project - ".$project_name;
+        break;
     }    
 }
 
@@ -157,7 +160,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
                 "isCancelled" => false
             );
             
-            $ecoded = base64_encode(urlencode(json_encode($data)));
+            $ecoded = base64_encode(json_encode($data));
             return "project-details/".$ecoded;
         break;
         case "styleboard" :
@@ -167,7 +170,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
                 "isCancelled" => false
             );
             
-            $ecoded = base64_encode(urlencode(json_encode($data)));
+            $ecoded = base64_encode(json_encode($data));
             return "project-details/".$ecoded;
         break;
     }    

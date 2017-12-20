@@ -1481,15 +1481,28 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
     $DbHandler = new DbHandler();
     $results = $DbHandler->getAllStyleboards($styleboard_id, null, $user_id);
 
-    $result = $DbHandler->updateStyleboard($styleboard_id);
+    $result = $DbHandler->updateStyleboard($styleboard_id, 1);
     if(!empty($results)){
-        if($result) {
+        if($results) {
             $project_id = $results['project_id'];
             $updateArr = array(
                 'status' => 2
             );
             $DbHandler = new DbHandler();
             $projectUpdate = $DbHandler->updateProject($updateArr, $results['project_id']);
+            // Sending notifications to daakor on styleboard selection
+			$baseUrl = getBaseUrl();
+			$daakor = $DbHandler->getDaakorByStyleboard($styleboard_id);
+			$values = $daakor.', 
+					 		"'.getNotificationText("styleboardSelect" ).'", 
+					 		"'.getNotificationUrl("styleboard",$project_id).'",
+					 		"1"';
+					
+			if(!$DbHandler->createNotification($values, null)){
+				$response["error"] = false;
+				$response['message'] = "Error in sending notifications to the Daarkorator ";
+				echoRespnse(200	, $response);
+			} 
             if($projectUpdate){
                 $response["error"] = false;
                 $response["message"] = "Style board finalized successfully!";
@@ -2016,7 +2029,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
-		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name,1)) {
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name, $file['name'] ,1)) {
 			$response["error"] = true;
 			$response["message"] = "An error occurred while saving ".$file['name']." ";
 			echoRespnse(500, $response);
@@ -2042,7 +2055,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
-		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name,2)) {
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name, $file['name'] ,2)) {
 			$response["error"] = true;
 			$response["message"] = "An error occurred while saving ".$file['name']." ";
 			echoRespnse(500, $response);
@@ -2068,7 +2081,33 @@ $app->put('/selectStyleboard', function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
-		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name,3)) {
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name, $file['name'],3)) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while saving ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+	}
+
+	if(! empty($_FILES['deliverables_4'])) {
+	
+		$file['name'] = $_FILES['deliverables_4']['name'];
+		$file['type'] = $_FILES['deliverables_4']['type'];
+		$file['tmp_name'] = $_FILES['deliverables_4']['tmp_name'];
+		$file['error'] = $_FILES['deliverables_4']['error'];
+		$file['size'] = $_FILES['deliverables_4']['size'];
+
+		if($file['type'] == 'application/pdf') 
+			$generated_name = uploadPdf($file);	
+		else
+			$generated_name = uploadProjectImages($file);	
+
+		if($generated_name == "") {
+			$response["error"] = true;
+			$response["message"] = "An error occurred while uploading ".$file['name']." ";
+			echoRespnse(500, $response);
+		}
+
+		if(!$DbHandler->saveDeliverableFile($project_id,$generated_name, $file['name'],4)) {
 			$response["error"] = true;
 			$response["message"] = "An error occurred while saving ".$file['name']." ";
 			echoRespnse(500, $response);
@@ -2078,7 +2117,6 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$response["error"] = false;
 	$response["message"] = "Deliverable uploaded successfully ";
 	echoRespnse(200, $response);
-
 });
 
  /**
@@ -2093,7 +2131,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$DbHandler 	= new DbHandler();
 	$result		= $DbHandler->getDeliverables($project_id);
 
-	if(empty($result) || $result) {
+	if(empty($result)) {
 		$response["error"] = false;
 		$response["deliverables"] = [];
 		echoRespnse(200, $response);
@@ -2111,7 +2149,56 @@ $app->put('/selectStyleboard', function() use ($app) {
 	echoRespnse(200, $response);
 });
 
+/**
+ * Accept Deliverables
+ * url - /deliverables
+ * method - PUT
+ * params - non
+ */	
+ $app->put('/deliverables/:styleboard_id', 'authenticate', function($styleboard_id) use ($app){
+	global $features;
+	
+	$capabilities = json_decode($features);
+	// if(!$capabilities->manageUsers->update) {
+	// 	$response["error"] = true;
+ //        $response["message"] = "Unauthorized access";
+ //        echoRespnse(401, $response);
+	// }
 
+	$response 	= array();
+	
+	$params 	=  array('status' => 4);
+	$DbHandler 	= new DbHandler();
+
+	if(!$DbHandler->updateStyleboard($styleboard_id, 4)) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred. Please try again";
+		echoRespnse(500, $response);
+	}
+
+	$response["error"] = fales;
+	$response["message"] = "Deliverables accepted successfully";
+	echoRespnse(200, $response);
+	
+});
+
+/**
+ * External messages
+ * url - /deliverables
+ * method - POST
+ * params - NA
+ */
+ $app->post('/deliverables', 'authenticate', function() use ($app){
+	global $features;
+	global $user_id;
+
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageProjects->deliverablesUpload) {
+		$response["error"] = true;
+        $response["message"] = "Unauthorized access";
+        echoRespnse(401, $response);
+	}
+});
 
 $app->run();
 		
