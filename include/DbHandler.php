@@ -1489,6 +1489,39 @@ class DbHandler {
             return false;
         }
     }
+
+    public function getExternalMessage () {
+
+        $db = new database();
+        $table = "messages";
+        $rows  = '*';
+        $where = 'project_id IN (
+                  select project_id from messages where message_reff = 1 order by id desc 
+                 ) order by id desc';
+
+        $db->select($table,$rows,$where);
+        $results = $db->getResults();
+        $result_array = array();
+        $inc  = 0;
+        $id   = null;
+        $project_id = null;
+               
+        foreach ($results as $key => $value) {
+
+            if($project_id != $value['project_id']) {
+                $inc++;
+                $project_id = $value['project_id'];
+                $id         = $value['id'];
+                array_push($result_array, $value);
+            }else{
+                if($id < $value['id'])
+                    $id = $value['id'];
+            }
+        }
+
+        return $result_array;
+    }
+
 }
 
 ?>

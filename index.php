@@ -2183,7 +2183,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 }); 
 
 /**
- * External messages
+ * Create external messages
  * url - /newMessages
  * method - POST
  * params -message object
@@ -2196,12 +2196,19 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
 	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
 
+		$customer = getCustomerByProject($project_id);
+
         $db = new DbHandler();
         $tmp['sender_id']       = $user_id;
-        $tmp['reciever_id']      = $params['reciever_id'];
         $tmp['message_text']    = $params['message_text'];
         $tmp['project_id']		= $params['project_id'];
         $tmp['message_reff']	= 1;
+
+        if($logged_user_type == 2) {
+        	$tmp['reciever_id']     = $customer['customer_id'];
+        }else {
+        	$tmp['reciever_id']     = $params['reciever_id'];
+        }
       
 		$DbHandler 	= new DbHandler();
 		$result = $DbHandler->createExternalMessage($tmp);
@@ -2219,6 +2226,31 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(400, $response);
 	}
+});
+
+/**
+ * Get external messages
+ * url - /newMessages
+ * method - Get
+ * params -
+ */
+$app->get('/newMessage', 'authenticate', function() use ($app){
+	global $user_id;
+	global $logged_user_type;
+
+    $response 	= array();
+  
+	$DbHandler 	= new DbHandler();
+	$result = $DbHandler->getExternalMessage();
+
+	if(!$result) {
+		$response["error"] = true;
+  		$response["message"] = "An error occurred while retrieving data";
+  		echoRespnse(500, $response);
+	}
+	$response["error"] = false;
+	$response["messages"] = $result;
+	echoRespnse(200	, $response);
 });
 
 $app->run();
