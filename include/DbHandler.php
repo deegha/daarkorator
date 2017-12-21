@@ -1454,6 +1454,41 @@ class DbHandler {
        
         return $results['daarkorator_id'];
     }
+
+    public function createExternalMessage($tmp) {
+        try{
+            $db = new database();
+            $tb = 'project_details';
+            $rows = 'title';
+            $where = "project_id=".$tmp["project_id"];
+            $db->select($tb,$rows,$where);
+            $results =  $db->getResults();
+
+            $db = new database();
+            $table = "messages";
+            $rows  = "project_id, message_reff, sender_id, reciever_id, message_subject, message_text";
+            $values = '"'.$tmp["project_id"].'",
+                    "'.$tmp["message_reff"].'",
+                    "'.$tmp["sender_id"].'",
+                    "'.$tmp["reciever_id"].'",
+                    "'.$results["title"].'",
+                    "'.$tmp["message_text"].'"';
+       
+            if($db->insert($table, $values, $rows)){  
+                $msgUrl = getNotificationUrl("styleboard", $tmp["project_id"]);
+                $values = $tmp["reciever_id"].", '".getNotificationText('message', $results["title"])."', '".$msgUrl."', 5";
+
+                $this->createNotification($values, null );
+                return  true;
+            }else{
+                return false;
+            }
+            
+        }catch(Exception $e){ 
+            $this->callErrorLog($e);
+            return false;
+        }
+    }
 }
 
 ?>

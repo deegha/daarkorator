@@ -2180,23 +2180,44 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$response["message"] = "Deliverables accepted successfully";
 	echoRespnse(200, $response);
 	
-});
+}); 
 
 /**
  * External messages
- * url - /deliverables
+ * url - /newMessages
  * method - POST
- * params - NA
+ * params -message object
  */
- $app->post('/deliverables', 'authenticate', function() use ($app){
-	global $features;
+$app->post('/newMessage', 'authenticate', function() use ($app){
 	global $user_id;
+	global $logged_user_type;
 
-	$capabilities = json_decode($features);
-	if(!$capabilities->manageProjects->deliverablesUpload) {
+    $response 	= array();
+	if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+
+        $db = new DbHandler();
+        $tmp['sender_id']       = $user_id;
+        $tmp['reciever_id']      = $params['reciever_id'];
+        $tmp['message_text']    = $params['message_text'];
+        $tmp['project_id']		= $params['project_id'];
+        $tmp['message_reff']	= 1;
+      
+		$DbHandler 	= new DbHandler();
+		$result = $DbHandler->createExternalMessage($tmp);
+		if(!$result) {
+          		$response["error"] = true;
+          		$response["message"] = "An error occurred while sending message";
+          		echoRespnse(500, $response);
+          	} else {
+          		$response["error"] = false;
+          		$response["message"] = "Message sent successfully!";
+          		echoRespnse(200	, $response);
+            }
+	}else {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
-        echoRespnse(401, $response);
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(400, $response);
 	}
 });
 

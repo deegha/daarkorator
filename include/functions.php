@@ -148,6 +148,9 @@ function getNotificationText($notificationType, $project_name=null) {
         case "styleboardSelect" :
             return "Your styleboard has been selected for project - ".$project_name;
         break;
+         case "message" :
+            return "New message arrived on ".$project_name;
+        break;
     }    
 }
 
