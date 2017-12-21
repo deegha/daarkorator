@@ -2243,6 +2243,41 @@ $app->get('/newMessage', 'authenticate', function() use ($app){
 	$DbHandler 	= new DbHandler();
 	$result = $DbHandler->getExternalMessage();
 
+	if(empty($result)) {
+		$response["error"] = true;
+  		$response["messages"] = [];
+  		echoRespnse(200, $response);
+	}
+	if(!$result) {
+		$response["error"] = true;
+  		$response["message"] = "An error occurred while retrieving data";
+  		echoRespnse(500, $response);
+	}
+	$response["error"] = false;
+	$response["messages"] = $result;
+	echoRespnse(200	, $response);
+});
+
+/**
+ * Get single external conversation
+ * url - /newMessages/:id
+ * method - Get
+ * params -
+ */
+$app->get('/newMessage/:id', 'authenticate', function($id) use ($app){
+	global $user_id;
+	global $logged_user_type;
+
+    $response 	= array();
+  
+	$DbHandler 	= new DbHandler();
+	$result = $DbHandler->getExternalMessageConversation($id);
+
+	if(empty($result)) {
+		$response["error"] = true;
+  		$response["messages"] = [];
+  		echoRespnse(200, $response);
+	}
 	if(!$result) {
 		$response["error"] = true;
   		$response["message"] = "An error occurred while retrieving data";

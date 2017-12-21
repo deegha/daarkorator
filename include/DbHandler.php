@@ -1522,6 +1522,17 @@ class DbHandler {
         return $result_array;
     }
 
+    public function getExternalMessageConversation($id) {
+        $db = new database();
+        $table = "messages";
+        $rows  = '*';
+        $where = 'message_reff = 1 and project_id = '.$id;
+
+        $db->selectJson($table,$rows,$where);
+        $results = $db->getJson();
+
+        return json_decode($results);
+    }
 }
 
 ?>
