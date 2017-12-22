@@ -2195,10 +2195,11 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
     $response 	= array();
 	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
-
-		$customer = getCustomerByProject($project_id);
-
+		//print_r($params);
         $db = new DbHandler();
+		$customer = $db->getCustomerByProject($params['project_id']);
+		//print_r($customer['customer_id']);
+
         $tmp['sender_id']       = $user_id;
         $tmp['message_text']    = $params['message_text'];
         $tmp['project_id']		= $params['project_id'];
