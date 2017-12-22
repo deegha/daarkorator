@@ -1490,26 +1490,33 @@ class DbHandler {
         }
     }
 
-    public function getExternalMessage ($project_id, $reciever_id) {
+    public function getExternalMessage ($project_id, $user_id) {
 
         $db = new database();
-        $table = "messages";
-        $rows  = 'id, message_reff, project_id, sender_id, message_subject, message_text, date_time';
-        $where = '(message_reff = 1 and ';
-        $where .= 'project_id = '.$project_id.' and reciever_id = '.$reciever_id.') ';
-        $where .= 'group by sender_id order by date_time desc';
+        $table = "messages m inner join user u on u.id = m.sender_id";
+        $rows  = 'm.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, m.date_time, concat(u.first_name," ", u.last_name) as sender';
+        $where = 'message_reff = 1 and project_id = '.$project_id.' and reciever_id = '.$user_id;
+        $where .= ' group by sender_id order by date_time desc';
 
         $db->selectJson($table,$rows,$where);
         $results = $db->getJson();
-        //print_r($results);
         return json_decode($results);
     }
 
     public function getExternalMessageConversation($project_id, $sender_id, $user_id) {
         $db = new database();
         $table = "messages";
-        $rows  = 'id, message_reff, project_id, sender_id, message_subject, message_text, date_time';
-        $where = 'message_reff = 1 and project_id = '.$project_id.' and sender_id = '.$sender_id.' and reciever_id ='.$user_id;
+        $rows  = "id,
+                    message_reff,
+                    project_id,
+                    sender_id,
+                    message_subject,
+                    message_text,
+                    date_time,
+                    if(reciever_id = $user_id, 'received', 'sent') as class";
+        $where = '(message_reff = 1 and project_id = '.$project_id.') and ((sender_id = '.$sender_id.' and reciever_id = '.$user_id.') or (sender_id = '.$user_id.' and reciever_id = '.$sender_id.'))';
+        //$where .= 'or (message_reff = 1 and project_id = '.$project_id.' and sender_id = '.$sender_id.' and reciever_id ='.$user_id.') ' ;
+        //SELECT * FROM `messages` where (message_reff = 1 and project_id = 242) and ((sender_id = 117 and reciever_id = 123) or (sender_id = 123 and reciever_id = 117))
 
         $db->selectJson($table,$rows,$where);
         $results = $db->getJson();

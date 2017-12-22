@@ -2205,7 +2205,7 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
         $tmp['project_id']		= $params['project_id'];
         $tmp['message_reff']	= 1;
 
-        if($logged_user_type == 2) {
+        if($logged_user_type == 3) {
         	$tmp['reciever_id']     = $customer['customer_id'];
         }else {
         	$tmp['reciever_id']     = $params['reciever_id'];
