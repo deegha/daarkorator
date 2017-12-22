@@ -1490,43 +1490,26 @@ class DbHandler {
         }
     }
 
-    public function getExternalMessage () {
+    public function getExternalMessage ($project_id, $reciever_id) {
 
         $db = new database();
         $table = "messages";
-        $rows  = '*';
-        $where = 'project_id IN (
-                  select project_id from messages where message_reff = 1 order by id desc 
-                 ) order by id desc';
+        $rows  = 'id, message_reff, project_id, sender_id, message_subject, message_text, date_time';
+        $where = '(message_reff = 1 and ';
+        $where .= 'project_id = '.$project_id.' and reciever_id = '.$reciever_id.') ';
+        $where .= 'group by sender_id order by date_time desc';
 
-        $db->select($table,$rows,$where);
-        $results = $db->getResults();
-        $result_array = array();
-        $inc  = 0;
-        $id   = null;
-        $project_id = null;
-               
-        foreach ($results as $key => $value) {
-
-            if($project_id != $value['project_id']) {
-                $inc++;
-                $project_id = $value['project_id'];
-                $id         = $value['id'];
-                array_push($result_array, $value);
-            }else{
-                if($id < $value['id'])
-                    $id = $value['id'];
-            }
-        }
-
-        return $result_array;
+        $db->selectJson($table,$rows,$where);
+        $results = $db->getJson();
+        //print_r($results);
+        return json_decode($results);
     }
 
-    public function getExternalMessageConversation($id) {
+    public function getExternalMessageConversation($project_id, $sender_id, $user_id) {
         $db = new database();
         $table = "messages";
-        $rows  = '*';
-        $where = 'message_reff = 1 and project_id = '.$id;
+        $rows  = 'id, message_reff, project_id, sender_id, message_subject, message_text, date_time';
+        $where = 'message_reff = 1 and project_id = '.$project_id.' and sender_id = '.$sender_id.' and reciever_id ='.$user_id;
 
         $db->selectJson($table,$rows,$where);
         $results = $db->getJson();

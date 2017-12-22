@@ -2230,19 +2230,19 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
 });
 
 /**
- * Get external messages
+ * Get external messages for a spesific project
  * url - /newMessages
  * method - Get
  * params -
  */
-$app->get('/newMessage', 'authenticate', function() use ($app){
+$app->get('/newMessage/:id', 'authenticate', function($project_id) use ($app){
 	global $user_id;
 	global $logged_user_type;
 
     $response 	= array();
   
 	$DbHandler 	= new DbHandler();
-	$result = $DbHandler->getExternalMessage();
+	$result = $DbHandler->getExternalMessage($project_id, $user_id);
 
 	if(empty($result)) {
 		$response["error"] = true;
@@ -2257,6 +2257,7 @@ $app->get('/newMessage', 'authenticate', function() use ($app){
 	$response["error"] = false;
 	$response["messages"] = $result;
 	echoRespnse(200	, $response);
+
 });
 
 /**
@@ -2265,14 +2266,15 @@ $app->get('/newMessage', 'authenticate', function() use ($app){
  * method - Get
  * params -
  */
-$app->get('/newMessage/:id', 'authenticate', function($id) use ($app){
+
+$app->get('/newMessage/:projectID/:senderID', 'authenticate', function($project_id, $sender_id) use ($app){
 	global $user_id;
 	global $logged_user_type;
 
     $response 	= array();
   
 	$DbHandler 	= new DbHandler();
-	$result = $DbHandler->getExternalMessageConversation($id);
+	$result = $DbHandler->getExternalMessageConversation($project_id, $sender_id, $user_id);
 
 	if(empty($result)) {
 		$response["error"] = true;
