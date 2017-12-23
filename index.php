@@ -2155,7 +2155,7 @@ $app->put('/selectStyleboard', function() use ($app) {
  * method - PUT
  * params - non
  */	
- $app->put('/deliverables/:styleboard_id', 'authenticate', function($styleboard_id) use ($app){
+ $app->put('/deliverables/:project_id', 'authenticate', function($project_id) use ($app){
 	global $features;
 	
 	$capabilities = json_decode($features);
@@ -2167,16 +2167,16 @@ $app->put('/selectStyleboard', function() use ($app) {
 
 	$response 	= array();
 	
-	$params 	=  array('status' => 4);
+	$params 	=  array('status' => 3);
 	$DbHandler 	= new DbHandler();
 
-	if(!$DbHandler->updateStyleboard($styleboard_id, 4)) {
+	if(!$DbHandler->updateProject($params, $project_id)) {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. Please try again";
 		echoRespnse(500, $response);
 	}
 
-	$response["error"] = fales;
+	$response["error"] = false;
 	$response["message"] = "Deliverables accepted successfully";
 	echoRespnse(200, $response);
 	
