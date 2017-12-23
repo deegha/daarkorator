@@ -2291,6 +2291,38 @@ $app->get('/newMessage/:projectID/:senderID', 'authenticate', function($project_
 	echoRespnse(200	, $response);
 });
 
+
+
+/**
+    *Get list of users subscribed for project
+    *url - /daakorslist/:projectid
+    *method - GET
+    *params - projectid
+
+**/
+$app->get('/daakorslist/:projectid', 'authenticate', function($project_id) use ($app){
+    global $user_id;
+
+    $dbHandler = new DbHandler();
+    $result = $dbHandler->getDaakorList($project_id);
+    //print_r($result);
+
+    if(empty($result)) {
+        $response["error"] = true;
+        $response["messages"] = [];
+        echoRespnse(200, $response);
+    }
+    if(!$result) {
+        $response["error"] = true;
+        $response["message"] = "An error occurred while retrieving data";
+        echoRespnse(500, $response);
+    }
+    $response["error"] = false;
+    $response["messages"] = $result;
+    echoRespnse(200	, $response);
+});
+
+
 $app->run();
 		
 ?>

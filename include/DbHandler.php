@@ -1523,6 +1523,19 @@ class DbHandler {
 
         return json_decode($results);
     }
+
+    public function getDaakorList($projectid){
+        //return $projectid;
+        $db = new database();
+        $table = "daakor_project dp INNER JOIN user u on u.id = dp.daakor_id";
+        $rows = "dp.id as id, concat(u.first_name, ' ', u.last_name) as name";
+        $where = "project_id = ".$projectid;
+
+        $db->selectJson($table, $rows, $where);
+        $results = $db->getJson();
+
+        return json_decode($results);
+    }
 }
 
 ?>
