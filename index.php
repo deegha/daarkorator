@@ -1,5 +1,13 @@
 <?php
 session_start();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'libs/PHPMailer/src/Exception.php';
+require 'libs/PHPMailer/src/PHPMailer.php';
+require 'libs/PHPMailer/src/SMTP.php';
+
 require_once 'include/database.php';
 require_once 'include/DbHandler.php';
 require_once 'include/PassHash.php';
@@ -990,8 +998,9 @@ $app->post('/payment','authenticate', function() use ($app) {
 		//Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
-		$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
-		
+		if($daa)  {
+			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
+		}
 		if(!$DbHandler->createNotification($values)){
 			$response["error"] = false;
 			$response['message'] = "Payment successful, error in creating notifications";
@@ -1374,7 +1383,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
 				 "2"';
 				 
-		if(!$DbHandler->createNotification($values, "true")){
+		if(!$DbHandler->createNotification($values, null)){
 			$response["error"] = false;
 			$response['message'] = "Error in sending notifications to the customer ";
 			echoRespnse(200	, $response);
