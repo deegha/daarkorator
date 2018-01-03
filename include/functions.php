@@ -75,9 +75,13 @@ function send_email ($template, $message=null) {
 
         $messagebody = file_get_contents('email/'.$template.'.html');
 
+        if(isset($message['text']))
         $messagebody = str_replace('%message_text%', $message_text, $messagebody);
+        if(isset($message['first_name']))
         $messagebody = str_replace('%message_first_name%', $message_first_name, $messagebody);
+        if(isset($message['last_name']))
         $messagebody = str_replace('%message_last_name%', $message_last_name, $messagebody);
+
 
         $mail = new PHPMailer(true);
 
@@ -87,7 +91,7 @@ function send_email ($template, $message=null) {
         $mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
         $mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
         $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
+        $mail->Port = 25;
 
         //Recipients
         $mail->setFrom('no-reply@dhammika.me', 'Daakor');
@@ -98,7 +102,6 @@ function send_email ($template, $message=null) {
         $mail->isHTML(true);
         $mail->Subject = $message['subject'];
         $mail->Body    = $messagebody;
-
         if(!$mail->send()){
             return false;
         }

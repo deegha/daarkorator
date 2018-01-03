@@ -202,7 +202,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 
 			$message['text'] = $url;
 			$message['to']	 = $params['email'];
-			// $message['subject']	= 'Activate your account';
+			$message['subject']	= 'Activate your account';
 
 			if(!send_email ('new_user_set_password', $message)) {
 				$response["error"] = true;
