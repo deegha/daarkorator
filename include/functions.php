@@ -1,4 +1,11 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require_once 'libs/PHPMailer/src/Exception.php';
+require_once 'libs/PHPMailer/src/PHPMailer.php';
+require_once 'libs/PHPMailer/src/SMTP.php';
+
 
 function echoRespnse($status_code, $response) {
     $app = \Slim\Slim::getInstance();
@@ -65,17 +72,36 @@ function send_email ($template, $message=null) {
             $message_first_name = $message['first_name'];
         if(isset($message['last_name']))
             $message_last_name = $message['last_name'];
-        ob_start();
+        /*ob_start();
         include 'email/'.$template.'.php';
         $msg_body = ob_get_clean();
-      
-        $headers[] = 'MIME-Version: 1.0';
-        $headers[] = 'Content-type: text/html; charset=iso-8859-1';
-        $headers[] = 'From: info@daakor.com' ;
-        $headers[] = 'Reply-To: info@daakor.com';
-        $headers[] = 'X-Mailer: PHP/' . phpversion();
+
 
         if(!mail($message['to'],$message['subject'],$msg_body, implode("\r\n", $headers))) {
+            return false;
+        }*/
+
+        $mail = new PHPMailer(true);
+
+        $mail->isSMTP();
+        $mail->Host = 'email-smtp.us-west-2.amazonaws.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
+        $mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+
+        //Recipients
+        $mail->setFrom('no-reply@dhammika.me', 'Daakor');
+        $mail->addAddress($message['to']);
+        $mail->addReplyTo('info@dhammika.me', 'Information');
+
+        //Content
+        $mail->isHTML(true);
+        $mail->Subject = $message['subject'];
+        $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+
+        if(!$mail->send()){
             return false;
         }
         return true;

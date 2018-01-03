@@ -1,13 +1,6 @@
 <?php
 session_start();
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require 'libs/PHPMailer/src/Exception.php';
-require 'libs/PHPMailer/src/PHPMailer.php';
-require 'libs/PHPMailer/src/SMTP.php';
-
 require_once 'include/database.php';
 require_once 'include/DbHandler.php';
 require_once 'include/PassHash.php';
@@ -1821,7 +1814,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$url = getBaseUrl().'reset-password;k=';
 
 	$message['text'] = $url;
-	$message['to']	 = "shuboothi@gmail.com";
+	$message['to']	 = "dhammika97@gmail.com";
 	$message['subject']	= 'Testing emails';
 
 	if(!send_email ('resetpassword', $message)) {
