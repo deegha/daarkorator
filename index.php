@@ -1814,10 +1814,12 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$url = getBaseUrl().'reset-password;k=';
 
 	$message['text'] = $url;
+	$message['first_name'] = "Dhammika";
+	$message['last_name'] = "Gunaratne";
 	$message['to']	 = "dhammika97@gmail.com";
 	$message['subject']	= 'Testing emails';
 
-	if(!send_email ('resetpassword', $message)) {
+	if(!send_email ('signup-complete', $message)) {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. Please try again";
 		echoRespnse(500, $response);

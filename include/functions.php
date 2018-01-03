@@ -72,14 +72,12 @@ function send_email ($template, $message=null) {
             $message_first_name = $message['first_name'];
         if(isset($message['last_name']))
             $message_last_name = $message['last_name'];
-        /*ob_start();
-        include 'email/'.$template.'.php';
-        $msg_body = ob_get_clean();
 
+        $messagebody = file_get_contents('email/'.$template.'.html');
 
-        if(!mail($message['to'],$message['subject'],$msg_body, implode("\r\n", $headers))) {
-            return false;
-        }*/
+        $messagebody = str_replace('%message_text%', $message_text, $messagebody);
+        $messagebody = str_replace('%message_first_name%', $message_first_name, $messagebody);
+        $messagebody = str_replace('%message_last_name%', $message_last_name, $messagebody);
 
         $mail = new PHPMailer(true);
 
@@ -99,7 +97,7 @@ function send_email ($template, $message=null) {
         //Content
         $mail->isHTML(true);
         $mail->Subject = $message['subject'];
-        $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+        $mail->Body    = $messagebody;
 
         if(!$mail->send()){
             return false;
