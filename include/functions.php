@@ -94,7 +94,7 @@ function send_email ($template, $message=null) {
         //Recipients
         $mail->setFrom('no-reply@dhammika.me', 'Daakor');
         $mail->addAddress($message['to']);
-        $mail->addReplyTo('info@dhammika.me', 'Information');
+        $mail->addReplyTo('info@daakor.com', 'Information');
 
         //Content
         $mail->isHTML(true);

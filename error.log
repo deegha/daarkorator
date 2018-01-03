@@ -25,3 +25,4 @@ mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify
 2017-Dec-Mon  06:09 PM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
 2017-Dec-Tue  06:58 AM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
 2017-Dec-Tue  06:59 AM - mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given
+SMTP Error: data not accepted.
