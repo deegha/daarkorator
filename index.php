@@ -68,11 +68,13 @@ function authenticate(\Slim\Route $route) {
 			global $logged_user_type;
 			global $user_fname;
 			global $user_lname;
+			global $telephone;
 			$user_id = $access['user_id'];
 			$features = $access['features'];
 			$logged_user_type = $access['type'];
 			$user_fname = $access['first_name'];
 			$user_lname = $access['last_name'];
+			$telephone = $access['telephone'];
 
         }        
     } else {
@@ -140,6 +142,7 @@ $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $logged_user_type;
 		global $user_fname;
 		global $user_lname;
+		global $telephone;
 
 		$response = array();
 		$DbHandler = new DbHandler();	
@@ -150,6 +153,7 @@ $app->get('/userFeatures', 'authenticate', function() use ($app) {
 			$response['features']->logged_user_type=json_decode($logged_user_type);
 			$response['features']->user_fname = $user_fname;
 			$response['features']->user_lname = $user_lname;
+			$response['features']->telephone = $telephone;
 			
 			echoRespnse(200	, $response);
 		} else {
@@ -2246,7 +2250,7 @@ $app->get('/newMessage/:id', 'authenticate', function($project_id) use ($app){
     $response 	= array();
   
 	$DbHandler 	= new DbHandler();
-	$result = $DbHandler->getExternalMessage($project_id, $user_id);
+	$result = $DbHandler->getExternalMessage($project_id, $user_id, $logged_user_type);
 
 	if(empty($result)) {
 		$response["error"] = true;
@@ -2266,7 +2270,7 @@ $app->get('/newMessage/:id', 'authenticate', function($project_id) use ($app){
 
 /**
  * Get single external conversation
- * url - /newMessages/:id
+ * url - /newMessages/:id/:sender
  * method - Get
  * params -
  */
@@ -2278,7 +2282,7 @@ $app->get('/newMessage/:projectID/:senderID', 'authenticate', function($project_
     $response 	= array();
   
 	$DbHandler 	= new DbHandler();
-	$result = $DbHandler->getExternalMessageConversation($project_id, $sender_id, $user_id);
+	$result = $DbHandler->getExternalMessageConversation($project_id, $sender_id, $user_id, $logged_user_type);
 
 	if(empty($result)) {
 		$response["error"] = true;

@@ -74,7 +74,7 @@ class DbHandler {
         try{
             $db          = new database();
             $table       = "authentication_table a JOIN user_type t JOIN user u";
-            $rows        = 'a.user_id, a.expiration, t.features, t.type, u.first_name, u.last_name';
+            $rows        = 'a.user_id, a.expiration, t.features, t.type, u.first_name, u.last_name, u.contact_number as telephone';
             $where       = 'a.access_token= "' . $user_accessToken .'" AND u.user_type = t.type AND a.user_id = u.id';
 
             $db->select($table, $rows, $where, '', '');
@@ -1490,20 +1490,21 @@ class DbHandler {
         }
     }
 
-    public function getExternalMessage ($project_id, $user_id) {
+    public function getExternalMessage ($project_id, $user_id, $user_type) {
 
         $db = new database();
-        $table = "messages m inner join user u on u.id = m.sender_id";
-        $rows  = 'm.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, m.date_time, u.first_name as sender';
-        $where = 'message_reff = 1 and project_id = '.$project_id.' and reciever_id = '.$user_id;
-        $where .= ' group by sender_id order by date_time desc';
+        $table = "messages m inner join user u on u.id = m.reciever_id inner join user uu on uu.id = m.sender_id";
+        $rows  = ' m.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, m.date_time, if(m.sender_id = '.$user_id.', u.first_name, uu.first_name ) as sender, if(m.sender_id = '.$user_id.', m.reciever_id, m.sender_id ) as sender_id';
+
+        $where = 'message_reff = 1 and project_id = '.$project_id.' and (reciever_id = '.$user_id.' or sender_id = '.$user_id.')';
+        $where .= ' group by sender  order by date_time desc';
 
         $db->selectJson($table,$rows,$where);
         $results = $db->getJson();
         return json_decode($results);
     }
 
-    public function getExternalMessageConversation($project_id, $sender_id, $user_id) {
+    public function getExternalMessageConversation($project_id, $sender_id, $user_id, $user_type) {
         $db = new database();
         $table = "messages";
         $rows  = "id,
@@ -1514,9 +1515,9 @@ class DbHandler {
                     message_text,
                     date_time,
                     if(reciever_id = $user_id, 'received', 'sent') as class";
-        $where = '(message_reff = 1 and project_id = '.$project_id.') and ((sender_id = '.$sender_id.' and reciever_id = '.$user_id.') or (sender_id = '.$user_id.' and reciever_id = '.$sender_id.'))';
-        //$where .= 'or (message_reff = 1 and project_id = '.$project_id.' and sender_id = '.$sender_id.' and reciever_id ='.$user_id.') ' ;
-        //SELECT * FROM `messages` where (message_reff = 1 and project_id = 242) and ((sender_id = 117 and reciever_id = 123) or (sender_id = 123 and reciever_id = 117))
+
+            //$where = '(message_reff = 1 and project_id = '.$project_id.') and ((sender_id = '.$sender_id.' and reciever_id = '.$user_id.') or (sender_id = '.$user_id.' or reciever_id = '.$sender_id.'))';
+        $where = '(message_reff = 1 and project_id = '.$project_id.') and (sender_id in ('.$sender_id.', '.$user_id.') and reciever_id in ('.$sender_id.','.$user_id.'))';
 
         $db->selectJson($table,$rows,$where);
         $results = $db->getJson();
@@ -1528,7 +1529,7 @@ class DbHandler {
         //return $projectid;
         $db = new database();
         $table = "daakor_project dp INNER JOIN user u on u.id = dp.daakor_id";
-        $rows = "dp.id as id, concat(u.first_name, ' ', u.last_name) as name";
+        $rows = "dp.daakor_id as id, concat(u.first_name, ' ', u.last_name) as name";
         $where = "project_id = ".$projectid;
 
         $db->selectJson($table, $rows, $where);
