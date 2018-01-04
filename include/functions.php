@@ -91,7 +91,7 @@ function send_email ($template, $message=null) {
         $mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
         $mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
         $mail->SMTPSecure = 'tls';
-        $mail->Port = 25;
+        $mail->Port = 587;
 
         //Recipients
         $mail->setFrom('no-reply@dhammika.me', 'Daakor');
@@ -102,7 +102,12 @@ function send_email ($template, $message=null) {
         $mail->isHTML(true);
         $mail->Subject = $message['subject'];
         $mail->Body    = $messagebody;
+        try{
         if(!$mail->send()){
+            return false;
+        }
+        }catch(Exception $e){
+            callErrorLog($e);
             return false;
         }
         return true;

@@ -662,7 +662,7 @@ class DbHandler {
                     $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
                                     case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, 
                                         pd.title" ;
-                    $where = "dp.daakor_id=".$user_id." and p.status <> 3 and p.status <> 4 and p.status <> 0";
+                    $where = "dp.daakor_id=".$user_id." and p.status <> 0";
                   
                 }elseif($logged_user_type == 2){
                     $where = "p.customer_id=".$user_id;
@@ -949,7 +949,7 @@ class DbHandler {
        
             if($db->insert($table, $values, $rows)){  
                 $msgUrl = getNotificationUrl("styleboard", $results["project_id"]);
-                $values = $results["reciever_id"].", 'New message arrived', '".$msgUrl."', 4";
+                $values = $results["reciever_id"].", 'New message arrived', '".$msgUrl."', 5";
 
 
                 $this->createNotification($values, null );
@@ -1039,7 +1039,7 @@ class DbHandler {
             $db     = new database();
             $table  = "messages m left outer join user u on u.id = m.sender_id";
             $rows   = "m.id as id,
-                               concat(u.first_name, ' ', u.last_name) as sender,
+                               u.first_name as sender,
                                m.message_subject as message_subject,
                                m.message_text as message_text,
                                m.date_time as date_time,
@@ -1494,7 +1494,7 @@ class DbHandler {
 
         $db = new database();
         $table = "messages m inner join user u on u.id = m.sender_id";
-        $rows  = 'm.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, m.date_time, concat(u.first_name," ", u.last_name) as sender';
+        $rows  = 'm.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, m.date_time, u.first_name as sender';
         $where = 'message_reff = 1 and project_id = '.$project_id.' and reciever_id = '.$user_id;
         $where .= ' group by sender_id order by date_time desc';
 
