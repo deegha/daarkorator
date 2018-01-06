@@ -1492,7 +1492,8 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
         if($results) {
             $project_id = $results['project_id'];
             $updateArr = array(
-                'status' => 2
+                'status' => 2,
+                'won_by' => $results['daarkorator_id']
             );
             $DbHandler = new DbHandler();
             $projectUpdate = $DbHandler->updateProject($updateArr, $results['project_id']);

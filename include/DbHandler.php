@@ -639,35 +639,46 @@ class DbHandler {
     public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
         try { 
             $db           = new database();
-            $table        = "project p join project_details pd on p.id = pd.project_id 
-                             join room_types rt on pd.room_types = rt.id";
-            $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
-                                case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Finalized' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, 
-                                pd.title";
-            $where        = ""; 
-            if($bidding == "yes"){ 
-                $table      = "project p join project_details pd on p.id = pd.project_id
-                                join room_types rt on pd.room_types = rt.id";
-                $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
-                $rows       = "p.*,DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date ,rt.title as room_type, pd.budget as budget, case p.status WHEN 1 then 'In progress' END AS status_title, pd.title, rt.image ";
 
-            }else{ 
-                if($logged_user_type == 3 ){  
-                    $table        = "project p 
-                                    join daakor_project dp
-                                    on p.id = dp.project_id
-                                    join project_details pd 
-                                    on p.id = pd.project_id
-                                    join room_types rt on pd.room_types = rt.id";
-                    $rows         = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget,
-                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'Won' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, 
-                                        pd.title" ;
-                    $where = "dp.daakor_id=".$user_id." and p.status <> 0";
-                  
+            if($bidding == "yes"){
+
+                $table      = "project p join project_details pd on p.id = pd.project_id join room_types rt on pd.room_types = rt.id";
+
+                $rows       = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget, pd.title";
+
+                $where      = "p.id NOT IN (select project_id from daakor_project where daakor_id = ".$user_id.") and status = 1";
+            }else{
+                if($logged_user_type == 3){
+
+                    $table      = "project p join daakor_project dp on p.id = dp.project_id join project_details pd on p.id = pd.project_id join room_types rt on pd.room_types = rt.id";
+
+                    $rows       = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date, rt.image, rt.title as room_type, pd.budget as budget, pd.title,
+                                    case when(p.status = 0) then 'Draft'
+                                    	when (p.status = 1) then 'In progress'
+                                    	when (p.status = 2) then 'In Progres'
+                                    	when (p.status = 3 and p.won_by = ".$user_id.") then 'Won'
+                                    	when (p.status = 3 and p.won_by != ".$user_id.") then 'Completed'
+                                    	when (p.status = 4) then 'Cancelled'
+                                    	END as status_title";
+
+                    $where      = "dp.daakor_id=".$user_id." and p.status <> 0";
+
                 }elseif($logged_user_type == 2){
-                    $where = "p.customer_id=".$user_id;
+
+                    $table      = "project p join project_details pd on p.id = pd.project_id join room_types rt on pd.room_types = rt.id";
+
+                    $rows       = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget, pd.title, case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'In progress' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title";
+
+                    $where      = "p.customer_id =".$user_id;
+                }else{
+
+                    $table      = "project p join project_details pd on p.id = pd.project_id join room_types rt on pd.room_types = rt.id";
+                    $rows       = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
+                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In progress' WHEN 2 then 'In progress' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, pd.title";
+                    $where      = "";
                 }
             }
+
             $order = "published_date DESC";
             $db->selectJson($table, $rows, $where,  $order, '', $limit);
             $projects = $db->getJson();
