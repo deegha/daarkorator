@@ -175,13 +175,13 @@ function getNotificationText($notificationType, $project_name=null) {
             return "A new room design contest has kicked off";
         break;
         case "styleboard" :
-            return "A new styleboard has added to your project - ".$project_name;
+            return "Check out the new style board added to ".$project_name;
         break;
         case "styleboardSelect" :
-            return "Your styleboard has been selected for project - ".$project_name;
+            return "Congratuations! Your style board has selected as the winner of - ".$project_name;
         break;
          case "message" :
-            return "New message arrived on ".$project_name;
+            return "You received a new message on ".$project_name;
         break;
     }    
 }

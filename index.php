@@ -1376,8 +1376,9 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		// Sending notifications to customer on new project
 		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
+		$project = $DbHandler->getProjectDetails($params['project_id']);
 		$values = $customer['customer_id'].', 
-				 		"'.getNotificationText("styleboard").'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
+				 		"'.getNotificationText("styleboard", $project['title']).'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
 				 "2"';
 				 
 		if(!$DbHandler->createNotification($values, null)){
@@ -1500,8 +1501,9 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
             // Sending notifications to daakor on styleboard selection
 			$baseUrl = getBaseUrl();
 			$daakor = $DbHandler->getDaakorByStyleboard($styleboard_id);
+			$project = $DbHandler->getProjectDetails($project_id);
 			$values = $daakor.', 
-					 		"'.getNotificationText("styleboardSelect" ).'", 
+					 		"'.getNotificationText("styleboardSelect", $project['title'] ).'",
 					 		"'.getNotificationUrl("styleboard",$project_id).'",
 					 		"1"';
 					
@@ -1512,7 +1514,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			} 
             if($projectUpdate){
                 $response["error"] = false;
-                $response["message"] = "Style board finalized successfully!";
+                $response["message"] = "Congratulations! You have selected your winning style board!";
                 echoRespnse(200	, $response);
             }
         }else{
