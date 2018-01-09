@@ -1499,11 +1499,17 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
             $DbHandler = new DbHandler();
             $projectUpdate = $DbHandler->updateProject($updateArr, $results['project_id']);
             // Sending notifications to daakor on styleboard selection
+            $user = $DbHandler->getCustomerByProject($project_id);
+            $customer = $DbHandler->getUser($user['customer_id']);
+            $project = $DbHandler->getProjectDetails($project_id);
+
+            $params['customer_name'] = $customer[0]->first_name;
+            $params['project_name']  = $project['title'];
 			$baseUrl = getBaseUrl();
-			$daakor = $DbHandler->getDaakorByStyleboard($styleboard_id);
-			$project = $DbHandler->getProjectDetails($project_id);
-			$values = $daakor.', 
-					 		"'.getNotificationText("styleboardSelect", $project['title'] ).'",
+			$daakor  = $DbHandler->getDaakorByStyleboard($styleboard_id);
+			
+			$values  = $daakor.', 
+					 		"'.getNotificationText("styleboardSelect", $params).'",
 					 		"'.getNotificationUrl("styleboard",$project_id).'",
 					 		"1"';
 					

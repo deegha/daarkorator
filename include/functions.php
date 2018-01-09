@@ -169,19 +169,19 @@ function uploadPdf($file) {
     return false;
 }
 
-function getNotificationText($notificationType, $project_name=null) {
+function getNotificationText($notificationType, $params=null) {
     switch ($notificationType) {
         case "project" :
             return "A new room design contest has kicked off";
         break;
         case "styleboard" :
-            return "Check out the new style board added to ".$project_name;
+            return "Check out the new style board added to ".$params;
         break;
         case "styleboardSelect" :
-            return "Congratuations! Your style board has selected as the winner of - ".$project_name;
+            return "Congratulations! ".$params['customer_name']." selected your style board as the winner for ".$params['project_name'];
         break;
-         case "message" :
-            return "You received a new message on ".$project_name;
+        case "message" :
+            return "You received a new message on ".$params;
         break;
     }    
 }
