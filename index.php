@@ -1514,12 +1514,26 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 					 		"'.getNotificationText("styleboardSelect", $params).'",
 					 		"'.getNotificationUrl("styleboard",$project_id).'",
 					 		"1"';
-					
+
 			if(!$DbHandler->createNotification($values, null)){
 				$response["error"] = false;
 				$response['message'] = "Error in sending notifications to the Daarkorator ";
 				echoRespnse(200	, $response);
 			} 
+
+			// Sending notifications to other daakors
+			$daakors = $DbHandler->daarkoratorsOnProject($project_id, $daakor);
+
+			if($daakors) {
+				foreach ($daakors as $key => $daak) {
+					$values  = $daak->daakor_id.', 
+						 		"'.getNotificationText("styleboardDidntwWin", $params).'",
+						 		"'.getNotificationUrl("styleboard",$project_id).'",
+						 		"1"';
+					$DbHandler->createNotification($values, null);
+				}
+			}
+			
             if($projectUpdate){
                 $response["error"] = false;
                 $response["message"] = "Congratulations! You have selected your winning style board!";

@@ -1548,6 +1548,18 @@ class DbHandler {
 
         return json_decode($results);
     }
+
+    public function daarkoratorsOnProject($project_id, $selected_daakor) {
+        $db = new database();
+        $table = "daakor_project";
+        $rows  = "daakor_id";
+        $where = "project_id = ".$project_id." and daakor_id <> ".$selected_daakor;
+
+        $db->selectJson($table, $rows, $where);
+        $results = $db->getJson();
+        $results = json_decode($results);
+        return ($results)? $results: false;
+    }
 }
 
 ?>

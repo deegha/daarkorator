@@ -189,6 +189,9 @@ function getNotificationText($notificationType, $params=null) {
         case "message" :
             return "You received a new message on ".$params;
         break;
+        case "styleboardDidntwWin" :
+            return $params['customer_name']." has selected a winning style board for ".$params['project_name']." Thank you for your participation in this contest.";
+        break;
     }    
 }
 
