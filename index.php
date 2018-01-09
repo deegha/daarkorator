@@ -53,7 +53,7 @@ function authenticate(\Slim\Route $route) {
         $access = $db->isValidAccessToken($user_accessToken);
         if (!$access) {
             $response["error"] = true;
-            $response["message"] = "Access Denied. Invalid Access Token";
+            $response["message"] = "Access Denied.";
             echoRespnse(401, $response);
             $app->stop();
         }else{
@@ -676,7 +676,7 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 				}
 				if(!$DbHandler->updateResetKeyStates($resetKey)) {
 					$response["error"] = true;
-					$response["message"] = "Couldnt update the reset the key";
+					$response["message"] = "Couldnt update the reset key";
 					echoRespnse(200, $response);
 				}
                 if($DbHandler->updateUser($update_params, $result['id'])){
@@ -849,7 +849,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 	
 
 	$response["error"] = false;
-    $response["message"] = "Account was successfully activated";
+    $response["message"] = "Account successfully activated";
 	echoRespnse(200	, $response);
 
 });
@@ -995,6 +995,8 @@ $app->post('/payment','authenticate', function() use ($app) {
 		//Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
+
+
 		if($daa)  {
 			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
 		}
@@ -1791,6 +1793,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$response["message"] = "An error occurred while canceling project";
 		echoRespnse(500, $response);
 	}
+
 
 	$response["error"] = false;
 	$response["message"] = "Project successfully canceled";

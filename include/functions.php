@@ -83,33 +83,39 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%message_last_name%', $message_last_name, $messagebody);
 
 
-        $mail = new PHPMailer(true);
+        //$mail = new PHPMailer(true);
 
-        $mail->isSMTP();
-        $mail->Host = 'email-smtp.us-west-2.amazonaws.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
-        $mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
+        //$mail->isSMTP();
+        //$mail->Host = 'email-smtp.us-west-2.amazonaws.com';
+        //$mail->SMTPAuth = true;
+        //$mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
+        //$mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
+        //$mail->SMTPSecure = 'tls';
+        //$mail->Port = 587;
 
         //Recipients
-        $mail->setFrom('no-reply@dhammika.me', 'Daakor');
-        $mail->addAddress($message['to']);
-        $mail->addReplyTo('info@daakor.com', 'Information');
+        //$mail->setFrom('no-reply@dhammika.me', 'Daakor');
+        //$mail->addAddress($message['to']);
+        //$mail->addReplyTo('info@daakor.com', 'Information');
 
         //Content
-        $mail->isHTML(true);
-        $mail->Subject = $message['subject'];
-        $mail->Body    = $messagebody;
-        try{
-        if(!$mail->send()){
-            return false;
+        //$mail->isHTML(true);
+        //$mail->Subject = $message['subject'];
+        //$mail->Body    = $messagebody;
+        //if(!$mail->send()){
+        //    return false;
+        //}
+        //print_r($messagebody);
+        $headers[] = 'MIME-Version: 1.0';
+        $headers[] = 'Content-type: text/html; charset=iso-8859-1';
+        $headers[] = 'From: Daakor-noreply@daakor.com' ;
+        $headers[] = 'Reply-To: info@daakor.com';
+        $headers[] = 'X-Mailer: PHP/' . phpversion();
+
+        if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
+        	return false;
         }
-        }catch(Exception $e){
-            callErrorLog($e);
-            return false;
-        }
+
         return true;
     }catch(Exception $e){
         callErrorLog($e);
@@ -218,6 +224,5 @@ function getBaseUrl() {
     //test
     return "http://daakor.dhammika.me/#/";
 }
-
 
 ?>
