@@ -219,5 +219,12 @@ function getBaseUrl() {
     return "http://daakor.dhammika.me/#/";
 }
 
+function getDakkorListId($arr){
+    $tmp = array();
+    foreach ($arr as $value => $k) {
+        //print_r($value);
+    }
+    //print_r($tmp);
+}
 
 ?>

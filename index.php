@@ -995,6 +995,8 @@ $app->post('/payment','authenticate', function() use ($app) {
 		//Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
+
+
 		if($daa)  {
 			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
 		}
@@ -1785,6 +1787,22 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$response["message"] = "An error occurred while canceling project";
 		echoRespnse(500, $response);
 	}
+
+    //Sending notifications to daarkorators on new project
+    //$baseUrl = getBaseUrl();
+    //$daa = $DbHandler->getDaakorList($id);
+
+    //$daakors = getDakkorListId($daa);
+
+
+    //if($daa)  {
+    //    $values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
+    //}
+    //if(!$DbHandler->createNotification($values)){
+    //    $response["error"] = false;
+    //    $response['message'] = "Payment successful, error in creating notifications";
+    //    echoRespnse(200	, $response);
+    //}
 
 	$response["error"] = false;
 	$response["message"] = "Project successfully canceled";
