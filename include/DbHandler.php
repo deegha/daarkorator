@@ -1560,6 +1560,18 @@ class DbHandler {
         $results = json_decode($results);
         return ($results)? $results: false;
     }
+
+    public function getAcceptedDaarkor($project_id) {
+        $db = new database();   
+        $table = "project_styleboard";
+        $rows  = "daarkorator_id";
+        $where = "project_id = ".$project_id." and status =1 ";
+
+        $db->select($table, $rows, $where);
+        $results = $db->getResults();
+
+        return ($results)?$results['daarkorator_id']:false;
+    }
 }
 
 ?>

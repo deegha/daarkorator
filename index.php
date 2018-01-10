@@ -2210,6 +2210,25 @@ $app->put('/selectStyleboard', function() use ($app) {
 		echoRespnse(500, $response);
 	}
 
+	$daakor  = $DbHandler->getAcceptedDaarkor($project_id);
+	$user = $DbHandler->getCustomerByProject($project_id);
+    $customer = $DbHandler->getUser($user['customer_id']);
+    $project = $DbHandler->getProjectDetails($project_id);
+
+    $params['customer_name'] = $customer[0]->first_name;
+    $params['project_name']  = $project['title'];
+
+	$values  = $daakor.', 
+			 		"'.getNotificationText("finalDeliverables", $params).'",
+			 		"'.getNotificationUrl("styleboard",$project_id).'",
+			 		"1"';
+
+	if(!$DbHandler->createNotification($values)) {
+		$response["error"] = false;
+		$response["message"] = "Deliverables accepted successfully, Couldn't send notification to daarkorator";
+		echoRespnse(200, $response);
+	}
+
 	$response["error"] = false;
 	$response["message"] = "Deliverables accepted successfully";
 	echoRespnse(200, $response);
