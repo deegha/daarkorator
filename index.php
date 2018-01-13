@@ -1808,6 +1808,22 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		echoRespnse(500, $response);
 	}
 
+	$daakors  = $DbHandler->daarkoratorsOnProject($id);
+    $project = $DbHandler->getProjectDetails($id);
+
+    if($daakors) { 
+
+    	foreach ($daakors as $key => $daakor) {
+    		$params['project_name']  = $project['title'];
+			$values  = $daakor->daakor_id.', 
+					 		"'.getNotificationText("projectCancel", $params).'",
+					 		"'.getNotificationUrl("styleboard",$id).'",
+					 		"1"';
+
+			$DbHandler->createNotification($values);
+    	}
+    	
+    }
 
 	$response["error"] = false;
 	$response["message"] = "Project successfully canceled";

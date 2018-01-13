@@ -1221,6 +1221,7 @@ class DbHandler {
 
             $db->select($table,$rows,$where);
             $results = $db->getResults();
+
             if($results['status'] > 2) {
                 return false;
             }
@@ -1549,11 +1550,17 @@ class DbHandler {
         return json_decode($results);
     }
 
-    public function daarkoratorsOnProject($project_id, $selected_daakor) {
+    public function daarkoratorsOnProject($project_id, $selected_daakor=null) {
         $db = new database();
         $table = "daakor_project";
         $rows  = "daakor_id";
-        $where = "project_id = ".$project_id." and daakor_id <> ".$selected_daakor;
+
+        if($selected_daakor){
+            $where = "project_id = ".$project_id." and daakor_id <> ".$selected_daakor;
+        }else{
+            $where = "project_id = ".$project_id;
+            $table = 'daakor_project';
+        }
 
         $db->selectJson($table, $rows, $where);
         $results = $db->getJson();
