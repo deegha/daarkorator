@@ -228,10 +228,10 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-    // return "http://app.daakor.com/#/";
+     return "http://testapp.daakor.com/#/";
 
     //test
-    return "http://daakor.dhammika.me/#/";
+    //return "http://daakor.dhammika.me/#/";
 }
 
 ?>
