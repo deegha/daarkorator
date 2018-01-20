@@ -43,13 +43,34 @@ $app->map('/:x+', function($x) {
  * Checking if the request has valid api key in the 'Authorization' header
  */
 function authenticate(\Slim\Route $route) {
-    $headers = apache_request_headers();
+    
+	if( !function_exists('apache_request_headers') ) {
+		function apache_request_headers() {
+		  $arh = array();
+		  $rx_http = '/\AHTTP_/';
+		  foreach($_SERVER as $key => $val) {
+			if( preg_match($rx_http, $key) ) {
+			  $arh_key = preg_replace($rx_http, '', $key);
+			  $rx_matches = array();
+			  // do some nasty string manipulations to restore the original letter case
+			  // this should work in most cases
+			  $rx_matches = explode('_', $arh_key);
+			  if( count($rx_matches) > 0 and strlen($arh_key) > 2 ) {
+				foreach($rx_matches as $ak_key => $ak_val) $rx_matches[$ak_key] = ucfirst($ak_val);
+				$arh_key = implode('-', $rx_matches);
+			  }
+			  $arh[$arh_key] = $val;
+			}
+		  }
+		  return( $arh );
+		}
+	}
+	$headers = apache_request_headers();
     $response = array();
     $app = \Slim\Slim::getInstance();
-    if (isset($headers['Authorization'])) {
+    if (isset($headers['AUTHORIZATION'])) {
         $db = new DbHandler();
-
-        $user_accessToken = $headers['Authorization'];
+        $user_accessToken = $headers['AUTHORIZATION'];
         $access = $db->isValidAccessToken($user_accessToken);
         if (!$access) {
             $response["error"] = true;
@@ -75,7 +96,6 @@ function authenticate(\Slim\Route $route) {
 			$user_fname = $access['first_name'];
 			$user_lname = $access['last_name'];
 			$telephone = $access['telephone'];
-
         }        
     } else {
         $response["error"] = true;

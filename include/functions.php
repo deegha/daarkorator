@@ -83,38 +83,38 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%message_last_name%', $message_last_name, $messagebody);
 
 
-        //$mail = new PHPMailer(true);
+        $mail = new PHPMailer(true);
 
-        //$mail->isSMTP();
-        //$mail->Host = 'email-smtp.us-west-2.amazonaws.com';
-        //$mail->SMTPAuth = true;
-        //$mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
-        //$mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
-        //$mail->SMTPSecure = 'tls';
-        //$mail->Port = 587;
+        $mail->isSMTP();
+        $mail->Host = 'email-smtp.us-west-2.amazonaws.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
+        $mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
 
         //Recipients
-        //$mail->setFrom('no-reply@dhammika.me', 'Daakor');
-        //$mail->addAddress($message['to']);
-        //$mail->addReplyTo('info@daakor.com', 'Information');
+        $mail->setFrom('no-reply@dhammika.me', 'Daakor-noreply@daakor');
+        $mail->addAddress($message['to']);
+        $mail->addReplyTo('info@daakor.com', 'Information');
 
         //Content
-        //$mail->isHTML(true);
-        //$mail->Subject = $message['subject'];
-        //$mail->Body    = $messagebody;
-        //if(!$mail->send()){
-        //    return false;
-        //}
-        //print_r($messagebody);
-        $headers[] = 'MIME-Version: 1.0';
-        $headers[] = 'Content-type: text/html; charset=iso-8859-1';
-        $headers[] = 'From: Daakor-noreply@daakor.com' ;
-        $headers[] = 'Reply-To: info@daakor.com';
-        $headers[] = 'X-Mailer: PHP/' . phpversion();
-
-        if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
-        	return false;
+        $mail->isHTML(true);
+        $mail->Subject = $message['subject'];
+        $mail->Body    = $messagebody;
+        if(!$mail->send()){
+            return false;
         }
+        //print_r($messagebody);
+        //$headers[] = 'MIME-Version: 1.0';
+        //$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+        //$headers[] = 'From: Daakor-noreply@daakor.com' ;
+        //$headers[] = 'Reply-To: info@daakor.com';
+        //$headers[] = 'X-Mailer: PHP/' . phpversion();
+
+        //if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
+        //	return false;
+        //}
 
         return true;
     }catch(Exception $e){
@@ -178,22 +178,22 @@ function uploadPdf($file) {
 function getNotificationText($notificationType, $params=null) {
     switch ($notificationType) {
         case "project" :
-            return "A new room design contest has kicked off";
+            return "A new room design contest has kicked off!";
         break;
         case "styleboard" :
-            return "Check out the new style board added to ".$params;
+            return "Check out the new style board added to ".$params.".";
         break;
         case "styleboardSelect" :
-            return "Congratulations! ".$params['customer_name']." selected your style board as the winner for ".$params['project_name'];
+            return "Congratulations! ".$params['customer_name']." has selected your style board as the winner for ".$params['project_name'].".";
         break;
         case "message" :
-            return "You received a new message on ".$params;
+            return "You received a new message on ".$params.".";
         break;
         case "styleboardDidntwWin" :
-            return $params['customer_name']." has selected a winning style board for ".$params['project_name']." Thank you for your participation in this contest.";
+            return $params['customer_name']." has selected a winning style board for ".$params['project_name'].". Thank you for your participation in this contest.";
         break;
         case "finalDeliverables" :
-            return $params['customer_name']." accepted your final deliverables for ".$params['project_name']." Congratulations on a successful gig!";
+            return $params['customer_name']." has accepted your final deliverables for ".$params['project_name'].". Congratulations on a successful gig!";
         break;
          case "projectCancel" :
             return "Customer has decided to cancel ".$params['project_name'].".";
@@ -228,7 +228,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-     return "http://testapp.daakor.com/#/";
+     return "http://18.218.149.78/daakor/#/";
 
     //test
     //return "http://daakor.dhammika.me/#/";
