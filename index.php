@@ -996,11 +996,10 @@ $app->post('/payment','authenticate', function() use ($app) {
 		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
 
-
 		if($daa)  {
 			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
 		}
-		if(!$DbHandler->createNotification($values)){
+		if(!$DbHandler->createNotification($values, true)){
 			$response["error"] = false;
 			$response['message'] = "Payment successful, error in creating notifications";
 			echoRespnse(200	, $response);
