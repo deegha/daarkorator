@@ -1006,7 +1006,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 			echoRespnse(200	, $response);
 		}
 
-		//Sending emails to daakorators
+		// //Sending emails to daakorators
 		if(!sendEmailsToDaakors ($daa)) {
             $response["error"] = true;
             $response["message"] = "Payment successful, Coundn't send emails to daakorators";
@@ -1025,6 +1025,26 @@ $app->post('/payment','authenticate', function() use ($app) {
             $response["message"] = "Payment successful, Coundn't send email to customer";
             echoRespnse(500, $response); 
         }
+
+        //Sending receipt 
+
+ 		$message['to']   = $customer->email;
+ 		$message['first_name']   = $customer->first_name;
+        $message['subject'] = 'Receipt for transaction '.$transactionId ;
+
+        $message['sub_total'] = $DbHandler->getPackage(1)['price'];
+        $message['discount'] = "0";
+        $message['hst']	= "0";
+        $message['totall_paid'] = $params['amount'];
+        $message['transaction_number'] = $transactionId;
+        $message['cur'] = "$";
+
+        if(!send_email ('receipt', $message)) {
+  			$response["error"] = true;
+            $response["message"] = "Payment successful, Coundn't email receipt to customer";
+            echoRespnse(500, $response); 
+        }
+
 
 		$response["error"] = false;
 	    $response["message"] = "Payment successful";

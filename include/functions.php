@@ -72,6 +72,8 @@ function send_email ($template, $message=null) {
             $message_first_name = $message['first_name'];
         if(isset($message['last_name']))
             $message_last_name = $message['last_name'];
+        if(isset($message['transaction_number']))
+            $transaction_number = $message['transaction_number'];
 
         $messagebody = file_get_contents('email/'.$template.'.html');
 
@@ -81,7 +83,20 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%message_first_name%', $message_first_name, $messagebody);
         if(isset($message['last_name']))
         $messagebody = str_replace('%message_last_name%', $message_last_name, $messagebody);
+        if(isset($message['transaction_number']))
+        $messagebody = str_replace('%transaction_number%', $transaction_number, $messagebody);
 
+     if(isset($message['sub_total']))
+        $messagebody = str_replace('%sub_total%', $message['sub_total'], $messagebody);
+     if(isset($message['discount']))
+        $messagebody = str_replace('%discount%', $message['discount'], $messagebody);
+     if(isset($message['hst']))
+        $messagebody = str_replace('%hst%', $message['hst'], $messagebody);
+     if(isset($message['totall_paid']))
+        $messagebody = str_replace('%totall_paid%', $message['totall_paid'], $messagebody);
+
+    if(isset($message['cur']))
+         $messagebody = str_replace('%cur%', $message['cur'], $messagebody);
 
         //$mail = new PHPMailer(true);
 
@@ -105,16 +120,16 @@ function send_email ($template, $message=null) {
         //if(!$mail->send()){
         //    return false;
         //}
-        // print_r($messagebody);
+        print_r($messagebody);
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=iso-8859-1';
         $headers[] = 'From: Daakor-noreply@daakor.com' ;
         $headers[] = 'Reply-To: info@daakor.com';
         $headers[] = 'X-Mailer: PHP/' . phpversion();
-        
-        if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
-        	return false;
-        }
+
+        // if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
+        // 	return false;
+        // }
 
         return true;
     }catch(Exception $e){
