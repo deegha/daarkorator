@@ -105,13 +105,13 @@ function send_email ($template, $message=null) {
         //if(!$mail->send()){
         //    return false;
         //}
-        //print_r($messagebody);
+        // print_r($messagebody);
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=iso-8859-1';
         $headers[] = 'From: Daakor-noreply@daakor.com' ;
         $headers[] = 'Reply-To: info@daakor.com';
         $headers[] = 'X-Mailer: PHP/' . phpversion();
-
+        
         if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
         	return false;
         }
@@ -232,6 +232,16 @@ function getBaseUrl() {
 
     //test
     //return "http://daakor.dhammika.me/#/";
+}
+
+function sendEmailsToDaakors ($daa) {
+    foreach ($daa as $key => $value) {
+        $message['to']   = $value['email'];
+        $message['first_name'] = $value['first_name'];
+        $message['subject'] = 'A new room design contest has kicked off';
+
+        (!send_email ('new_project_daakor', $message)) ? false : true;
+    }
 }
 
 ?>

@@ -998,12 +998,33 @@ $app->post('/payment','authenticate', function() use ($app) {
 
 		if($daa)  {
 			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
+
 		}
 		if(!$DbHandler->createNotification($values, true)){
 			$response["error"] = false;
 			$response['message'] = "Payment successful, error in creating notifications";
 			echoRespnse(200	, $response);
 		}
+
+		//Sending emails to daakorators
+		if(!sendEmailsToDaakors ($daa)) {
+            $response["error"] = true;
+            $response["message"] = "Payment successful, Coundn't send emails to daakorators";
+            echoRespnse(500, $response);    
+        }
+
+        // Send emails to customer
+        $customer = $DbHandler->getUser($user_id);
+        $customer = $customer[0];
+
+        $message['to']   = $customer->email;
+        $message['subject'] = 'Your room design contest has kicked off!';
+
+        if(!send_email ('new_project_customer', $message)) {
+  			$response["error"] = true;
+            $response["message"] = "Payment successful, Coundn't send email to customer";
+            echoRespnse(500, $response); 
+        }
 
 		$response["error"] = false;
 	    $response["message"] = "Payment successful";
