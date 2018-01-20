@@ -1549,7 +1549,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 					$values  = $daak->daakor_id.', 
 						 		"'.getNotificationText("styleboardDidntwWin", $params).'",
 						 		"'.getNotificationUrl("styleboard",$project_id).'",
-						 		"1"';
+						 		"6"';
 					$DbHandler->createNotification($values, null);
 				}
 			}
@@ -1838,7 +1838,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			$values  = $daakor->daakor_id.', 
 					 		"'.getNotificationText("projectCancel", $params).'",
 					 		"'.getNotificationUrl("styleboard",$id).'",
-					 		"1"';
+					 		"7"';
 
 			$DbHandler->createNotification($values);
     	}
