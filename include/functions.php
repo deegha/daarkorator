@@ -72,6 +72,8 @@ function send_email ($template, $message=null) {
             $message_first_name = $message['first_name'];
         if(isset($message['last_name']))
             $message_last_name = $message['last_name'];
+        if(isset($message['transaction_number']))
+            $transaction_number = $message['transaction_number'];
 
         $messagebody = file_get_contents('email/'.$template.'.html');
 
@@ -81,7 +83,20 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%message_first_name%', $message_first_name, $messagebody);
         if(isset($message['last_name']))
         $messagebody = str_replace('%message_last_name%', $message_last_name, $messagebody);
+        if(isset($message['transaction_number']))
+        $messagebody = str_replace('%transaction_number%', $transaction_number, $messagebody);
 
+     if(isset($message['sub_total']))
+        $messagebody = str_replace('%sub_total%', $message['sub_total'], $messagebody);
+     if(isset($message['discount']))
+        $messagebody = str_replace('%discount%', $message['discount'], $messagebody);
+     if(isset($message['hst']))
+        $messagebody = str_replace('%hst%', $message['hst'], $messagebody);
+     if(isset($message['totall_paid']))
+        $messagebody = str_replace('%totall_paid%', $message['totall_paid'], $messagebody);
+
+    if(isset($message['cur']))
+         $messagebody = str_replace('%cur%', $message['cur'], $messagebody);
 
         $mail = new PHPMailer(true);
 
@@ -232,6 +247,16 @@ function getBaseUrl() {
 
     //test
     //return "http://daakor.dhammika.me/#/";
+}
+
+function sendEmailsToDaakors ($daa) {
+    foreach ($daa as $key => $value) {
+        $message['to']   = $value['email'];
+        $message['first_name'] = $value['first_name'];
+        $message['subject'] = 'A new room design contest has kicked off';
+
+        (!send_email ('new_project_daakor', $message)) ? false : true;
+    }
 }
 
 ?>

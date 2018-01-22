@@ -12,13 +12,13 @@
                 <p>Here is your receipt for transaction %transaction_number%.</p>
                 <h4>Order Summery</h4>
                 <hr/>
-                <p>1. One Project Submission. <span style="float: right">$299.99</span></p>
+                <p>1. One Project Submission. <span style="float: right">%sub_total%</span></p>
                 <hr/>
-                <p>Subtotal <span style="float: right">$299.99</span></p>
-                <p>Discount <span style="float: right">$40.00</span></p>
-                <p>HST(13%) </p>
+                <p>Subtotal <span style="float: right">%cur% %sub_total%</span></p>
+                <p>Discount <span style="float: right">%discount%</span></p>
+                <p>HST(%hst%) </p>
                 <hr/>
-                <h4>Total Paid <span style="float: right">$298.98</span></h4>
+                <h4>Total Paid <span style="float: right">%cur% %totall_paid%</span></h4>
                 <br/>
                 <p>If you have any questions, please do not hesitate to reply to this email - we are here to help!</p>
                 <p>Regards,<br/>Your friends at Daakor</p><br/><br/>

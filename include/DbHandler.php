@@ -906,7 +906,7 @@ class DbHandler {
         try{
             $db     = new database();
             $table  = "user" ;
-            $rows   = "id";
+            $rows   = "id, email, first_name";
             $where  = "user_type = 3 and status = 1";
 
             $db->select($table, $rows, $where);
