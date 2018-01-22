@@ -210,8 +210,11 @@ function getNotificationText($notificationType, $params=null) {
         case "finalDeliverables" :
             return $params['customer_name']." accepted your final deliverables for ".$params['project_name']." Congratulations on a successful gig!";
         break;
-         case "projectCancel" :
+        case "projectCancel" :
             return "Customer has decided to cancel ".$params['project_name'].".";
+        break;
+        case "sumbmitFinalDeliverablesCustomer" :
+            return "Your project has been submited with final deliverables";
         break;
     }    
 }

@@ -2204,6 +2204,18 @@ $app->put('/selectStyleboard', function() use ($app) {
 		}
 	}
 
+	$user 	 = $DbHandler->getCustomerByProject($project_id);
+	$values  = $user['customer_id'].', 
+			 		"'.getNotificationText("sumbmitFinalDeliverablesCustomer", null).'",
+			 		"'.getNotificationUrl("styleboard",$project_id).'",
+			 		"8"';
+
+	if(!$DbHandler->createNotification($values)) {
+		$response["error"] = false;
+		$response["message"] = "Deliverables submited successfully, Couldn't send notification to customer";
+		echoRespnse(200, $response);
+	}
+
 	$response["error"] = false;
 	$response["message"] = "Deliverable uploaded successfully ";
 	echoRespnse(200, $response);
