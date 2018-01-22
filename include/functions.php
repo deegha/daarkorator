@@ -120,16 +120,16 @@ function send_email ($template, $message=null) {
         //if(!$mail->send()){
         //    return false;
         //}
-        print_r($messagebody);
+        // print_r($messagebody);
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=iso-8859-1';
         $headers[] = 'From: Daakor-noreply@daakor.com' ;
         $headers[] = 'Reply-To: info@daakor.com';
         $headers[] = 'X-Mailer: PHP/' . phpversion();
 
-        // if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
-        // 	return false;
-        // }
+        if(!mail($message['to'],$message['subject'],$messagebody, implode("\r\n", $headers))) {
+        	return false;
+        }
 
         return true;
     }catch(Exception $e){
