@@ -136,11 +136,11 @@ function send_email ($template, $message=null) {
         callErrorLog($e);
         return false;
     }
+}
 
-    function getSiteBaseUrl() {
+   function getSiteBaseUrl() {
         return true;
     }
-}
 
 
 function gnerateTransactionId($user_id) {
