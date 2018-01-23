@@ -136,10 +136,6 @@ function send_email ($template, $message=null) {
         callErrorLog($e);
         return false;
     }
-
-    function getSiteBaseUrl() {
-        return true;
-    }
 }
 
 
@@ -210,8 +206,11 @@ function getNotificationText($notificationType, $params=null) {
         case "finalDeliverables" :
             return $params['customer_name']." has accepted your final deliverables for ".$params['project_name'].". Congratulations on a successful gig!";
         break;
-         case "projectCancel" :
+        case "projectCancel" :
             return "Customer has decided to cancel ".$params['project_name'].".";
+        break;
+        case "sumbmitFinalDeliverablesCustomer" :
+            return "Your project has been submited with final deliverables";
         break;
     }    
 }
@@ -243,10 +242,10 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-     return "http://18.218.149.78/daakor/#/";
+     //return "http://18.218.149.78/daakor/#/";
 
     //test
-    //return "http://daakor.dhammika.me/#/";
+    return "http://testapp.daakor.com/#/";
 }
 
 function sendEmailsToDaakors ($daa) {
@@ -255,8 +254,9 @@ function sendEmailsToDaakors ($daa) {
         $message['first_name'] = $value['first_name'];
         $message['subject'] = 'A new room design contest has kicked off';
 
-        (!send_email ('new_project_daakor', $message)) ? false : true;
+        send_email ('new_project_daakor', $message);
     }
+    return true;
 }
 
 ?>

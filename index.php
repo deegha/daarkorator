@@ -1026,14 +1026,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 			echoRespnse(200	, $response);
 		}
 
-		// //Sending emails to daakorators
-		if(!sendEmailsToDaakors ($daa)) {
-            $response["error"] = true;
-            $response["message"] = "Payment successful, Coundn't send emails to daakorators";
-            echoRespnse(500, $response);    
-        }
-
-        // Send emails to customer
+		// Send emails to customer
         $customer = $DbHandler->getUser($user_id);
         $customer = $customer[0];
 
@@ -1041,15 +1034,16 @@ $app->post('/payment','authenticate', function() use ($app) {
         $message['subject'] = 'Your room design contest has kicked off!';
 
         if(!send_email ('new_project_customer', $message)) {
-  			$response["error"] = true;
+            $response["error"] = true;
             $response["message"] = "Payment successful, Coundn't send email to customer";
-            echoRespnse(500, $response); 
+            echoRespnse(500, $response);
         }
 
-        //Sending receipt 
 
- 		$message['to']   = $customer->email;
- 		$message['first_name']   = $customer->first_name;
+        //Sending receipt
+
+        $message['to']   = $customer->email;
+        $message['first_name']   = $customer->first_name;
         $message['subject'] = 'Receipt for transaction '.$transactionId ;
 
         $message['sub_total'] = $DbHandler->getPackage(1)['price'];
@@ -1060,9 +1054,17 @@ $app->post('/payment','authenticate', function() use ($app) {
         $message['cur'] = "$";
 
         if(!send_email ('receipt', $message)) {
-  			$response["error"] = true;
+            $response["error"] = true;
             $response["message"] = "Payment successful, Coundn't email receipt to customer";
-            echoRespnse(500, $response); 
+            echoRespnse(500, $response);
+        }
+
+		// //Sending emails to daakorators
+		//print_r($daa);
+		if(!sendEmailsToDaakors ($daa)) {
+            $response["error"] = true;
+            $response["message"] = "Payment successful, Coundn't send emails to daakorators";
+            echoRespnse(500, $response);    
         }
 
 
