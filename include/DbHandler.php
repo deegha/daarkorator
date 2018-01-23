@@ -960,7 +960,7 @@ class DbHandler {
        
             if($db->insert($table, $values, $rows)){  
                 $msgUrl = getNotificationUrl("styleboard", $results["project_id"]);
-                $values = $results["reciever_id"].", 'New message arrived', '".$msgUrl."', 5";
+                $values = $results["reciever_id"].", 'New comment on styleboard', '".$msgUrl."', 5";
 
 
                 $this->createNotification($values, null );
@@ -1488,7 +1488,7 @@ class DbHandler {
        
             if($db->insert($table, $values, $rows)){  
                 $msgUrl = getNotificationUrl("styleboard", $tmp["project_id"]);
-                $values = $tmp["reciever_id"].", '".getNotificationText('message', $results["title"])."', '".$msgUrl."', 5";
+                $values = $tmp["reciever_id"].", '".getNotificationText('message', $results["title"])."', '".$msgUrl."', 4";
 
                 $this->createNotification($values, null );
                 return  true;
