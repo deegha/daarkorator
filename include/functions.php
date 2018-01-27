@@ -210,7 +210,7 @@ function getNotificationText($notificationType, $params=null) {
             return "Customer has decided to cancel ".$params['project_name'].".";
         break;
         case "sumbmitFinalDeliverablesCustomer" :
-            return "Your project has been submited with final deliverables";
+            return "Check out the final deliverables added to your project.";
         break;
     }    
 }
@@ -242,10 +242,10 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-     //return "http://18.218.149.78/daakor/#/";
+     return "http://18.218.149.78/#/";
 
     //test
-    return "http://testapp.daakor.com/#/";
+    //return "http://testapp.daakor.com/#/";
 }
 
 function sendEmailsToDaakors ($daa) {
