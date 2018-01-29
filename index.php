@@ -74,13 +74,13 @@ function authenticate(\Slim\Route $route) {
         $access = $db->isValidAccessToken($user_accessToken);
         if (!$access) {
             $response["error"] = true;
-            $response["message"] = "Access Denied.";
+            $response["message"] = "Sorry! It looks like you don't have access to this page.";
             echoRespnse(401, $response);
             $app->stop();
         }else{
             if($access['expiration'] <= date('Y-m-d H:i:s')){
                 $response["error"] = true;
-	            $response["message"] = "Access token has expired"; 
+	            $response["message"] = "Oops! It looks like your access token has expired. Please contact us to receive a new access token.";
 	            echoRespnse(400, $response);
 	            $app->stop();
             }
@@ -99,7 +99,7 @@ function authenticate(\Slim\Route $route) {
         }        
     } else {
         $response["error"] = true;
-        $response["message"] = "invalid Request. Please login to the system";
+        $response["message"] = "Something went wrong. Please login to continue.";
         echoRespnse(400, $response);
         $app->stop();
     }
@@ -122,22 +122,22 @@ $app->post('/login', function() use ($app){
 					$access_token = $db->getAccessToken($logged_User['id']);
 					if(!$access_token) {
 						$response['error'] = true;
-						$response['message'] = "An error occurred. Please try again";
+						$response['message'] = "Something went wrong. Pease try again.";
 						echoRespnse(400, $response);
 					} 
 					$response["error"] = false;
 					$response['accessToken'] 	= $access_token;
 					$response['username'] 		= $logged_User['first_name'];
-					$response['message'] = "Successfully authenticated";
+					$response['message'] = "You were successfully authenticated!";
 					echoRespnse(200, $response);
 				} else {
 					$response['error'] = true;
-					$response['message'] = "An error occurred. Please try again";
+					$response['message'] = "Something went wrong. Pease try again.";
 					echoRespnse(400, $response);
 				}
 			} else {
 				$response['error'] = true;
-				$response['message'] = 'Login failed. Incorrect credentials';
+				$response['message'] = 'Oops! It looks like your login or password was entered incorrectly. Please try again.';
 				echoRespnse(400, $response);
 			}
 		}else {
@@ -178,7 +178,7 @@ $app->get('/userFeatures', 'authenticate', function() use ($app) {
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
-			$response["message"] = "The requested resource doesn't exists";
+			$response["message"] = "Something went wrong. It looks like some information is missing.";
 			echoRespnse(404, $response);
 		}
 	});	
@@ -194,7 +194,7 @@ $app->post('/user', 'authenticate', function() use ($app){
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->create) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -215,7 +215,7 @@ $app->post('/user', 'authenticate', function() use ($app){
         }
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Email already exists";
+			$response["message"] = "This email already has an account with us. ";
 			echoRespnse(400, $response);
 		}
 		$result = $DbHandler->createUser($params);
@@ -235,11 +235,11 @@ $app->post('/user', 'authenticate', function() use ($app){
 			}
 
 			$response["error"] = false;
-			$response["message"] = "user created successfully";
+			$response["message"] = "Congrats! Your account has been created.";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(400, $response);
 		}
 	}else {
@@ -259,7 +259,7 @@ $app->get('/user', 'authenticate', function() use ($app) {
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -272,7 +272,7 @@ $app->get('/user', 'authenticate', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });	
@@ -288,7 +288,7 @@ $app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->remove) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 	$response 	= array();
@@ -299,12 +299,12 @@ $app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
 
 		if(!$result) {
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);	
 		}
 
 		$response["error"] = false;
-		$response["message"] = "User Successfully Deleted";
+		$response["message"] = "User has been deleted.";
 		echoRespnse(200	, $response);
 	}
 });	
@@ -321,7 +321,7 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 
 		if(!$capabilities->manageProjects->priceSetup) {
 			$response["error"] = true;
-	        $response["message"] = "Unauthorized access";
+	        $response["message"] = "Sorry! It looks like you don't have access to this page.";
 	        echoRespnse(401, $response);
 		}
 
@@ -334,11 +334,11 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 	        $results = $DbHandler->updatePackage($pkg, $pkg_id);
 	        if($results) {
 	            $response["error"] = false;
-	            $response['message'] = "Package updated successfully";
+	            $response['message'] = "Service cost has been updated.";
 	            echoRespnse(200	, $response);
 	        }else{
 	            $response["error"] = true;
-	            $response["message"] = "An error occurred. Please try again";
+	            $response["message"] = "Something went wrong. Pease try again.";
 	            echoRespnse(500, $response);
 	        }
     	}else {
@@ -363,7 +363,7 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->update) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -374,13 +374,13 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 
 		if(isset($params['email'])) {
 			$response["error"] = true;
-			$response['message'] = "Unauthorized request, email cannot be changed";
+			$response['message'] = "Unauthorized request. Email cannot be changed.";
 			echoRespnse(401	, $response);
 		}
 
 		if(isset($params['user_type'])) {
 			$response["error"] = true;
-			$response['message'] = "Unauthorized request, user type cannot be changed";
+			$response['message'] = "Unauthorized request. User type cannot be changed.";
 			echoRespnse(401	, $response);
 		}
 
@@ -411,7 +411,7 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 	}else {
@@ -442,7 +442,7 @@ $app->post('/forgotPassword', function() use ($app) {
 			$resetKey = $DbHandler->generateResetKey($user_id);
 			if(!$resetKey ){
 				$response["error"] = true;
-				$response["message"] = "An error occurred while generating reset key Please try again";
+				$response["message"] = "Something went wrong. Pease try again.";
 				echoRespnse(500, $response);
 			}
 
@@ -484,7 +484,7 @@ $app->post('/userSignUp',  function() use ($app){
 		$DbHandler 	= new DbHandler();
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Email already exists";
+			$response["message"] = "This email already has an account with us. ";
 			echoRespnse(400, $response);
 		}
 		$user_type = 2;
@@ -501,7 +501,7 @@ $app->post('/userSignUp',  function() use ($app){
 			$activationKey = $DbHandler->generateResetKey($result);
 			if(!$activationKey ){
 				$response["error"] = true;
-				$response["message"] = "An error occurred while generating reset key Please try again";
+				$response["message"] = "Something went wrong. Pease try again.";
 				echoRespnse(500, $response);
 			}
 			$url = getBaseUrl().'activate-user;key='.$activationKey;
@@ -515,11 +515,11 @@ $app->post('/userSignUp',  function() use ($app){
 				echoRespnse(500, $response);	
 			}
 			$response["error"] = false;
-			$response["message"] = "User created successfully";
+			$response["message"] = "Congrats! Your account has been created.";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 	}else {
@@ -548,7 +548,7 @@ $app->get('/rooms', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -571,7 +571,7 @@ $app->get('/room-images', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -595,7 +595,7 @@ $app->get('/color-choices', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -614,7 +614,7 @@ $app->get('/user/types', 'authenticate', function() use ($app) {
     $capabilities = json_decode($features);
     if(!$capabilities->manageUsers->enabled) {
         $response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
     }
 	$response = array();
@@ -626,7 +626,7 @@ $app->get('/user/types', 'authenticate', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -642,7 +642,7 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -655,7 +655,7 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -682,12 +682,12 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 		    if($result){ 
 		    	if($result['expiry'] <= date('Y-m-d H:i:s')) {
 		    		$response["error"] = true;
-	                $response["message"] = "Password reset request has been expired!";
+	                $response["message"] = "Oops! It looks like your request for a password reset has expired. Please contact us to reset your password.";
 	                echoRespnse(400, $response);
 				}
 				if($result['status'] == 1) {
 		    		$response["error"] = true;
-	                $response["message"] = "This link has already been used";
+	                $response["message"] = "Oops! It looks like the link we sent you to reset the password has already been used. Please contact us to reset your password.";
 	                echoRespnse(200, $response);
 				}
 				$update_params = array('password' => $params['password']);
@@ -702,7 +702,7 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
                 if($DbHandler->updateUser($update_params, $result['id'])){
 					
                     $response["error"] = false;
-                    $response['message'] = "Password updated Successfully";
+                    $response['message'] = "Your password has been updated.";
                     echoRespnse(200	, $response);
                 }
 		    }else{
@@ -730,7 +730,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->create) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -767,7 +767,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 
 			if($generated_name == "") {
 				$response["error"] = true;
-				$response["message"] = "An error occurred while uploading images";
+				$response["message"] = "Something went wrong. Pease try again.";
 				echoRespnse(500, $response);
 			}
 
@@ -791,7 +791,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 
 			if($generated_name == "") {
 				$response["error"] = true;
-				$response["message"] = "An error occurred while uploading images";
+				$response["message"] = "Something went wrong. Pease try again.";
 				echoRespnse(500, $response);
 			}
 
@@ -816,7 +816,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 		}
 
 		$response["error"] = false;
-		$response["message"] = "Project successfully created.";
+		$response["message"] = "Your new project has been created.";
 		$response["project_id"] = $result;
 		$response["price"] = $payment['price'];
 		echoRespnse(200	, $response);
@@ -858,7 +858,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 	
 	$user = $DbHandler->getUser($user_id['id'])[0];
 	$message['to']	 = $user->email;
-	$message['subject']	= 'Your account activated successfully';
+	$message['subject']	= 'Your account is now active. ';
 	$message['first_name']	 = $user->first_name;
 
 	if(!send_email ('signup-complete', $message)) {
@@ -886,7 +886,7 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -929,7 +929,7 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -945,7 +945,7 @@ $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 	$DbHandler = new DbHandler();	
 	if(!$capabilities->manageProjects->priceSetup) {
 		$response["error"] = true;
-		$response["message"] = "Unauthorized access";
+		$response["message"] = "Sorry! It looks like you don't have access to this page.";
 		echoRespnse(401, $response);
 	}
 		
@@ -1020,11 +1020,11 @@ $app->post('/payment','authenticate', function() use ($app) {
 			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
 
 		}
-		if(!$DbHandler->createNotification($values, true)){
-			$response["error"] = false;
-			$response['message'] = "Payment successful, error in creating notifications";
-			echoRespnse(200	, $response);
-		}
+		$DbHandler->createNotification($values, true);
+		//	$response["error"] = false;
+		//	$response['message'] = "Payment successful, error in creating notifications";
+		//	echoRespnse(200	, $response);
+		//}
 
 		// Send emails to customer
         $customer = $DbHandler->getUser($user_id);
@@ -1033,11 +1033,11 @@ $app->post('/payment','authenticate', function() use ($app) {
         $message['to']   = $customer->email;
         $message['subject'] = 'Your room design contest has kicked off!';
 
-        if(!send_email ('new_project_customer', $message)) {
-            $response["error"] = true;
-            $response["message"] = "Payment successful, Coundn't send email to customer";
-            echoRespnse(500, $response);
-        }
+        send_email ('new_project_customer', $message);
+        //    $response["error"] = true;
+         //   $response["message"] = "Payment successful, Coundn't send email to customer";
+        //    echoRespnse(500, $response);
+        //}
 
 
         //Sending receipt
@@ -1053,23 +1053,23 @@ $app->post('/payment','authenticate', function() use ($app) {
         $message['transaction_number'] = $transactionId;
         $message['cur'] = "$";
 
-        if(!send_email ('receipt', $message)) {
-            $response["error"] = true;
-            $response["message"] = "Payment successful, Coundn't email receipt to customer";
-            echoRespnse(500, $response);
-        }
+        send_email ('receipt', $message);
+        //    $response["error"] = true;
+        //    $response["message"] = "Payment successful, Coundn't email receipt to customer";
+         //   echoRespnse(500, $response);
+       // }
 
 		// //Sending emails to daakorators
 		//print_r($daa);
-		if(!sendEmailsToDaakors ($daa)) {
-            $response["error"] = true;
-            $response["message"] = "Payment successful, Coundn't send emails to daakorators";
-            echoRespnse(500, $response);    
-        }
+		sendEmailsToDaakors ($daa);
+        //    $response["error"] = true;
+        //    $response["message"] = "Payment successful, Coundn't send emails to daakorators";
+        //    echoRespnse(500, $response);
+       // }
 
 
 		$response["error"] = false;
-	    $response["message"] = "Payment successful";
+	    $response["message"] = "Your payment has been processed. ";
 		echoRespnse(200	, $response);
 
 	}else {
@@ -1098,13 +1098,13 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 
 		if(isset($params['email'])) {
 			$response["error"] = true;
-			$response['message'] = "Unauthorized request, email cannot be changed";
+			$response['message'] = "Unauthorized request. Email cannot be changed.";
 			echoRespnse(401	, $response);
 		}
 
 		if(isset($params['user_type'])) {
 			$response["error"] = true;
-			$response['message'] = "Unauthorized request, user type cannot be changed";
+			$response['message'] = "Unauthorized request. User type cannot be changed.";
 			echoRespnse(401	, $response);
 		}
 
@@ -1154,7 +1154,7 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 	}else {
@@ -1178,7 +1178,7 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->view) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -1197,7 +1197,7 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 		echoRespnse(200	, $response);		
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1220,7 +1220,7 @@ $app->get('/notificationcount', 'authenticate', function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1243,7 +1243,7 @@ $app->get('/notifications(/:limit(/:status))', 'authenticate', function($limit=n
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1301,7 +1301,7 @@ $app->get('/projectdetails/:project_id', 'authenticate',function($project_id) us
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1329,11 +1329,11 @@ $app->post('/message', 'authenticate', function() use ($app){
 		$result = $DbHandler->createMessage($tmp, $logged_user_type);
 		if(!$result) {
           		$response["error"] = true;
-          		$response["message"] = "An error occurred while sending message";
+          		$response["message"] = "Something went wrong. Pease try again.";
           		echoRespnse(500, $response);
           	} else {
           		$response["error"] = false;
-          		$response["message"] = "Message sent successfully!";
+          		$response["message"] = "Your message has been sent. ";
           		echoRespnse(200	, $response);
             }
 	}else {
@@ -1406,7 +1406,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	// $capabilities = json_decode($features);
 	// if(!$capabilities->manageProjects->addStyleBoard) {
 	// 	$response["error"] = true;
-    //     $response["message"] = "Unauthorized access";
+    //     $response["message"] = "Sorry! It looks like you don't have access to this page.";
     //     echoRespnse(401, $response);
 	// }
 
@@ -1427,13 +1427,13 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$generated_name = uploadPdf($file);
 		if($generated_name == "") {
 			$response["error"] = true;
-			$response["message"] = "An error occurred while uploading images";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);		
 		}
 
 		if(!$DbHandler->saveStyleBoard($params,$generated_name,$user_id)){
 			$response["error"] = true;
-			$response["message"] = "An error occurred while saving Styleboard";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 
@@ -1486,7 +1486,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1513,7 +1513,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1541,7 +1541,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1625,7 +1625,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 	if(!$capabilities->manageProjects->priceSetup) {
 		$response["error"] = true;
-		$response["message"] = "Unauthorized access";
+		$response["message"] = "Sorry! It looks like you don't have access to this page.";
 		echoRespnse(401, $response);
 	}
 
@@ -1638,11 +1638,11 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$results = $DbHandler->updatePackage($pkg, $pkg_id);
 		if($results) {
 			$response["error"] = false;
-			$response['message'] = "Package updated successfully";
+			$response['message'] = "Service cost has been updated.";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 	}else {
@@ -1666,7 +1666,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$DbHandler 	= new DbHandler();
 		if($DbHandler->getUserByEmail($params['email'])) {
 			$response["error"] = true;
-			$response["message"] = "Email already exists";
+			$response["message"] = "This email already has an account with us. ";
 			echoRespnse(400, $response);
 		}
 		$user_type = 3;
@@ -1686,15 +1686,15 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 			if(!send_email ('new_daarkorator_created', $message)) {
 				$response["error"] = true;
-				$response["message"] = "User created successfully, Coundn't send an email";
+				$response["message"] = "Congrats! Your account has been created, Coundn't send an email";
 				echoRespnse(500, $response);	
 			}
 			$response["error"] = false;
-			$response["message"] = "User created successfully";
+			$response["message"] = "Congrats! Your account has been created.";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
-			$response["message"] = "An error occurred. Please try again";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 	}else {
@@ -1716,7 +1716,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->update) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -1730,11 +1730,11 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	if($result) {
 		$user = $DbHandler->getUser($id);
 		// print_r($user)
-		if(!$user[0]->email) {
-			$response["error"] = true;
-			$response["message"] = "User approved successfully, Coundn't find the email address";
-			echoRespnse(500, $response);	
-		}
+		//$user[0]->email;
+		//	$response["error"] = true;
+		//	$response["message"] = "User approved successfully, Coundn't find the email address";
+		//	echoRespnse(500, $response);
+		//}
 		$resetKey = $DbHandler->generateResetKey($id);
 		$url = getBaseUrl().'set-password;k='.$resetKey;
 
@@ -1742,17 +1742,17 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$message['to']	 = $user[0]->email;
 		$message['subject']	= 'Set your password';
 
-		if(!send_email ('new_user_set_password', $message)) {
-			$response["error"] = true;
-			$response["message"] = "User approved successfully, Could not sent an email";
-			echoRespnse(400, $response);
-		}
+		send_email ('new_user_set_password', $message);
+		//	$response["error"] = true;
+		//	$response["message"] = "User approved successfully, Could not sent an email";
+		//	echoRespnse(400, $response);
+		//}
 		$response["error"] = false;
-		$response['message'] = "User approved Successfully";
+		$response['message'] = "User has been approved. ";
 		echoRespnse(200	, $response);
 	}else{
 		$response["error"] = true;
-		$response["message"] = "An error occurred. Please try again";
+		$response["message"] = "Something went wrong. Pease try again.";
 		echoRespnse(500, $response);
 	}
 });
@@ -1770,7 +1770,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->view) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -1788,7 +1788,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
-		$response["message"] = "The requested resource doesn't exists";
+		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
 });
@@ -1806,7 +1806,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->update) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -1826,7 +1826,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			echoRespnse(500, $response);
 		}
 		$response["error"] = false;
-		$response["message"] = "Added to my projects successfully";
+		$response["message"] = "You just added this project to your My Projects page. ";
 		echoRespnse(200, $response);
 	}else {
 		$response["error"] = true;
@@ -1848,7 +1848,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->remove) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 	$response 	= array();
@@ -1929,7 +1929,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 	if(!send_email ('signup-complete', $message)) {
 		$response["error"] = true;
-		$response["message"] = "An error occurred. Please try again";
+		$response["message"] = "Something went wrong. Pease try again.";
 		echoRespnse(500, $response);
 	}else{
 	$response["error"] = false;
@@ -1953,7 +1953,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 	if(!$result) {
 		$response["error"] = true;
-		$response["message"] = "An error occurred. Please try again";
+		$response["message"] = "Something went wrong. Pease try again.";
 		echoRespnse(500, $response);
 	}else{
 		$response["error"] = false;
@@ -1998,7 +1998,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 			if($generated_name == "") {
 				$response["error"] = true;
-				$response["message"] = "An error occurred while uploading images";
+				$response["message"] = "Something went wrong. Pease try again.";
 				echoRespnse(500, $response);
 			}
 
@@ -2022,7 +2022,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 			if($generated_name == "") {
 				$response["error"] = true;
-				$response["message"] = "An error occurred while uploading images";
+				$response["message"] = "Something went wrong. Pease try again.";
 				echoRespnse(500, $response);
 			}
 
@@ -2046,7 +2046,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		}
 
 		$response["error"] = false;
-		$response["message"] = "Project successfully Updated.";
+		$response["message"] = "Your changes to the project has been saved. ";
 		$response["price"] = $payment['price'];
 		echoRespnse(200	, $response);
 	}
@@ -2067,7 +2067,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 		
 		if(!$result || $result === 0 ) {
 			$response["error"] = true;
-			$response["message"] = "Something went wrong while adding the stlyboard to the project";
+			$response["message"] = "Something went wrong. Pease try again.";
 			echoRespnse(500, $response);
 		}
 
@@ -2084,7 +2084,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 		}
 
 		$response["error"] = false;
-		$response["message"] = "Styleboard added to projects successfully";
+		$response["message"] = "Your style board has been submitted. ";
 		echoRespnse(200, $response);
 	}else {
 		$response["error"] = true;
@@ -2106,7 +2106,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageProjects->deliverablesUpload) {
 		$response["error"] = true;
-        $response["message"] = "Unauthorized access";
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
         echoRespnse(401, $response);
 	}
 
@@ -2239,7 +2239,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 	}
 
 	$response["error"] = false;
-	$response["message"] = "Deliverable uploaded successfully ";
+	$response["message"] = "Your deliverables have been submitted. ";
 	echoRespnse(200, $response);
 });
 
@@ -2285,7 +2285,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$capabilities = json_decode($features);
 	// if(!$capabilities->manageUsers->update) {
 	// 	$response["error"] = true;
- //        $response["message"] = "Unauthorized access";
+ //        $response["message"] = "Sorry! It looks like you don't have access to this page.";
  //        echoRespnse(401, $response);
 	// }
 
@@ -2296,7 +2296,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 
 	if(!$DbHandler->updateProject($params, $project_id)) {
 		$response["error"] = true;
-		$response["message"] = "An error occurred. Please try again";
+		$response["message"] = "Something went wrong. Pease try again.";
 		echoRespnse(500, $response);
 	}
 
@@ -2358,11 +2358,11 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
 		$result = $DbHandler->createExternalMessage($tmp);
 		if(!$result) {
           		$response["error"] = true;
-          		$response["message"] = "An error occurred while sending message";
+          		$response["message"] = "Something went wrong. Pease try again.";
           		echoRespnse(500, $response);
           	} else {
           		$response["error"] = false;
-          		$response["message"] = "Message sent successfully!";
+          		$response["message"] = "Your message has been sent. ";
           		echoRespnse(200	, $response);
             }
 	}else {
