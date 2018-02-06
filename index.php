@@ -511,11 +511,11 @@ $app->post('/userSignUp',  function() use ($app){
 
 			if(!send_email ('new_user_created', $message)) {
 				$response["error"] = true;
-				$response["message"] = "User created, Coundn't send an activation email";
+				$response["message"] = "User created, Coundn't send an activation email.";
 				echoRespnse(500, $response);	
 			}
 			$response["error"] = false;
-			$response["message"] = "Congrats! Your account has been created.";
+			$response["message"] = "Congratulations! Your account has been created.";
 			echoRespnse(200	, $response);
 		}else{
 			$response["error"] = true;
@@ -524,7 +524,7 @@ $app->post('/userSignUp',  function() use ($app){
 		}
 	}else {
 		$response["error"] = true;
-		$response["message"] = "An error occurred. No request body";
+		$response["message"] = "An error occurred. No request body.";
 		echoRespnse(500, $response);
 	}	
 });
