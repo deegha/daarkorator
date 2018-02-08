@@ -1013,7 +1013,7 @@ class DbHandler {
                         u.email as email,
                         m.project_id as project_id,
                         m.message_subject as message_subject,
-                        m.date_time as date_time, 
+                        DATE_FORMAT(m.date_time, '%Y-%m-%d') as date_time,
                         psb.style_board_name as styleboard_name,
                         psb.id as styleboard_id,
                         m.status as status";
@@ -1053,7 +1053,7 @@ class DbHandler {
                                u.first_name as sender,
                                m.message_subject as message_subject,
                                m.message_text as message_text,
-                               m.date_time as date_time,
+                               DATE_FORMAT(m.date_time, '%Y-%m-%d') as date_time,
                                m.status as status,
                                if(m.reciever_id = $user_id, 'received', 'sent') as class";
             $where  = "(m.reciever_id = $user_id or m.sender_id = $user_id) and m.styleboard_id = $styleboard_id";
@@ -1506,7 +1506,7 @@ class DbHandler {
 
         $db = new database();
         $table = "messages m inner join user u on u.id = m.reciever_id inner join user uu on uu.id = m.sender_id";
-        $rows  = ' m.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, m.date_time, if(m.sender_id = '.$user_id.', u.first_name, uu.first_name ) as sender, if(m.sender_id = '.$user_id.', m.reciever_id, m.sender_id ) as sender_id';
+        $rows  = ' m.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, DATE_FORMAT(m.date_time, "%b %d, %Y") as date_time, if(m.sender_id = '.$user_id.', u.first_name, uu.first_name ) as sender, if(m.sender_id = '.$user_id.', m.reciever_id, m.sender_id ) as sender_id';
 
         $where = 'message_reff = 1 and project_id = '.$project_id.' and (reciever_id = '.$user_id.' or sender_id = '.$user_id.')';
         $where .= ' group by sender  order by date_time desc';
@@ -1525,7 +1525,7 @@ class DbHandler {
                     sender_id,
                     message_subject,
                     message_text,
-                    date_time,
+                    DATE_FORMAT(date_time, '%Y-%m-%d') as date_time,
                     if(reciever_id = $user_id, 'received', 'sent') as class";
 
             //$where = '(message_reff = 1 and project_id = '.$project_id.') and ((sender_id = '.$sender_id.' and reciever_id = '.$user_id.') or (sender_id = '.$user_id.' or reciever_id = '.$sender_id.'))';

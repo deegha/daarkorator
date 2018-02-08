@@ -44,7 +44,7 @@ $app->map('/:x+', function($x) {
  */
 function authenticate(\Slim\Route $route) {
     
-	if( !function_exists('apache_request_headers') ) {
+	/*if( !function_exists('apache_request_headers') ) {
 		function apache_request_headers() {
 		  $arh = array();
 		  $rx_http = '/\AHTTP_/';
@@ -64,13 +64,13 @@ function authenticate(\Slim\Route $route) {
 		  }
 		  return( $arh );
 		}
-	}
+	}*/
 	$headers = apache_request_headers();
     $response = array();
     $app = \Slim\Slim::getInstance();
-    if (isset($headers['AUTHORIZATION'])) {
+    if (isset($headers['Authorization'])) {
         $db = new DbHandler();
-        $user_accessToken = $headers['AUTHORIZATION'];
+        $user_accessToken = $headers['Authorization'];
         $access = $db->isValidAccessToken($user_accessToken);
         if (!$access) {
             $response["error"] = true;
