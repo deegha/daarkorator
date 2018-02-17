@@ -15,11 +15,11 @@ function echoRespnse($status_code, $response) {
     http_response_code($status_code);
     // setting response content type to json
     $app->contentType('application/json');
-    
+
     echo json_encode($response);
-    die();       
+    die();
 }
- 
+
 function callErrorLog($e){
     error_log($e->getMessage(). "\n", 3, "./error.log");
 }
@@ -141,7 +141,7 @@ function send_email ($template, $message=null) {
 
 function gnerateTransactionId($user_id) {
     try{
-        $transactionId = md5(time()); 
+        $transactionId = "DAA-".substr(time(),6).rand(1000,9999); 
         return $transactionId;
     }catch(Exception $e){
         callErrorLog($e);
@@ -157,9 +157,9 @@ function uploadProjectImages($file) {
     $image->load($file['tmp_name']);
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     $generatedFileName = $unique . '.' . $ext;
-    
+
     $image->save($path.$generatedFileName);
-    return $generatedFileName;   
+    return $generatedFileName;
 }
 
 
@@ -170,7 +170,7 @@ function prepareBulkNotifications($daarkors, $notificationsText, $url=null, $typ
         $values[$inc] = "(".$daarkor['id'].", '".$notificationsText."', '".$url."', '".$type."')";
         $inc++;
     }
-    
+
     return implode(",",$values);
 }
 
@@ -212,7 +212,7 @@ function getNotificationText($notificationType, $params=null) {
         case "sumbmitFinalDeliverablesCustomer" :
             return "Check out the final deliverables added to your project.";
         break;
-    }    
+    }
 }
 
 function getNotificationUrl($notificationType, $projectId=null) {
@@ -223,7 +223,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
                 "showAddProject" => true,
                 "isCancelled" => false
             );
-            
+
             $ecoded = base64_encode(json_encode($data));
             return "project-details/".$ecoded;
         break;
@@ -233,11 +233,21 @@ function getNotificationUrl($notificationType, $projectId=null) {
                 "showAddProject" => false,
                 "isCancelled" => false
             );
-            
+
             $ecoded = base64_encode(json_encode($data));
             return "project-details/".$ecoded;
         break;
-    }    
+        case "projectCancel" :
+            $data = array(
+                "id" => $projectId,
+                "showAddProject" => false,
+                "isCancelled" => true
+            );
+
+            $ecoded = base64_encode(json_encode($data));
+            return "project-details/".$ecoded;
+        break;
+    }
 }
 
 function getBaseUrl() {

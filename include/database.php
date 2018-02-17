@@ -172,17 +172,22 @@ private $numrows;
 		}
 		
 	}
+
+	public function callErrorLog($e){
+            error_log(date('Y-M-D  h:i A')." - ".$e->getMessage(). "\n", 3, "./error.log");
+        }
 	
 
 	
 	public function update($table,$rows,$where){
+	try{
         $update = "update ".$table." set " ;
 		$keys = array_keys($rows);
 		for($i=0; $i<count($rows); $i++){
 			if(is_string($rows[$keys[$i]])){
-				$update .= $keys[$i]."='".$rows[$keys[$i]]."'";
+				$update .= $keys[$i]."='".$this->con->real_escape_string($rows[$keys[$i]])."'";
 			}else{
-				$update .= $keys[$i]."=".$rows[$keys[$i]];
+				$update .= $keys[$i]."=".$this->con->real_escape_string($rows[$keys[$i]]);
 			}
 			if($i != count($rows)-1){
 				$update .= ",";
@@ -196,6 +201,9 @@ private $numrows;
 			return false;	
 		}
 		$this->disconnect();
+		}catch(Exception $e){
+         $this->callErrorLog($e);
+     }
     }
     public function updatePreparedStatment($query){
     

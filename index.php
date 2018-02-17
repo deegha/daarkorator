@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 require_once 'include/database.php';
 require_once 'include/DbHandler.php';
 require_once 'include/PassHash.php';
@@ -8,7 +9,10 @@ require_once 'include/functions.php';
 require_once 'include/SimpleImage.php';
 require 'libs/Slim/Slim.php';
 
-//test 
+
+
+
+//test
 \Slim\Slim::registerAutoloader();
 $app = new \Slim\Slim();
 $app->add(new \Slim\Middleware\ContentTypes());
@@ -43,8 +47,8 @@ $app->map('/:x+', function($x) {
  * Checking if the request has valid api key in the 'Authorization' header
  */
 function authenticate(\Slim\Route $route) {
-    
-	/*if( !function_exists('apache_request_headers') ) {
+
+	if( !function_exists('apache_request_headers') ) {
 		function apache_request_headers() {
 		  $arh = array();
 		  $rx_http = '/\AHTTP_/';
@@ -64,13 +68,13 @@ function authenticate(\Slim\Route $route) {
 		  }
 		  return( $arh );
 		}
-	}*/
+	}
 	$headers = apache_request_headers();
     $response = array();
     $app = \Slim\Slim::getInstance();
-    if (isset($headers['Authorization'])) {
+    if (isset($headers['AUTHORIZATION'])) {
         $db = new DbHandler();
-        $user_accessToken = $headers['Authorization'];
+        $user_accessToken = $headers['AUTHORIZATION'];
         $access = $db->isValidAccessToken($user_accessToken);
         if (!$access) {
             $response["error"] = true;
@@ -96,7 +100,7 @@ function authenticate(\Slim\Route $route) {
 			$user_fname = $access['first_name'];
 			$user_lname = $access['last_name'];
 			$telephone = $access['telephone'];
-        }        
+        }
     } else {
         $response["error"] = true;
         $response["message"] = "Something went wrong. Please login to continue.";
@@ -108,13 +112,13 @@ function authenticate(\Slim\Route $route) {
 $app->post('/login', function() use ($app){
 	$response = array();
 	$request = $app->request();
-	$db = new DbHandler();	
+	$db = new DbHandler();
 	try{
 		if($app->request() && $app->request()->getBody()){
 			$params = $app->request()->getBody();
 			$email= $params['email'];
 			$password = $params['password'];
-			
+
 			if ($db->checkLogin($email, $password)) {
 
 				$logged_User = $db->getUserByEmail($email);
@@ -124,7 +128,7 @@ $app->post('/login', function() use ($app){
 						$response['error'] = true;
 						$response['message'] = "Something went wrong. Pease try again.";
 						echoRespnse(400, $response);
-					} 
+					}
 					$response["error"] = false;
 					$response['accessToken'] 	= $access_token;
 					$response['username'] 		= $logged_User['first_name'];
@@ -149,14 +153,14 @@ $app->post('/login', function() use ($app){
         $db->callErrorLog($e);
         return false;
     }
-});	
+});
 
 
 /**
  * Get user allowed features
  * url 		- /userFeatures
  * method 	- GET
- * params 	- $user_id */	
+ * params 	- $user_id */
 $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $features;
 		global $logged_user_type;
@@ -165,30 +169,30 @@ $app->get('/userFeatures', 'authenticate', function() use ($app) {
 		global $telephone;
 
 		$response = array();
-		$DbHandler = new DbHandler();	
+		$DbHandler = new DbHandler();
 
         if ($features != NULL) {
-        	$response["error"] = false;	
+        	$response["error"] = false;
 			$response['features'] = json_decode($features);
 			$response['features']->logged_user_type=json_decode($logged_user_type);
 			$response['features']->user_fname = $user_fname;
 			$response['features']->user_lname = $user_lname;
 			$response['features']->telephone = $telephone;
-			
+
 			echoRespnse(200	, $response);
 		} else {
 			$response["error"] = true;
 			$response["message"] = "Something went wrong. It looks like some information is missing.";
 			echoRespnse(404, $response);
 		}
-	});	
+	});
 
 /**
  * Create user
  * url - /user
  * method - POST
  * params -user object
- */	
+ */
 $app->post('/user', 'authenticate', function() use ($app){
 	global $features;
 	$capabilities = json_decode($features);
@@ -247,13 +251,13 @@ $app->post('/user', 'authenticate', function() use ($app){
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(400, $response);
 	}
-});	
+});
 
 /**
  * List all users
  * url - /user
  * method - GET
- */		
+ */
 $app->get('/user', 'authenticate', function() use ($app) {
 	global $features;
 	$capabilities = json_decode($features);
@@ -264,7 +268,7 @@ $app->get('/user', 'authenticate', function() use ($app) {
 	}
 
 	$response = array();
-	$DbHandler = new DbHandler();	
+	$DbHandler = new DbHandler();
 	$result = $DbHandler->getUser();
 	if ($result != NULL) {
 		$response["error"] = false;
@@ -275,14 +279,14 @@ $app->get('/user', 'authenticate', function() use ($app) {
 		$response["message"] = "Something went wrong. It looks like some information is missing.";
 		echoRespnse(404, $response);
 	}
-});	
+});
 
 /**
  * Delete user
  * url - /user/:user_id
  * method - DELETE
  * params -user object
- */	
+ */
 $app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
 	global $features;
 	$capabilities = json_decode($features);
@@ -300,17 +304,17 @@ $app->delete('/user/:user_id', 'authenticate', function($user_id) use ($app){
 		if(!$result) {
 			$response["error"] = true;
 			$response["message"] = "Something went wrong. Pease try again.";
-			echoRespnse(500, $response);	
+			echoRespnse(500, $response);
 		}
 
 		$response["error"] = false;
 		$response["message"] = "User has been deleted.";
 		echoRespnse(200	, $response);
 	}
-});	
+});
 
 /**
- * Update price 
+ * Update price
  * url - /package/:id
  * method - PUT
  * params - */
@@ -353,7 +357,7 @@ $app->put('/package/:id', 'authenticate', function($pkg_id) use ($app) {
  * url - /user
  * method - PUT
  * params -user object
- */	
+ */
 $app->put('/user/:id', 'authenticate', function($id) use ($app){
 	global $features;
 	if(!isset($id)) {
@@ -384,8 +388,8 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 			echoRespnse(401	, $response);
 		}
 
-		if(!isset($params['update_password']) 
-				&&  isset($params['password']) 
+		if(!isset($params['update_password'])
+				&&  isset($params['password'])
 				|| isset($params['update_password']) && $params['update_password'] == false && isset($params['password']) ) {
 			$response["error"] = true;
 			$response['message'] = "Unauthorized request, password cannot be changed on this request";
@@ -422,7 +426,7 @@ $app->put('/user/:id', 'authenticate', function($id) use ($app){
 });
 
 /**
- * forgot password 
+ * forgot password
  * url - /forgotPassword
  * method - POST
  * params - */
@@ -457,7 +461,7 @@ $app->post('/forgotPassword', function() use ($app) {
 			if(!send_email ('resetpassword', $message)) {
 				$response["error"] = true;
 				$response["message"] = "An error occurred while sending the rest key email. Please try again";
-				echoRespnse(500, $response);	
+				echoRespnse(500, $response);
 			}
 
 			$response["error"] = false;
@@ -467,7 +471,7 @@ $app->post('/forgotPassword', function() use ($app) {
 			$response["error"] = true;
 			$response["message"] = "An error occurred. No request body";
 			echoRespnse(500, $response);
-		}	
+		}
 });
 
 /**
@@ -475,7 +479,7 @@ $app->post('/forgotPassword', function() use ($app) {
  * url - /userSignUp
  * method - POST
  * params -user object
- */	
+ */
 $app->post('/userSignUp',  function() use ($app){
 
 	$response 	= array();
@@ -488,7 +492,7 @@ $app->post('/userSignUp',  function() use ($app){
 			echoRespnse(400, $response);
 		}
 		$user_type = 2;
-		
+
 		if(!$DbHandler->validate($params, true)) {
 			$response["error"] = false;
 			$response["message"] = "Validation failed";
@@ -512,7 +516,7 @@ $app->post('/userSignUp',  function() use ($app){
 			if(!send_email ('new_user_created', $message)) {
 				$response["error"] = true;
 				$response["message"] = "User created, Coundn't send an activation email.";
-				echoRespnse(500, $response);	
+				echoRespnse(500, $response);
 			}
 			$response["error"] = false;
 			$response["message"] = "Congratulations! Your account has been created.";
@@ -526,7 +530,7 @@ $app->post('/userSignUp',  function() use ($app){
 		$response["error"] = true;
 		$response["message"] = "An error occurred. No request body.";
 		echoRespnse(500, $response);
-	}	
+	}
 });
 
 
@@ -605,7 +609,7 @@ $app->get('/color-choices', function() use ($app) {
  * List all roles
  * url - /user/types
  * method - GET
- * 
+ *
 
  */
 $app->get('/user/types', 'authenticate', function() use ($app) {
@@ -635,10 +639,10 @@ $app->get('/user/types', 'authenticate', function() use ($app) {
  * List single user
  * url - /user/:id
  * method - GET
- **/		
+ **/
 $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 	global $features;
-	
+
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->view) {
 		$response["error"] = true;
@@ -647,7 +651,7 @@ $app->get('/user/:id', 'authenticate', function($id) use ($app) {
 	}
 
 	$response = array();
-	$DbHandler = new DbHandler();	
+	$DbHandler = new DbHandler();
 	$result = $DbHandler->getUser($id);
 	if ($result != NULL) {
 		$response["error"] = false;
@@ -679,7 +683,7 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
             echoRespnse(200, $response);
 		}else{
 		    $result = $DbHandler->getPasswordChangeUser($resetKey);
-		    if($result){ 
+		    if($result){
 		    	if($result['expiry'] <= date('Y-m-d H:i:s')) {
 		    		$response["error"] = true;
 	                $response["message"] = "Oops! It looks like your request for a password reset has expired. Please contact us to reset your password.";
@@ -700,7 +704,7 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
 					echoRespnse(200, $response);
 				}
                 if($DbHandler->updateUser($update_params, $result['id'])){
-					
+
                     $response["error"] = false;
                     $response['message'] = "Your password has been updated.";
                     echoRespnse(200	, $response);
@@ -719,7 +723,7 @@ $app->post('/resetpassword/:resetKey',  function($resetKey) use ($app){
  * Create Project
  * url - /project
  * method - post
- **/		
+ **/
 $app->post('/project', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
@@ -754,7 +758,7 @@ $app->post('/project', 'authenticate', function() use ($app) {
 	$result 	= false;
 
 	$result = $DbHandler->createProject($params, $user_id, $draft);
-	
+
 	if(! empty($_FILES['room_images'])) {
 		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
 			$file['name'] = $_FILES['room_images']['name'][$key];
@@ -836,7 +840,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 		$response["error"] = true;
         $response["message"] = "The requested activation key does not exist";
         echoRespnse(404, $response);
-	}	
+	}
 	if($user_id['status'] == 1) {
 		$response["error"] = true;
 		$response["message"] = "This link has already been used";
@@ -855,7 +859,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
         $response["message"] = "something went wrong while updating user";
         echoRespnse(500, $response);
 	}
-	
+
 	$user = $DbHandler->getUser($user_id['id'])[0];
 	$message['to']	 = $user->email;
 	$message['subject']	= 'Your account is now active. ';
@@ -866,7 +870,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
 		$response["message"] = "User created, Coundn't send an activation email";
 		echoRespnse(500, $response);
 	}
-	
+
 
 	$response["error"] = false;
     $response["message"] = "Account successfully activated";
@@ -878,7 +882,7 @@ $app->put('/activateUser/:activationKey', function($changeRequestCode) use ($app
  * My profile
  * url - /user
  * method - GET
- **/		
+ **/
 $app->get('/myprofile', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
@@ -891,7 +895,7 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
 	}
 
 	$response = array();
-	$DbHandler = new DbHandler();	
+	$DbHandler = new DbHandler();
 	$result = (array)$DbHandler->getUser($user_id);
 
 	$result = (array)$result[0];
@@ -938,17 +942,17 @@ $app->get('/myprofile', 'authenticate', function() use ($app) {
  * Get package
  * url - /user
  * method - GET
- **/	
+ **/
 $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 	global $features;
 	$capabilities = json_decode($features);
-	$DbHandler = new DbHandler();	
+	$DbHandler = new DbHandler();
 	if(!$capabilities->manageProjects->priceSetup) {
 		$response["error"] = true;
 		$response["message"] = "Sorry! It looks like you don't have access to this page.";
 		echoRespnse(401, $response);
 	}
-		
+
 	$package = $DbHandler->getPackage($pkg_id);
 	if(!$package) {
 		$response["error"] = true;
@@ -969,11 +973,11 @@ $app->get('/package/:id', 'authenticate', function($pkg_id) use ($app) {
 
 $app->post('/payment','authenticate', function() use ($app) {
 	global $user_id;
-	
+
 	if($app->request() && $app->request()->getBody()){
 
 		$response 	= array();
-		$DbHandler 	= new DbHandler();	
+		$DbHandler 	= new DbHandler();
 		$params 	= $app->request()->getBody();
 
 		if(!isset($params['project_id'])  ||
@@ -998,7 +1002,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        echoRespnse(400, $response);
 		}
 
-		$transactionId = gnerateTransactionId($user_id);	
+		$transactionId = gnerateTransactionId($user_id);
 
 		if(!$transactionId) {
 			$response["error"] = true;
@@ -1006,13 +1010,13 @@ $app->post('/payment','authenticate', function() use ($app) {
 			echoRespnse(500, $response);
 		}
 
-		if(!$DbHandler->payment($params, $user_id, $transactionId)) {
+		if(!$paymentDetails = $DbHandler->payment($params, $user_id, $transactionId)) {
 			$response["error"] = true;
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
-		}	
+		}
 
-		//Sending notifications to daarkorators on new project
+    //Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
 		$daa = $DbHandler->getAllDaarkorators();
 
@@ -1021,55 +1025,36 @@ $app->post('/payment','authenticate', function() use ($app) {
 
 		}
 		$DbHandler->createNotification($values, true);
-		//	$response["error"] = false;
-		//	$response['message'] = "Payment successful, error in creating notifications";
-		//	echoRespnse(200	, $response);
-		//}
 
 		// Send emails to customer
-        $customer = $DbHandler->getUser($user_id);
-        $customer = $customer[0];
+    $customer = $DbHandler->getUser($user_id);
+    $customer = $customer[0];
 
-        $message['to']   = $customer->email;
-        $message['subject'] = 'Your room design contest has kicked off!';
+    $message['to']   = $customer->email;
+    $message['subject'] = 'Your room design contest has kicked off!';
 
-        send_email ('new_project_customer', $message);
-        //    $response["error"] = true;
-         //   $response["message"] = "Payment successful, Coundn't send email to customer";
-        //    echoRespnse(500, $response);
-        //}
+    send_email ('new_project_customer', $message);
 
+    //Sending receipt
 
-        //Sending receipt
+    $message['to']   = $customer->email;
+    $message['first_name']   = $customer->first_name;
+    $message['subject'] = 'Receipt for transaction '.$transactionId ;
 
-        $message['to']   = $customer->email;
-        $message['first_name']   = $customer->first_name;
-        $message['subject'] = 'Receipt for transaction '.$transactionId ;
+    $message['sub_total'] = $DbHandler->getPackage(1)['price'];
+    $message['discount'] = "0";
+    $message['hst']	= "0";
+    $message['totall_paid'] = $params['amount'];
+    $message['transaction_number'] = $transactionId;
+    $message['cur'] = "$";
 
-        $message['sub_total'] = $DbHandler->getPackage(1)['price'];
-        $message['discount'] = "0";
-        $message['hst']	= "0";
-        $message['totall_paid'] = $params['amount'];
-        $message['transaction_number'] = $transactionId;
-        $message['cur'] = "$";
-
-        send_email ('receipt', $message);
-        //    $response["error"] = true;
-        //    $response["message"] = "Payment successful, Coundn't email receipt to customer";
-         //   echoRespnse(500, $response);
-       // }
-
-		// //Sending emails to daakorators
-		//print_r($daa);
-		sendEmailsToDaakors ($daa);
-        //    $response["error"] = true;
-        //    $response["message"] = "Payment successful, Coundn't send emails to daakorators";
-        //    echoRespnse(500, $response);
-       // }
+    send_email ('receipt', $message);
+    sendEmailsToDaakors ($daa);
 
 
 		$response["error"] = false;
 	    $response["message"] = "Your payment has been processed. ";
+      $response["paymentDetails"] = $paymentDetails;
 		echoRespnse(200	, $response);
 
 	}else {
@@ -1085,7 +1070,7 @@ $app->post('/payment','authenticate', function() use ($app) {
  * Update My profile
  * url - /user
  * method -PUT
- **/		
+ **/
 $app->put('/myprofile', 'authenticate', function() use ($app) {
 	global $features;
 	global $user_id;
@@ -1108,8 +1093,8 @@ $app->put('/myprofile', 'authenticate', function() use ($app) {
 			echoRespnse(401	, $response);
 		}
 
-		if(!isset($params['update_password']) 
-				&&  isset($params['password']) 
+		if(!isset($params['update_password'])
+				&&  isset($params['password'])
 				|| isset($params['update_password']) && $params['update_password'] == false && isset($params['password']) ) {
 			$response["error"] = true;
 			$response['message'] = "Unauthorized request, password cannot be changed on this request";
@@ -1194,7 +1179,7 @@ $app->get('/project(/:limit(/:bidding(/:status)))', 'authenticate', function($li
 	if ($result) {
 		$response["error"] = false;
 		$response['projects'] = $result;
-		echoRespnse(200	, $response);		
+		echoRespnse(200	, $response);
 	} else {
 		$response["error"] = true;
 		$response["message"] = "Something went wrong. It looks like some information is missing.";
@@ -1400,7 +1385,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 	global $user_id;
 	global $features;
 	$response 	= array();
-	$DbHandler 	= new DbHandler();	
+	$DbHandler 	= new DbHandler();
 	$params 	= $_POST;
 
 	// $capabilities = json_decode($features);
@@ -1417,7 +1402,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["message"] = "Required Feilds are missing";
 		echoRespnse(400, $response);
 	}
-	if(!empty($_FILES['style_board'])) {	
+	if(!empty($_FILES['style_board'])) {
 		$file['name'] = $_FILES['style_board']['name'];
 		$file['type'] = $_FILES['style_board']['type'];
 		$file['tmp_name'] = $_FILES['style_board']['tmp_name'];
@@ -1428,7 +1413,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		if($generated_name == "") {
 			$response["error"] = true;
 			$response["message"] = "Something went wrong. Pease try again.";
-			echoRespnse(500, $response);		
+			echoRespnse(500, $response);
 		}
 
 		if(!$DbHandler->saveStyleBoard($params,$generated_name,$user_id)){
@@ -1441,10 +1426,10 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$baseUrl = getBaseUrl();
 		$customer = $DbHandler->getCustomerByProject($params['project_id']) ;
 		$project = $DbHandler->getProjectDetails($params['project_id']);
-		$values = $customer['customer_id'].', 
+		$values = $customer['customer_id'].',
 				 		"'.getNotificationText("styleboard", $project['title']).'", "'.getNotificationUrl("styleboard",$params["project_id"]).'",
 				 "2"';
-				 
+
 		if(!$DbHandler->createNotification($values, null)){
 			$response["error"] = false;
 			$response['message'] = "Error in sending notifications to the customer ";
@@ -1454,7 +1439,7 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 		$response["error"] = false;
 		$response["message"] = "Style board successfully attached";
 		echoRespnse(200, $response);
-		
+
 	}else{
 		$response["error"] = true;
 		$response["message"] = "No styleboard attached";
@@ -1463,24 +1448,24 @@ $app->post('/styleboard','authenticate'  ,function() use ($app) {
 });
 
 /**
- * get All style boards for all projects 
+ * get All style boards for all projects
  * url - /styleboard/project_id
  * method - GET
  */
  $app->get('/styleboards', 'authenticate', function() use ($app) {
 	global $user_id;
-	
+
 	$response = array();
 	$DbHandler = new DbHandler();
 	$result = $DbHandler->getAllStyleboards(null,null, $user_id);
-	if(count($result) == 0 ) { 
+	if(count($result) == 0 ) {
 		$arr = array();
 		$response["error"] = false;
 		$response['styleboards'] = [];
 		echoRespnse(200	, $response);
 	}
 
-	if ($result) { 
+	if ($result) {
 		$response['styleboards'] = $result;
 		$response["error"] 		 = false;
 		echoRespnse(200	, $response);
@@ -1571,8 +1556,8 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
             $params['project_name']  = $project['title'];
 			$baseUrl = getBaseUrl();
 			$daakor  = $DbHandler->getDaakorByStyleboard($styleboard_id);
-			
-			$values  = $daakor.', 
+
+			$values  = $daakor.',
 					 		"'.getNotificationText("styleboardSelect", $params).'",
 					 		"'.getNotificationUrl("styleboard",$project_id).'",
 					 		"1"';
@@ -1581,21 +1566,21 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 				$response["error"] = false;
 				$response['message'] = "Error in sending notifications to the Daarkorator ";
 				echoRespnse(200	, $response);
-			} 
+			}
 
 			// Sending notifications to other daakors
 			$daakors = $DbHandler->daarkoratorsOnProject($project_id, $daakor);
 
 			if($daakors) {
 				foreach ($daakors as $key => $daak) {
-					$values  = $daak->daakor_id.', 
+					$values  = $daak->daakor_id.',
 						 		"'.getNotificationText("styleboardDidntwWin", $params).'",
 						 		"'.getNotificationUrl("styleboard",$project_id).'",
 						 		"6"';
 					$DbHandler->createNotification($values, null);
 				}
 			}
-			
+
             if($projectUpdate){
                 $response["error"] = false;
                 $response["message"] = "Congratulations! You have selected your winning style board!";
@@ -1615,7 +1600,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 });
 
 /**
- * Update messages 
+ * Update messages
  * url - /message/:id
  * method - PUT
  * params - */
@@ -1657,9 +1642,9 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
  * url - /daarkoratorSignUp
  * method - POST
  * params -user object
- */	
+ */
  $app->post('/daarkoratorSignUp',  function() use ($app){
-	
+
 	$response 	= array();
 	if($app->request() && $app->request()->getBody()){
 		$params 	=  $app->request()->getBody();
@@ -1670,7 +1655,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			echoRespnse(400, $response);
 		}
 		$user_type = 3;
-		
+
 		if(!$DbHandler->validate($params)) {
 			$response["error"] = false;
 			$response["message"] = "Validation failed";
@@ -1687,7 +1672,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			if(!send_email ('new_daarkorator_created', $message)) {
 				$response["error"] = true;
 				$response["message"] = "Congrats! Your account has been created, Coundn't send an email";
-				echoRespnse(500, $response);	
+				echoRespnse(500, $response);
 			}
 			$response["error"] = false;
 			$response["message"] = "Congrats! Your account has been created.";
@@ -1701,7 +1686,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$response["error"] = true;
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(500, $response);
-	}	
+	}
 });
 
 /**
@@ -1709,10 +1694,10 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
  * url - /approveDaarkoratorer
  * method - PUT
  * params - non
- */	
+ */
  $app->put('/approveDaarkorator/:id', 'authenticate', function($id) use ($app){
 	global $features;
-	
+
 	$capabilities = json_decode($features);
 	if(!$capabilities->manageUsers->update) {
 		$response["error"] = true;
@@ -1721,7 +1706,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	}
 
 	$response 	= array();
-	
+
 	$params 	=  array('status' => 0);
 	$DbHandler 	= new DbHandler();
 
@@ -1832,7 +1817,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$response["error"] = true;
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(500, $response);
-	}	
+	}
 });
 
 /**
@@ -1873,18 +1858,18 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$daakors  = $DbHandler->daarkoratorsOnProject($id);
     $project = $DbHandler->getProjectDetails($id);
 
-    if($daakors) { 
+    if($daakors) {
 
     	foreach ($daakors as $key => $daakor) {
     		$params['project_name']  = $project['title'];
-			$values  = $daakor->daakor_id.', 
+			$values  = $daakor->daakor_id.',
 					 		"'.getNotificationText("projectCancel", $params).'",
-					 		"'.getNotificationUrl("styleboard",$id).'",
+					 		"'.getNotificationUrl("projectCancel",$id).'",
 					 		"7"';
 
 			$DbHandler->createNotification($values);
     	}
-    	
+
     }
 
 	$response["error"] = false;
@@ -1896,7 +1881,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
  * read notifications
  * url - /readNotifications
  * method - PUT
- * params - 
+ * params -
  */
  $app->put('/readNotifications/:id', 'authenticate', function($id) use ($app){
 
@@ -1918,7 +1903,7 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 
 
  $app->post('/sendEmail', function() use ($app) {
-	
+
 	$url = getBaseUrl().'reset-password;k=';
 
 	$message['text'] = $url;
@@ -1960,14 +1945,14 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 		$response["message"] = "Successfully deleted styleboard";
 		echoRespnse(200	, $response);
 	}
-	
+
 });
 
 /**
  * Update Project
  * url - /updateProject
  * method - post
- **/		
+ **/
  $app->post('/updateProject/:id', 'authenticate', function($project_id) use ($app) {
 	global $features;
 	global $user_id;
@@ -1975,17 +1960,17 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 	$has_furniture_images = false;
 	$draft  = false;
 
-	
+
 	if(isset($_POST['draft']) && $_POST['draft'] == true)
 		$draft = true;
-	
+
 	$response 	= array();
 	$DbHandler 	= new DbHandler();
 	$params 	= json_decode($_POST['project'] , True);
 	$result 	= false;
-	
+
 	$result = $DbHandler->updateProjectDetails($params,$project_id);
-	
+
 	if(!empty($_FILES['room_images'])) {
 		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
 			$file['name'] = $_FILES['room_images']['name'][$key];
@@ -2064,7 +2049,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 		$DbHandler 	= new DbHandler();
 
 		$result = $DbHandler->selectStyleboard($project_id, $styleboard_id);
-		
+
 		if(!$result || $result === 0 ) {
 			$response["error"] = true;
 			$response["message"] = "Something went wrong. Pease try again.";
@@ -2090,7 +2075,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 		$response["error"] = true;
 		$response["message"] = "An error occurred. No request body";
 		echoRespnse(500, $response);
-	}	
+	}
 });
 
 /**
@@ -2123,17 +2108,17 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$DbHandler 	= new DbHandler();
 
 	if(! empty($_FILES['deliverables_1'])) {
-	
+
 		$file['name'] = $_FILES['deliverables_1']['name'];
 		$file['type'] = $_FILES['deliverables_1']['type'];
 		$file['tmp_name'] = $_FILES['deliverables_1']['tmp_name'];
 		$file['error'] = $_FILES['deliverables_1']['error'];
 		$file['size'] = $_FILES['deliverables_1']['size'];
 
-		if($file['type'] == 'application/pdf') 
-			$generated_name = uploadPdf($file);	
+		if($file['type'] == 'application/pdf')
+			$generated_name = uploadPdf($file);
 		else
-			$generated_name = uploadProjectImages($file);	
+			$generated_name = uploadProjectImages($file);
 
 		if($generated_name == "") {
 			$response["error"] = true;
@@ -2149,17 +2134,17 @@ $app->put('/selectStyleboard', function() use ($app) {
 	}
 
 	if(! empty($_FILES['deliverables_2'])) {
-	
+
 		$file['name'] = $_FILES['deliverables_2']['name'];
 		$file['type'] = $_FILES['deliverables_2']['type'];
 		$file['tmp_name'] = $_FILES['deliverables_2']['tmp_name'];
 		$file['error'] = $_FILES['deliverables_2']['error'];
 		$file['size'] = $_FILES['deliverables_2']['size'];
 
-		if($file['type'] == 'application/pdf') 
-			$generated_name = uploadPdf($file);	
+		if($file['type'] == 'application/pdf')
+			$generated_name = uploadPdf($file);
 		else
-			$generated_name = uploadProjectImages($file);	
+			$generated_name = uploadProjectImages($file);
 
 		if($generated_name == "") {
 			$response["error"] = true;
@@ -2175,17 +2160,17 @@ $app->put('/selectStyleboard', function() use ($app) {
 	}
 
 	if(! empty($_FILES['deliverables_3'])) {
-	
+
 		$file['name'] = $_FILES['deliverables_3']['name'];
 		$file['type'] = $_FILES['deliverables_3']['type'];
 		$file['tmp_name'] = $_FILES['deliverables_3']['tmp_name'];
 		$file['error'] = $_FILES['deliverables_3']['error'];
 		$file['size'] = $_FILES['deliverables_3']['size'];
 
-		if($file['type'] == 'application/pdf') 
-			$generated_name = uploadPdf($file);	
+		if($file['type'] == 'application/pdf')
+			$generated_name = uploadPdf($file);
 		else
-			$generated_name = uploadProjectImages($file);	
+			$generated_name = uploadProjectImages($file);
 
 		if($generated_name == "") {
 			$response["error"] = true;
@@ -2201,17 +2186,17 @@ $app->put('/selectStyleboard', function() use ($app) {
 	}
 
 	if(! empty($_FILES['deliverables_4'])) {
-	
+
 		$file['name'] = $_FILES['deliverables_4']['name'];
 		$file['type'] = $_FILES['deliverables_4']['type'];
 		$file['tmp_name'] = $_FILES['deliverables_4']['tmp_name'];
 		$file['error'] = $_FILES['deliverables_4']['error'];
 		$file['size'] = $_FILES['deliverables_4']['size'];
 
-		if($file['type'] == 'application/pdf') 
-			$generated_name = uploadPdf($file);	
+		if($file['type'] == 'application/pdf')
+			$generated_name = uploadPdf($file);
 		else
-			$generated_name = uploadProjectImages($file);	
+			$generated_name = uploadProjectImages($file);
 
 		if($generated_name == "") {
 			$response["error"] = true;
@@ -2227,7 +2212,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 	}
 
 	$user 	 = $DbHandler->getCustomerByProject($project_id);
-	$values  = $user['customer_id'].', 
+	$values  = $user['customer_id'].',
 			 		"'.getNotificationText("sumbmitFinalDeliverablesCustomer", null).'",
 			 		"'.getNotificationUrl("styleboard",$project_id).'",
 			 		"8"';
@@ -2278,10 +2263,10 @@ $app->put('/selectStyleboard', function() use ($app) {
  * url - /deliverables
  * method - PUT
  * params - non
- */	
+ */
  $app->put('/deliverables/:project_id', 'authenticate', function($project_id) use ($app){
 	global $features;
-	
+
 	$capabilities = json_decode($features);
 	// if(!$capabilities->manageUsers->update) {
 	// 	$response["error"] = true;
@@ -2290,7 +2275,7 @@ $app->put('/selectStyleboard', function() use ($app) {
 	// }
 
 	$response 	= array();
-	
+
 	$params 	=  array('status' => 3);
 	$DbHandler 	= new DbHandler();
 
@@ -2308,7 +2293,7 @@ $app->put('/selectStyleboard', function() use ($app) {
     $params['customer_name'] = $customer[0]->first_name;
     $params['project_name']  = $project['title'];
 
-	$values  = $daakor.', 
+	$values  = $daakor.',
 			 		"'.getNotificationText("finalDeliverables", $params).'",
 			 		"'.getNotificationUrl("styleboard",$project_id).'",
 			 		"1"';
@@ -2322,8 +2307,8 @@ $app->put('/selectStyleboard', function() use ($app) {
 	$response["error"] = false;
 	$response["message"] = "Deliverables accepted successfully";
 	echoRespnse(200, $response);
-	
-}); 
+
+});
 
 /**
  * Create external messages
@@ -2353,7 +2338,7 @@ $app->post('/newMessage', 'authenticate', function() use ($app){
         }else {
         	$tmp['reciever_id']     = $params['reciever_id'];
         }
-      
+
 		$DbHandler 	= new DbHandler();
 		$result = $DbHandler->createExternalMessage($tmp);
 		if(!$result) {
@@ -2383,7 +2368,7 @@ $app->get('/newMessage/:id', 'authenticate', function($project_id) use ($app){
 	global $logged_user_type;
 
     $response 	= array();
-  
+
 	$DbHandler 	= new DbHandler();
 	$result = $DbHandler->getExternalMessage($project_id, $user_id, $logged_user_type);
 
@@ -2415,7 +2400,7 @@ $app->get('/newMessage/:projectID/:senderID', 'authenticate', function($project_
 	global $logged_user_type;
 
     $response 	= array();
-  
+
 	$DbHandler 	= new DbHandler();
 	$result = $DbHandler->getExternalMessageConversation($project_id, $sender_id, $user_id, $logged_user_type);
 
@@ -2466,7 +2451,47 @@ $app->get('/daakorslist/:projectid', 'authenticate', function($project_id) use (
 });
 
 
-$app->run();
-		
-?>
+/**
+ * Get external messages for a spesific project
+ * url - /newMessages
+ * method - Get
+ * params -
+ */
+$app->post('/taxRate', 'authenticate', function() use ($app){
+	//global $user_id;
+	//global $logged_user_type;
 
+  $response 	= array();
+  if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+
+
+    $DbHandler 	= new DbHandler();
+  	$result = $DbHandler->getTaxCalc($params);
+
+  	if(empty($result)) {
+  		$response["error"] = true;
+    		$response["taxdetails"] = [];
+    		echoRespnse(200, $response);
+  	}
+  	if(!$result) {
+  		$response["error"] = true;
+    		$response["taxdetails"] = "An error occurred while retrieving data";
+    		echoRespnse(500, $response);
+  	}
+  	$response["error"] = false;
+  	$response["taxdetails"] = $result;
+  	echoRespnse(200	, $response);
+
+  }else{
+    $response["error"] = true;
+		$response["taxdetails"] = "An error occurred. No request body";
+		echoRespnse(400, $response);
+  }
+
+});
+
+
+$app->run();
+
+?>

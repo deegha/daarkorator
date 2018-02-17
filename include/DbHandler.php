@@ -1,4 +1,10 @@
 <?php
+require 'libs/vendor/autoload.php';
+
+Braintree_Configuration::environment('sandbox');
+Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
+Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
+Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
 
 /**
  * Class to handle all db operations
@@ -16,15 +22,15 @@ class DbHandler {
             $db->select($table, $rows, $where, '', '');
 
             $logged_User = $db->getResults();
-            
+
             if ($logged_User != NULL) {
                return true;
             } else {
                 return false;
             }
         }catch (Exception $e) {
-            return false;           
-        } 
+            return false;
+        }
     }
 
     public function callErrorLog($e){
@@ -42,7 +48,7 @@ class DbHandler {
             $values = '"'.$user_id.'","'.$accesstoken.'","'.$expiration.'"';
 
             if($db->insert($table,$values,$rows)){
-                return  $accesstoken;    
+                return  $accesstoken;
             }else{
                 return false;
             }
@@ -51,7 +57,7 @@ class DbHandler {
             $this->callErrorLog($e);
             return false;
         }
-    } 
+    }
 
     private function updateAccesstokenExpiry($user_accessToken) {
         try{
@@ -86,9 +92,9 @@ class DbHandler {
             if($access['expiration'] >= date('Y-m-d H:i:s')){
                  $this->updateAccesstokenExpiry($user_accessToken);
             }
-			
-        	return $access;	
-			
+
+        	return $access;
+
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
@@ -114,9 +120,9 @@ class DbHandler {
             $this->callErrorLog($e);
             return false;
         }
-        
+
     }
-   
+
 
     public function getUserByEmail($email) {
         $db = new database();
@@ -134,17 +140,17 @@ class DbHandler {
     }
 
     public function createUser($params, $user_type=null, $status=null) {
-        try{ 
+        try{
             $db           = new database();
             $user_table   = "user";
             $user_rows    = [];
             $user_values  = [];
             $daarkorator_details = [];
-            $is_daarkorator = false; 
-            
+            $is_daarkorator = false;
+
             if(array_key_exists("daarkorator_details", $params) ){
                 $daarkorator_details = $params['daarkorator_details'];
-                
+
                 unset($params['daarkorator_details']);
                 $is_daarkorator = true;
             }
@@ -175,7 +181,7 @@ class DbHandler {
                 }
             }
             return $id;
-        
+
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
@@ -191,10 +197,10 @@ class DbHandler {
         try {
             foreach ($request as $key => $value) {
                 $rows[$inc]          =  $key;
-                $insert_values[$inc] =  $value; 
+                $insert_values[$inc] =  $value;
                 $inc++;
-            }   
-            
+            }
+
             $result['rows']     =  implode(",", $rows);
             $result['values']   =  implode('","', $insert_values);
 
@@ -203,7 +209,7 @@ class DbHandler {
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
-        }   
+        }
     }
 
     public function getUser($id=null) {
@@ -212,7 +218,7 @@ class DbHandler {
             $table = 'user u left join daarkorator_details du on u.id = du.user_id join user_type ut on u.user_type = ut.id';
             $rows = 'u.id, u.user_type, u.first_name ,u.last_name, u.email, u.user_image, u.contact_number, u.status ,du.company_name, du.about, du.tranings, du.tools, du.instagrame, du.website, ut.id as type_id, ut.type_name, case u.status WHEN 0 then "Pending" WHEN 1 then "Active" when 2 then "Inactive" when 5 then "Pending Approval"  END AS status_title';
             $where = ' u.status<>3';
-           
+
             if($id!=null)
                 $where = $where." and u.id=".$id;
 
@@ -223,7 +229,7 @@ class DbHandler {
                 return false;
             }
             return json_decode($users);
-        
+
         }catch(Exception $e) {
             $this->callErrorLog($e);
             return false;
@@ -252,23 +258,24 @@ class DbHandler {
             $db           = new database();
             $user_table   = "user";
             $daarkorator_details = [];
-            $is_daarkorator = false; 
+            $is_daarkorator = false;
             $where = "id=".$id;
 
             if(array_key_exists("daarkorator_details", $params)  ){
                 $daarkorator_details = $params['daarkorator_details'];
-                
+
                 unset($params['daarkorator_details']);
                 $is_daarkorator = true;
             }
             if(array_key_exists("update_password", $params))
                  unset($params['update_password']);
 
-            // print_r($params);die();
-          
+             //print_r($params);die();
+
             $db->update($user_table,$params,$where);
 
             if($is_daarkorator) {
+            //print_r('daakor');
                 $daarkor_details_table = "daarkorator_details";
                 $where_daar = "user_id=".$id;
                 if(!$db->update($daarkor_details_table,$daarkorator_details,$where_daar)) {
@@ -280,7 +287,7 @@ class DbHandler {
         }catch(Exception $e){
             $this->callErrorLog($e);
         }
-    }    
+    }
 
     public function checkEmailExist($email){
         try{
@@ -291,10 +298,10 @@ class DbHandler {
             $db->selectJson($table, $rows, $where, '', '');
             $result = $db->getJson();
             if(!$result){
-                return false; 
+                return false;
             }
-                
-            $id = json_decode($result)  ;           
+
+            $id = json_decode($result)  ;
             return $id[0];
 
         }catch(Exception $e){
@@ -302,11 +309,11 @@ class DbHandler {
             return false;
         }
     }
- 
+
     public function generateResetKey($user_id) {
         try{
             $db = new database();
-            $resetkey = md5(uniqid(rand(), true));  
+            $resetkey = md5(uniqid(rand(), true));
             $expiry   = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' +1 day'));
             $table    = 'password_reset_table';
             $rows     = 'user_id, reset_key, expiry';
@@ -336,11 +343,11 @@ class DbHandler {
         if($if_signUp!=null) {
             if(!array_key_exists("password", $params) || strlen(trim($params["password"])) <= 0  ){
                 return false;
-            }  
+            }
 
             if(!array_key_exists("confirm_password", $params) || strlen(trim($params["confirm_password"])) <= 0  ){
                 return false;
-            }  
+            }
 
             if(trim($params["password"]) != trim($params["confirm_password"])) {
                 return false;
@@ -440,7 +447,7 @@ class DbHandler {
 
             $rows          = 'customer_id, status';
             $values        = $customer_id.', '.$status;
-            
+
             if(!isset($params['roomDetails'])) {
                 return false;
             }
@@ -448,9 +455,9 @@ class DbHandler {
             $db->insert($project_table,$values,$rows);
 
             if($project_id = $db->getInsertId()) {
-              
+
             //print_r('start');
-                
+
                 $insert_params['title']          = $params['roomDetails']['projectName'];
                 $insert_params['room_types']     = $params['room'];
                 $insert_params['desing_styles']  = json_encode($params['designStyle']);
@@ -460,12 +467,12 @@ class DbHandler {
                     "length" => $params['roomDetails']['length'],
                     "width"  => $params['roomDetails']['width'],
                     "height" => $params['roomDetails']['height'],
-                    "unit"   => $params['roomDetails']['unit']  
+                    "unit"   => $params['roomDetails']['unit']
                 ));
                 $insert_params['description']        = $params['inspirations']['description'];
                 $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
                 $insert_params['budget']        = $params['roomDetails']['budget'];
-                $result = $this->getInsertSting($insert_params); 
+                $result = $this->getInsertSting($insert_params);
 
                 $rows_detials   = $result['rows'];
                 $rows_detials   = $rows_detials.', project_id';
@@ -487,13 +494,13 @@ class DbHandler {
                 //print_r($params['roomDetails']['budget']);
 
                  //echo "insert into project_details (".$rows_detials." ) values (".$values_details.")";
-                                
+
                 if($db->insert($project_table,$values_details,$rows_detials)) {
                     $id =  $db->getInsertId();
                     return $project_id;
                 }
 
-                return false;     
+                return false;
             }
         }catch (Exception $e){
             $this->callErrorLog($e);
@@ -503,7 +510,7 @@ class DbHandler {
 
     public function getPasswordChangeUser($changeRequestCode){
         try{
-            
+
             $db = new database();
             $table = "password_reset_table";
             $rows = "user_id as id, expiry, status";
@@ -524,7 +531,7 @@ class DbHandler {
             $table = "subscription";
             $rows = "price";
             $where = " id = '".$pkg_id."'";
-             
+
             $db->select($table, $rows, $where, '', '');
             $result = $db->getResults();
 
@@ -540,6 +547,40 @@ class DbHandler {
     }
 
     public function payment($params , $user_id, $transaction_id){
+      if(empty($params['payment_method_nonce'])){
+          return false;
+      }
+
+
+      $result = Braintree_Transaction::sale([
+        'amount' => $params['amount'],
+        'orderId' => 'xyz1245',
+        //'orderId' => $transaction_id,
+        //'merchantAccountId' => 'w3hzrzq84x6f2dmy',
+        'paymentMethodNonce' => $params['payment_method_nonce'],
+        'customer' => [
+          'firstName' => $params['first_name'],
+          'lastName' => $params['last_name'],
+          'phone' => $params['phone']
+        ],
+        'billing' => [
+          'firstName' => $params['first_name'],
+          'lastName' => $params['last_name'],
+          'streetAddress' => $params['street_address'],
+          'extendedAddress' => $params['address_line_2'],
+          'locality' => $params['city'],
+          'region' => $params['state_province_region'],
+          'postalCode' => $params['zip_code']
+        ],
+        'options' => [
+          'submitForSettlement' => true
+        ]
+      ]);
+
+      if($result->success === true){
+
+        //print_r($result);
+        //return $result;
         try{
             $db           = new database();
             $table        = "payment_table";
@@ -591,11 +632,20 @@ class DbHandler {
             $rows = array('status' => 1);
             $where = 'id = '  .$params['project_id'];
             $db->update($table,$rows,$where);
-            return true;
+
+
+            //print_r($response);
+            return $result;
 
         }catch(Exception $e){
              $this->callErrorLog($e);
         }
+        //return $result;
+      }else{
+        //print_r($result->errors);
+        return false;
+        die();
+      }
     }
 
     public function saveImageName($project_id,$generatedFileNAme,$type){
@@ -637,7 +687,7 @@ class DbHandler {
     }
 
     public function getProjects($user_id=null, $logged_user_type=null, $limit=null, $status=null, $bidding=null){
-        try { 
+        try {
             $db           = new database();
 
             if($bidding == "yes"){
@@ -682,7 +732,7 @@ class DbHandler {
             $order = "published_date DESC";
             $db->selectJson($table, $rows, $where,  $order, '', $limit);
             $projects = $db->getJson();
-          
+
             return json_decode($projects);
 
         } catch(Exception $e){
@@ -712,31 +762,31 @@ class DbHandler {
             $db           = new database();
             $table        = "notifications";
             $rows         = "id, notification_text, url, notification_type, status as status, case
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 2 then 'Today'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 3 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 2 then '2 Days ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 4 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 3 then '3 Days ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 5 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 4 then '4 Days ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 6 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 5 then '5 Days ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 7 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 14 then '1 week ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) >= 15 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 21 then '2 weeks ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 22 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 28 then '3 weeks ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 28 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 60 then '1 Month ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 61 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) <= 90 then '2 Months ago'
-            
+
                                                                                                           when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 91 and TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) < 120 then '3 Months ago'
-            
+
                                                                when TIMESTAMPDIFF(DAY, datetime, CURRENT_TIMESTAMP) > 120 then 'more than 3 Months ago'
-            
+
                                                                                                           end as duration";
             $where        = "user_id = ".$user_id;
             if(isset($status))
@@ -767,7 +817,7 @@ class DbHandler {
             }else{
                 return false;
             }
-    
+
         }catch(Exception $e){
              $this->callErrorLog($e);
              return false;
@@ -872,7 +922,7 @@ class DbHandler {
             $response['style_boards'] = json_decode($styleBoards);
 
             return $response;
-           
+
         }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
@@ -927,28 +977,28 @@ class DbHandler {
     public function createMessage($params, $user_type){
         try{
             $db = new database();
-     
-            if($user_type == 2) { 
-                $tb     = 'project_styleboard ps 
+
+            if($user_type == 2) {
+                $tb     = 'project_styleboard ps
                            join  project_details pd on ps.project_id = pd.project_id';
-                $rows   = 'ps.project_id, 
-                            ps.daarkorator_id as reciever_id, 
+                $rows   = 'ps.project_id,
+                            ps.daarkorator_id as reciever_id,
                             CONCAT(pd.title,"-",ps.style_board_name) as message_subject';
             }else {
-                $tb     = 'project_styleboard ps 
+                $tb     = 'project_styleboard ps
                            join project p on ps.project_id = p.id
                            join user u on p.customer_id = u.id
                            join  project_details pd on ps.project_id = pd.project_id';
-                $rows   = 'ps.project_id, 
-                            u.id as reciever_id, 
+                $rows   = 'ps.project_id,
+                            u.id as reciever_id,
                             CONCAT(pd.title,"-",ps.style_board_name) as message_subject';
             }
-            
+
             $where = "ps.id=".$params["styleboard_id"];
             $db->select($tb,$rows,$where);
             $results =  $db->getResults();
             $db = new database();
-     
+
             $table = "messages";
             $rows  = "project_id, styleboard_id, sender_id, reciever_id, message_subject, message_text";
             $values = '"'.$results["project_id"].'",
@@ -957,8 +1007,8 @@ class DbHandler {
                     "'.$results["reciever_id"].'",
                     "'.$results["message_subject"].'",
                     "'.$params["message_text"].'"';
-       
-            if($db->insert($table, $values, $rows)){  
+
+            if($db->insert($table, $values, $rows)){
                 $msgUrl = getNotificationUrl("styleboard", $results["project_id"]);
                 $values = $results["reciever_id"].", 'New comment on styleboard', '".$msgUrl."', 5";
 
@@ -968,8 +1018,8 @@ class DbHandler {
             }else{
                 return false;
             }
-            
-        }catch(Exception $e){ 
+
+        }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
         }
@@ -984,10 +1034,10 @@ class DbHandler {
             if(isset($params['note']))
                 $note = $params['note'];
 
-            $values = "'".$params['project_id']."', 
+            $values = "'".$params['project_id']."',
                         '".$generated_name."',
-                        '".$user_id."', 
-                        '".$note."', 
+                        '".$user_id."',
+                        '".$note."',
                         '".$params['style_board_name']."'";
 
             if($db->insert($table, $values, $rows)){
@@ -1007,9 +1057,9 @@ class DbHandler {
             $table  =  'messages m left outer join user u on u.id = m.sender_id';
             $table .= " left outer join project_details pd on pd.project_id = m.project_id";
             $table .= " left outer join project_styleboard psb on psb.project_id = m.project_id";
-            $rows   = " m.id as id,  
-                        pd.title as project_name, 
-                        CONCAT(u.first_name,' ',last_name ) as sender, 
+            $rows   = " m.id as id,
+                        pd.title as project_name,
+                        CONCAT(u.first_name,' ',last_name ) as sender,
                         u.email as email,
                         m.project_id as project_id,
                         m.message_subject as message_subject,
@@ -1022,11 +1072,11 @@ class DbHandler {
             if(isset($status))
             $where .= " AND m.status = ".$status;
 
-          
-      
+
+
             $db->selectJson($table, $rows, $where);
             $results = json_decode($db->getJson());
-           
+
             return $results;
 
         }catch(Exception $e){
@@ -1046,7 +1096,7 @@ class DbHandler {
     }
 
     public function messageDetail($styleboard_id, $user_id){
-        try{ 
+        try{
             $db     = new database();
             $table  = "messages m left outer join user u on u.id = m.sender_id";
             $rows   = "m.id as id,
@@ -1057,16 +1107,16 @@ class DbHandler {
                                m.status as status,
                                if(m.reciever_id = $user_id, 'received', 'sent') as class";
             $where  = "(m.reciever_id = $user_id or m.sender_id = $user_id) and m.styleboard_id = $styleboard_id";
-            
+
             $order = 'date_time ASC';
 
             $db->selectJson($table, $rows, $where, $order);
             $results = $db->getJson();
-          
+
             return json_decode($results);
-                                
+
         }catch(Exception $e){
-             $this->callErrorLog($e);               
+             $this->callErrorLog($e);
              return false;
         }
     }
@@ -1087,8 +1137,8 @@ class DbHandler {
         try{
             $db = new database();
             $table = "project_styleboard sb
-            join project p 
-            on sb.project_id = p.id 
+            join project p
+            on sb.project_id = p.id
             join user u
             on sb.daarkorator_id = u.id";
             $rows = "sb.*, DATE_FORMAT(sb.added_time, '%Y-%m-%d')  as added_time,u.first_name as daarkorator_name" ;
@@ -1098,40 +1148,40 @@ class DbHandler {
             $user = $this->getUser($user_id);
             $userType = $user[0]->user_type;
 
-            if($project_id != null) 
+            if($project_id != null)
                 $where = "project_id =".$project_id;
-     
+
 
             if($userType == 3) {
-                if($project_id != null) 
+                if($project_id != null)
                     $where = $where." and ";
 
                 $where = $where."  sb.daarkorator_id=".$user_id;
             }
             if($userType == 2) {
-                if($project_id != null) 
+                if($project_id != null)
                     $where = $where." and ";
 
                 $where = $where."  p.customer_id=".$user_id;
             }
-       
+
             if($id != null) {
-                if($project_id != null) 
+                if($project_id != null)
                     $where = $where." and ";
 
                 $where = $where." and sb.status <> 3 and sb.id=".$id;
-               
-                $db->select($table, $rows, $where, $order); 
-                $results = $db->getResults(); 
+
+                $db->select($table, $rows, $where, $order);
+                $results = $db->getResults();
                 return $results;
-            } 
-            
-            
+            }
+
+
             $where = $where." and sb.status <> 3 ";
 
             $db->selectJson($table, $rows, $where, $order);
             $results = $db->getJson();
-            
+
             return json_decode($results);
         }catch(Exception $e){
             $this->callErrorLog($e);
@@ -1184,7 +1234,7 @@ class DbHandler {
 
             $db->select($table, $rows, $where);
             $result = $db->getResults();
-            
+
             if(!$result) {
                 return false;
             }
@@ -1196,7 +1246,7 @@ class DbHandler {
     }
 
     public function updateProject($updateArr, $project_id) {
-        try { 
+        try {
             $db = new database();
             $table = "project";
             $where = " id = ".$project_id;
@@ -1213,7 +1263,7 @@ class DbHandler {
     }
 
     public function checkProjectStatus($id) {
-        try { 
+        try {
             $db = new database();
             $table = "project";
             $rows  = "*";
@@ -1233,7 +1283,7 @@ class DbHandler {
     }
 
     public function updateResetKeyStates($activtionKey) {
-        try{   
+        try{
             $db = new database();
             $table = "password_reset_table";
             $rows = array("status" => 1);
@@ -1282,7 +1332,7 @@ class DbHandler {
     }
 
     public function updateStyleboard($id, $status) {
-        try{ 
+        try{
             $db = new database();
             $table = "project_styleboard";
             $rows = array('status' => $status);
@@ -1299,7 +1349,7 @@ class DbHandler {
     }
 
     public function updateProjectDetails($params, $project_id) {
-        try{ 
+        try{
             $insert_params['title']          = $params['roomDetails']['projectName'];
             $insert_params['room_types']     = $params['room'];
             $insert_params['desing_styles']  = json_encode($params['designStyle']);
@@ -1309,24 +1359,24 @@ class DbHandler {
                 'length' => $params['roomDetails']['length'],
                 'width'  => $params['roomDetails']['width'],
                 'height' => $params['roomDetails']['height'],
-                'unit'   => $params['roomDetails']['unit']  
+                'unit'   => $params['roomDetails']['unit']
             ));
             $insert_params['description']        = $params['inspirations']['description'];
             $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
             $insert_params['budget']        = $params['roomDetails']['budget'];
             $insert_params['last_updated_time'] = date('Y-m-d H:m:s');
 
-           
-            
+
+
             if(isset($params['roomDetails']['removed_room_images']) && !empty($params['roomDetails']['removed_room_images']) ) {
-               
+
                 foreach($params['roomDetails']['removed_room_images'] as $image) {
                     $db = new database();
                     try{
                         $table     = "resources_table";
                         $where     = 'image_url="'.$image.'"';
                         $db->delete($table,$where);
-                            
+
                     }catch (Exception $e){
                         $this->callErrorLog($e);
                         return false;
@@ -1335,7 +1385,7 @@ class DbHandler {
             }
 
             if(isset($params['roomDetails']['removed_furniture_images']) && !empty($params['roomDetails']['removed_furniture_images']) ) {
-                
+
                 foreach($params['roomDetails']['removed_furniture_images'] as $image) {
                     $db = new database();
                     try{
@@ -1350,14 +1400,14 @@ class DbHandler {
                 }
             }
 
-           
+
             $db = new database();
             $where = " project_id=".$project_id;
             $table = "project_details";
             if($db->update($table,$insert_params,$where)) {
                 return true;
             }
-            return false;  
+            return false;
 
         }catch (Exception $e){
             $this->callErrorLog($e);
@@ -1372,30 +1422,30 @@ class DbHandler {
             $table = "project_styleboard";
             $rows  = "status";
             $where = " project_id=".$project_id. " and  id =".$styleboard_id;
-            
+
             $db->select($table,$rows,$where);
             $results = $db->getResults();
-           
+
             if(!$results) {
                 return 0;
             }
-            
+
             if($results['status'] == 1) {
                 return 1;
             }
-            
+
             if($results['status'] == 3) {
                 return 3;
             }
-           
+
             $db = new database();
             $where = " project_id=".$project_id. " and id =".$styleboard_id;
             $rows  = array("status" => 1);
             $table = "project_styleboard";
-            if($db->update($table,$rows,$where)) { 
+            if($db->update($table,$rows,$where)) {
                 return 2;
             }
-            return 0; 
+            return 0;
 
         }catch (Exception $e){
             $this->callErrorLog($e);
@@ -1414,10 +1464,10 @@ class DbHandler {
 
             if($db->getResults()) {
                 $db   = new database();
-    
+
                 $rows = array(
                         'deliverable_url' => $generatedFileNAme,
-                        'title' => $title);  
+                        'title' => $title);
 
                 if($db->update($table,$rows,$where))
                     return true;
@@ -1447,7 +1497,7 @@ class DbHandler {
 
             $db->selectJson($table,$rows,$where);
             $results = $db->getJson();
-           
+
             return json_decode($results);
 
         }catch(Exception $e){
@@ -1463,7 +1513,7 @@ class DbHandler {
 
         $db->select($table,$rows,$where);
         $results = $db->getResults();
-       
+
         return $results['daarkorator_id'];
     }
 
@@ -1485,8 +1535,8 @@ class DbHandler {
                     "'.$tmp["reciever_id"].'",
                     "'.$results["title"].'",
                     "'.$tmp["message_text"].'"';
-       
-            if($db->insert($table, $values, $rows)){  
+
+            if($db->insert($table, $values, $rows)){
                 $msgUrl = getNotificationUrl("styleboard", $tmp["project_id"]);
                 $values = $tmp["reciever_id"].", '".getNotificationText('message', $results["title"])."', '".$msgUrl."', 4";
 
@@ -1495,8 +1545,8 @@ class DbHandler {
             }else{
                 return false;
             }
-            
-        }catch(Exception $e){ 
+
+        }catch(Exception $e){
             $this->callErrorLog($e);
             return false;
         }
@@ -1569,7 +1619,7 @@ class DbHandler {
     }
 
     public function getAcceptedDaarkor($project_id) {
-        $db = new database();   
+        $db = new database();
         $table = "project_styleboard";
         $rows  = "daarkorator_id";
         $where = "project_id = ".$project_id." and status =1 ";
@@ -1578,6 +1628,37 @@ class DbHandler {
         $results = $db->getResults();
 
         return ($results)?$results['daarkorator_id']:false;
+    }
+
+    public function getTaxCalc($params){
+      if(!empty($params)){
+        //print_r('test');
+        $client = TaxJar\Client::withApiKey("5059d662551e912575fe03c77deefd87");
+        try{
+          $rates = $client->ratesForLocation($params['zip_code'], [
+            'city' => $params['city'],
+            'state' => $params['state_province_region'],
+            'country' => $params['country']
+          ]);
+
+          if($rates){
+            $tax = $params['amount'] * $rates->combined_rate;
+            $total = $params['amount'] + ($params['amount'] * $rates->combined_rate);
+            $response = array();
+            $response['tax'] = $tax;
+            $response['total'] = $total;
+            return $response;
+          }else{
+            return false;
+          }
+        }catch(Exception $e){
+            $this->callErrorLog($e);
+            return false;
+        }
+      }else{
+        return false;
+      }
+
     }
 }
 
