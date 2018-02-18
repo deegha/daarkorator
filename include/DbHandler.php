@@ -554,8 +554,8 @@ class DbHandler {
 
       $result = Braintree_Transaction::sale([
         'amount' => $params['amount'],
-        'orderId' => 'xyz1245',
-        //'orderId' => $transaction_id,
+        //'orderId' => 'xyz1245',
+        'orderId' => $transaction_id,
         //'merchantAccountId' => 'w3hzrzq84x6f2dmy',
         'paymentMethodNonce' => $params['payment_method_nonce'],
         'customer' => [

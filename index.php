@@ -1015,18 +1015,10 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
 		}
-
+try{
     //Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
-		$daa = $DbHandler->getAllDaarkorators();
-
-		if($daa)  {
-			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
-
-		}
-		$DbHandler->createNotification($values, true);
-
-		// Send emails to customer
+    // Send emails to customer
     $customer = $DbHandler->getUser($user_id);
     $customer = $customer[0];
 
@@ -1043,15 +1035,26 @@ $app->post('/payment','authenticate', function() use ($app) {
 
     $message['sub_total'] = $DbHandler->getPackage(1)['price'];
     $message['discount'] = "0";
-    $message['hst']	= "0";
-    $message['totall_paid'] = $params['amount'];
+    $message['tax']	= $params['tax'];
+    $message['total_paid'] = $params['amount'];
     $message['transaction_number'] = $transactionId;
     $message['cur'] = "$";
 
     send_email ('receipt', $message);
+		$daa = $DbHandler->getAllDaarkorators();
+
+		if($daa)  {
+			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
+
+		}
+		$DbHandler->createNotification($values, true);
+
+
     sendEmailsToDaakors ($daa);
 
+}catch(Exception $e){
 
+}
 		$response["error"] = false;
 	    $response["message"] = "Your payment has been processed. ";
       $response["paymentDetails"] = $paymentDetails;

@@ -74,6 +74,13 @@ function send_email ($template, $message=null) {
             $message_last_name = $message['last_name'];
         if(isset($message['transaction_number']))
             $transaction_number = $message['transaction_number'];
+        if(isset($message['total_paid']))
+            $message_amount = $message['total_paid'];
+        if(isset($message['sub_total']))
+            $message_subtotal = $message['sub_total'];
+        if(isset($message['tax']))
+            $message_tax = $message['tax'];
+
 
         $messagebody = file_get_contents('email/'.$template.'.html');
 
@@ -90,10 +97,10 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%sub_total%', $message['sub_total'], $messagebody);
      if(isset($message['discount']))
         $messagebody = str_replace('%discount%', $message['discount'], $messagebody);
-     if(isset($message['hst']))
-        $messagebody = str_replace('%hst%', $message['hst'], $messagebody);
-     if(isset($message['totall_paid']))
-        $messagebody = str_replace('%totall_paid%', $message['totall_paid'], $messagebody);
+     if(isset($message['tax']))
+        $messagebody = str_replace('%tax%', $message['tax'], $messagebody);
+     if(isset($message['total_paid']))
+        $messagebody = str_replace('%total_paid%', $message['total_paid'], $messagebody);
 
     if(isset($message['cur']))
          $messagebody = str_replace('%cur%', $message['cur'], $messagebody);
@@ -141,7 +148,7 @@ function send_email ($template, $message=null) {
 
 function gnerateTransactionId($user_id) {
     try{
-        $transactionId = "DAA-".substr(time(),6).rand(1000,9999); 
+        $transactionId = "DAA-".substr(time(),6).rand(1000,9999);
         return $transactionId;
     }catch(Exception $e){
         callErrorLog($e);
