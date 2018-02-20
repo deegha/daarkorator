@@ -110,13 +110,13 @@ function send_email ($template, $message=null) {
         $mail->isSMTP();
         $mail->Host = 'email-smtp.us-west-2.amazonaws.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'AKIAJUNQKA3CXCI7YIZQ';
-        $mail->Password = 'AiaY558KBBlcf8ls3nVT1F7bl3eQfZAtyBoDSlPaahGq';
+        $mail->Username = 'AKIAIMT3WCCARULI3WLA';
+        $mail->Password = 'AjKrou2iDw/jcFVAgfVIql/xe4ppfb+lrce+d3Fe8kmG';
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
         //Recipients
-        $mail->setFrom('no-reply@dhammika.me', 'Daakor-noreply@daakor');
+        $mail->setFrom('info@daakor.com', 'Daakor-noreply@daakor');
         $mail->addAddress($message['to']);
         $mail->addReplyTo('info@daakor.com', 'Information');
 
@@ -259,7 +259,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-     return "http://18.218.149.78/#/";
+     return "http://18.219.178.52/#/";
 
     //test
     //return "http://testapp.daakor.com/#/";

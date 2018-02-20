@@ -621,7 +621,7 @@ class DbHandler {
                              '".$zip_code."',
                              '".$country."',
                              '".$params['payment_method']."',
-                              '0'";
+                              '1'";
 
             if(!$db->insert($table,$values,$rows)){
                 return false;

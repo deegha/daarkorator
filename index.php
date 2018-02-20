@@ -1031,7 +1031,7 @@ try{
 
     $message['to']   = $customer->email;
     $message['first_name']   = $customer->first_name;
-    $message['subject'] = 'Receipt for transaction '.$transactionId ;
+    $message['subject'] = 'Thanks for your order #'.$transactionId ;
 
     $message['sub_total'] = $DbHandler->getPackage(1)['price'];
     $message['discount'] = "0";
