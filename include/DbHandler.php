@@ -1591,7 +1591,7 @@ class DbHandler {
         //return $projectid;
         $db = new database();
         $table = "daakor_project dp INNER JOIN user u on u.id = dp.daakor_id";
-        $rows = "dp.daakor_id as id, concat(u.first_name, ' ', u.last_name) as name";
+        $rows = "dp.daakor_id as id, u.first_name as name";
         $where = "project_id = ".$projectid;
 
         $db->selectJson($table, $rows, $where);

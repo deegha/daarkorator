@@ -80,6 +80,8 @@ function send_email ($template, $message=null) {
             $message_subtotal = $message['sub_total'];
         if(isset($message['tax']))
             $message_tax = $message['tax'];
+        if(isset($message['project_name']))
+            $message_tax = $message['project_name'];
 
 
         $messagebody = file_get_contents('email/'.$template.'.html');
@@ -101,6 +103,8 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%tax%', $message['tax'], $messagebody);
      if(isset($message['total_paid']))
         $messagebody = str_replace('%total_paid%', $message['total_paid'], $messagebody);
+    if(isset($message['project_name']))
+       $messagebody = str_replace('%project_name%', $message['project_name'], $messagebody);
 
     if(isset($message['cur']))
          $messagebody = str_replace('%cur%', $message['cur'], $messagebody);

@@ -1038,6 +1038,7 @@ try{
     $message['tax']	= $params['tax'];
     $message['total_paid'] = $params['amount'];
     $message['transaction_number'] = $transactionId;
+    $message['project_name'] = $params["project_name"];
     $message['cur'] = "$";
 
     send_email ('receipt', $message);
