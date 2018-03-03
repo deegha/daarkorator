@@ -2495,6 +2495,48 @@ $app->post('/taxRate', 'authenticate', function() use ($app){
 
 });
 
+/**
+ * Decline Darrkorator
+ * url - /approveDaarkoratorer
+ * method - PUT
+ * params - non
+ */
+ $app->put('/declineDaarkorator/:id', 'authenticate', function($id) use ($app){
+	global $features;
+
+	$capabilities = json_decode($features);
+
+	if(!$capabilities->manageUsers->update) {
+		$response["error"] = true;
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
+        echoRespnse(401, $response);
+	}
+
+	$response 	= array();
+
+	$params 	=  array('status' => 5);
+	$DbHandler 	= new DbHandler();
+
+	$result = $DbHandler->updateUser($params, $id);
+	if($result) {
+		$user = $DbHandler->getUser($id);
+		$message['to']	 = $user[0]->email;
+		$message['first_name'] = $user[0]->first_name;
+		$message['subject']	= 'Your request to sign up as a Daakorator has been declined';
+
+		send_email ('new_daarkorator_rejected', $message);
+	
+		$response["error"] = false;
+		$response['message'] = "User has been declined. ";
+		echoRespnse(200	, $response);
+	}else{
+		$response["error"] = true;
+		$response["message"] = "Something went wrong. Pease try again.";
+		echoRespnse(500, $response);
+	}
+});
+
+
 
 $app->run();
 
