@@ -263,7 +263,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-     return "http://18.219.178.52/#/";
+     return "http://18.218.149.78/#/";
 
     //test
     //return "http://testapp.daakor.com/#/";

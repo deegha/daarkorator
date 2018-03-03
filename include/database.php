@@ -8,8 +8,8 @@ class database{
 
 private $db_host = "localhost:3306";
 private $db_user = "root";
-private $db_pass = "R5ln88u4sGRn";
-private $db_name = "daakor";
+private $db_pass = "oYLF2Ph7Ecut";
+private $db_name = "tmp";
 
 //require_once 'Config.php';
 
@@ -20,7 +20,7 @@ private $json;
 private $numrows;
 
 	function __construct(){
-		$this->connect();	
+		$this->connect();
 	}
 
 	function connect(){
@@ -28,21 +28,21 @@ private $numrows;
 			$myconn = mysqli_connect($this->db_host,$this->db_user,$this->db_pass,$this->db_name);
 			$this->con = $myconn;
 		}else{
-			return true;	
+			return true;
 		}
 	}
-	
+
 	function disconnect(){
 		if($this->con){
 			if(mysqli_close($this->con)){
 				return true;
 			}else{
-				return false;	
+				return false;
 			}
 		}
 	}
-	
-	
+
+
 	function select($table,$rows,$where=null,$order=null,$limit=null){
 		$q = 'select '.$rows.' from '.$table;
 		if($where!=""){
@@ -69,17 +69,17 @@ private $numrows;
 					} else if ($numRows < 1){
 						$this->results = null;
 					} else{
-						$this->results[$key[$x]] = $r[$key[$x]];	
+						$this->results[$key[$x]] = $r[$key[$x]];
 					}
 				}
 			}
 		}else{
-			return false;	
+			return false;
 		}
 		mysqli_free_result($query);
 		$this->disconnect();
 	}
-	
+
 	function selectJson($table = null,$rows = null,$where = null,$order = null,$group = null, $limit = null){
 		$q = 'select '.$rows.' from '.$table;
 		if($where!=""){
@@ -94,39 +94,39 @@ private $numrows;
 		if($limit!=""){
 			$q .= ' limit '.$limit;
 		}
-		
+
 		// echo $q;
 		$query = mysqli_query($this->con,$q);
 		$numRows = mysqli_num_rows($query);
 		$this->numrows = $numRows;
 		if($numRows){
 			while($row=mysqli_fetch_assoc($query)){
-				$show[] = $row;	
+				$show[] = $row;
 			}
 			$this->json = json_encode($show);
 		}
-		
+
 		mysqli_free_result($query);
 		$this->disconnect();
 	}
-	
+
 	function getJson(){
-		return $this->json;	
+		return $this->json;
 	}
-	
+
 	function getNumRows(){
 		return $this->numrows;
 	}
-	
+
 	function getResults(){
 		return $this->results;
 	}
-	
+
 	function getInsertId(){
 		return $this->insertid;
 	}
-	
-	
+
+
 	function insert($table,$values,$rows,$multiple=null){
 		//try{
 			$insert = "insert into ".$table;
@@ -145,16 +145,16 @@ private $numrows;
 			if($ins){
 				return true;
 			}else{
-				return false;	
+				return false;
 			}
 			$this->disconnect();
 		/*}catch (Exception $e) {
 			$this->callErrorLog($e);
             return false;
 		}*/
-		
+
 	}
-	
+
 	function delete($table,$where){
 		if($where != ""){
 			$del = 'delete from '.$table.' where '.$where;
@@ -170,15 +170,15 @@ private $numrows;
 			$this->disconnect();
 			return false;
 		}
-		
+
 	}
 
 	public function callErrorLog($e){
             error_log(date('Y-M-D  h:i A')." - ".$e->getMessage(). "\n", 3, "./error.log");
         }
-	
 
-	
+
+
 	public function update($table,$rows,$where){
 	try{
         $update = "update ".$table." set " ;
@@ -196,9 +196,9 @@ private $numrows;
 		$update .= " where ".$where;
 		 //echo $update;
 		if($up = mysqli_query($this->con,$update)){
-			return true;	
+			return true;
 		}else{
-			return false;	
+			return false;
 		}
 		$this->disconnect();
 		}catch(Exception $e){
@@ -206,7 +206,7 @@ private $numrows;
      }
     }
     public function updatePreparedStatment($query){
-    
+
     	if($up = mysqli_query($this->con,$query)){
     		return true;
     	}else{
@@ -214,7 +214,7 @@ private $numrows;
     	}
     	$this->disconnect();
     }
-	
+
 	function tableExists($table){
 		$tablesInDb = @mysqli_query($this->con,'show tables from '.$this->db_name.' like "'.$table.'"')	;
 		if($tablesInDb){
@@ -224,7 +224,7 @@ private $numrows;
 				return false;
 			}
 		}
-	}	
-	
+	}
+
 }
 ?>
