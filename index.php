@@ -1025,7 +1025,7 @@ try{
 
     $message['to']   = $customer->email;
     $message['subject'] = 'Your room design contest has kicked off!';
-
+    $message['url']  = getNotificationUrl("project_email", $params["project_id"]);
     send_email ('new_project_customer', $message);
 
     //Sending receipt
@@ -1051,6 +1051,7 @@ try{
 		}
 		$DbHandler->createNotification($values, true);
 
+		
     sendEmailsToDaakors ($daa, getNotificationUrl("project_email", $params["project_id"]));
 
 }catch(Exception $e){
