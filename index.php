@@ -1673,6 +1673,17 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			$message['first_name'] = $params['first_name'];
 			$message['subject']	= 'Your Daakor application has been received ';
 
+			$adminObject = $DbHandler->getUsers(1, 1);
+			$admins =  json_decode(json_encode($adminObject), true);
+
+			$values = prepareBulkNotifications($admins, getNotificationText("newDaakorSignUp"), getNotificationUrl("daakorSignUp"), 1);
+
+			if(!$DbHandler->createNotification($values, true)){
+				$response["error"] = false;
+				$response['message'] = "Error in sending notifications to the Admins";
+				echoRespnse(200	, $response);
+			}
+
 			if(!send_email ('new_daarkorator_created', $message)) {
 				$response["error"] = true;
 				$response["message"] = "Congrats! Your account has been created, Coundn't send an email";
@@ -2514,7 +2525,7 @@ $app->post('/taxRate', 'authenticate', function() use ($app){
 
 	$response 	= array();
 
-	$params 	=  array('status' => 5);
+	$params 	=  array('status' => 6);
 	$DbHandler 	= new DbHandler();
 
 	$result = $DbHandler->updateUser($params, $id);

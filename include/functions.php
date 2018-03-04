@@ -223,6 +223,9 @@ function getNotificationText($notificationType, $params=null) {
         case "sumbmitFinalDeliverablesCustomer" :
             return "Check out the final deliverables added to your project.";
         break;
+         case "newDaakorSignUp" :
+            return "A new daakorator has signed up";
+        break;
     }
 }
 
@@ -257,6 +260,9 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
             $ecoded = base64_encode(json_encode($data));
             return "project-details/".$ecoded;
+        break;
+        case "daakorSignUp" :
+            return "user-manage";
         break;
     }
 }
