@@ -1015,11 +1015,12 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
 		}
-try{
+try{ 
     //Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
     // Send emails to customer
     $customer = $DbHandler->getUser($user_id);
+
     $customer = $customer[0];
 
     $message['to']   = $customer->email;
@@ -1050,11 +1051,10 @@ try{
 		}
 		$DbHandler->createNotification($values, true);
 
-
-    sendEmailsToDaakors ($daa);
+    sendEmailsToDaakors ($daa, getNotificationUrl("project_email", $params["project_id"]));
 
 }catch(Exception $e){
-
+	// echo $e;
 }
 		$response["error"] = false;
 	    $response["message"] = "Your payment has been processed. ";

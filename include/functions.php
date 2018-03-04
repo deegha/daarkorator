@@ -105,6 +105,8 @@ function send_email ($template, $message=null) {
         $messagebody = str_replace('%total_paid%', $message['total_paid'], $messagebody);
     if(isset($message['project_name']))
        $messagebody = str_replace('%project_name%', $message['project_name'], $messagebody);
+    if(isset($message['url']))
+        $messagebody = str_replace('%project_url%', $message['url'], $messagebody);
 
     if(isset($message['cur']))
          $messagebody = str_replace('%cur%', $message['cur'], $messagebody);
@@ -123,7 +125,7 @@ function send_email ($template, $message=null) {
         $mail->setFrom('info@daakor.com', 'Daakor-noreply@daakor');
         $mail->addAddress($message['to']);
         $mail->addReplyTo('info@daakor.com', 'Information');
-
+            echo $messagebody."d";
         //Content
         $mail->isHTML(true);
         $mail->Subject = $message['subject'];
@@ -264,6 +266,16 @@ function getNotificationUrl($notificationType, $projectId=null) {
         case "daakorSignUp" :
             return "user-manage";
         break;
+        case 'project_email':
+            $data = array(
+                "id" => $projectId,
+                "showAddProject" => true,
+                "isCancelled" => false
+            );
+
+            $ecoded = base64_encode(json_encode($data));
+            return "project-details/?login".$ecoded;
+        break;
     }
 }
 
@@ -275,9 +287,10 @@ function getBaseUrl() {
     //return "http://testapp.daakor.com/#/";
 }
 
-function sendEmailsToDaakors ($daa) {
+function sendEmailsToDaakors ($daa, $url) {
     foreach ($daa as $key => $value) {
         $message['to']   = $value['email'];
+        $message['url']  = $url;
         $message['first_name'] = $value['first_name'];
         $message['subject'] = 'A new room design contest has kicked off';
 
