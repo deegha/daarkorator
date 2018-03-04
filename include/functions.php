@@ -106,7 +106,7 @@ function send_email ($template, $message=null) {
     if(isset($message['project_name']))
        $messagebody = str_replace('%project_name%', $message['project_name'], $messagebody);
     if(isset($message['url']))
-        $messagebody = str_replace('%project_url%', $message['url'], $messagebody);
+        $messagebody = str_replace('%project_url%', getBaseUrl().$message['url'], $messagebody);
 
     if(isset($message['cur']))
          $messagebody = str_replace('%cur%', $message['cur'], $messagebody);
@@ -274,7 +274,7 @@ function getNotificationUrl($notificationType, $projectId=null) {
             );
 
             $ecoded = base64_encode(json_encode($data));
-            return "project-details/?login".$ecoded;
+            return "login/".$ecoded;
         break;
     }
 }

@@ -1015,7 +1015,7 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Payment unsuccessful";
 	        echoRespnse(400, $response);
 		}
-try{ 
+try{
     //Sending notifications to daarkorators on new project
 		$baseUrl = getBaseUrl();
     // Send emails to customer
@@ -1051,7 +1051,7 @@ try{
 		}
 		$DbHandler->createNotification($values, true);
 
-		
+
     sendEmailsToDaakors ($daa, getNotificationUrl("project_email", $params["project_id"]));
 
 }catch(Exception $e){
@@ -1674,22 +1674,21 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 			$message['first_name'] = $params['first_name'];
 			$message['subject']	= 'Your Daakor application has been received ';
 
-			$adminObject = $DbHandler->getUsers(1, 1);
-			$admins =  json_decode(json_encode($adminObject), true);
-
-			$values = prepareBulkNotifications($admins, getNotificationText("newDaakorSignUp"), getNotificationUrl("daakorSignUp"), 1);
-
-			if(!$DbHandler->createNotification($values, true)){
-				$response["error"] = false;
-				$response['message'] = "Error in sending notifications to the Admins";
-				echoRespnse(200	, $response);
-			}
-
 			if(!send_email ('new_daarkorator_created', $message)) {
 				$response["error"] = true;
 				$response["message"] = "Congrats! Your account has been created, Coundn't send an email";
 				echoRespnse(500, $response);
 			}
+      //$adminObject = $DbHandler->getUsers(1, 1);
+			//$admins =  json_decode(json_encode($adminObject), true);
+
+			// $values = prepareBulkNotifications($admins, getNotificationText("newDaakorSignUp"), getNotificationUrl("daakorSignUp"), 1);
+      //
+			// if(!$DbHandler->createNotification($values, true)){
+			// 	$response["error"] = false;
+			// 	$response['message'] = "Error in sending notifications to the Admins";
+			// 	echoRespnse(200	, $response);
+			// }
 			$response["error"] = false;
 			$response["message"] = "Congrats! Your account has been created.";
 			echoRespnse(200	, $response);
@@ -2537,7 +2536,7 @@ $app->post('/taxRate', 'authenticate', function() use ($app){
 		$message['subject']	= 'Your request to sign up as a Daakorator has been declined';
 
 		send_email ('new_daarkorator_rejected', $message);
-	
+
 		$response["error"] = false;
 		$response['message'] = "User has been declined. ";
 		echoRespnse(200	, $response);
