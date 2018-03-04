@@ -1679,16 +1679,18 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 				$response["message"] = "Congrats! Your account has been created, Coundn't send an email";
 				echoRespnse(500, $response);
 			}
-      //$adminObject = $DbHandler->getUsers(1, 1);
-			//$admins =  json_decode(json_encode($adminObject), true);
+      		$admins = $DbHandler->getUsers(1, 1);
 
-			// $values = prepareBulkNotifications($admins, getNotificationText("newDaakorSignUp"), getNotificationUrl("daakorSignUp"), 1);
-      //
-			// if(!$DbHandler->createNotification($values, true)){
-			// 	$response["error"] = false;
-			// 	$response['message'] = "Error in sending notifications to the Admins";
-			// 	echoRespnse(200	, $response);
-			// }
+			foreach ($admins as $key => $admin) {
+
+				$values  = $admin->id.',
+					 		"'.getNotificationText("newDaakorSignUp").'",
+					 		"'.getNotificationUrl("daakorSignUp").'",
+					 		"1"';
+      
+				$DbHandler->createNotification($values, null);
+			}
+			
 			$response["error"] = false;
 			$response["message"] = "Congrats! Your account has been created.";
 			echoRespnse(200	, $response);
