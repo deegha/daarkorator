@@ -125,7 +125,7 @@ function send_email ($template, $message=null) {
         $mail->setFrom('info@daakor.com', 'Daakor-noreply@daakor');
         $mail->addAddress($message['to']);
         $mail->addReplyTo('info@daakor.com', 'Information');
-            echo $messagebody."d";
+
         //Content
         $mail->isHTML(true);
         $mail->Subject = $message['subject'];
