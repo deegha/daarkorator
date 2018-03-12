@@ -1043,7 +1043,9 @@ try{
     $message['cur'] = "$";
 
     send_email ('receipt', $message);
-		$daa = $DbHandler->getAllDaarkorators();
+		//$daa = $DbHandler->getAllDaarkorators();
+    $daa = $DbHandler->getUsers(3,1);
+    //print_r($daa);
 
 		if($daa)  {
 			$values = prepareBulkNotifications($daa, getNotificationText("project"),getNotificationUrl("project", $params["project_id"]) , "3");
@@ -1680,17 +1682,19 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
 				echoRespnse(500, $response);
 			}
       		$admins = $DbHandler->getUsers(1, 1);
+          //print_r($admins);
+          //die("killed by force!");
 
 			foreach ($admins as $key => $admin) {
 
 				$values  = $admin->id.',
 					 		"'.getNotificationText("newDaakorSignUp").'",
 					 		"'.getNotificationUrl("daakorSignUp").'",
-					 		"1"';
-      
+					 		"9"';
+
 				$DbHandler->createNotification($values, null);
 			}
-			
+
 			$response["error"] = false;
 			$response["message"] = "Congrats! Your account has been created.";
 			echoRespnse(200	, $response);
@@ -2535,7 +2539,7 @@ $app->post('/taxRate', 'authenticate', function() use ($app){
 		$user = $DbHandler->getUser($id);
 		$message['to']	 = $user[0]->email;
 		$message['first_name'] = $user[0]->first_name;
-		$message['subject']	= 'Your request to sign up as a Daakorator has been declined';
+		$message['subject']	= 'Your Daakorator Application';
 
 		send_email ('new_daarkorator_rejected', $message);
 
