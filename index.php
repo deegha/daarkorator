@@ -1685,9 +1685,9 @@ $app->put('/styleboard/:id', 'authenticate', function($styleboard_id) use ($app)
           //print_r($admins);
           //die("killed by force!");
 
-			foreach ($admins as $key => $admin) {
+			foreach ($admins as  $admin) {
 
-				$values  = $admin->id.',
+				$values  = $admin["id"].',
 					 		"'.getNotificationText("newDaakorSignUp").'",
 					 		"'.getNotificationUrl("daakorSignUp").'",
 					 		"9"';
