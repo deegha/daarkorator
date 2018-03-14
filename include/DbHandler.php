@@ -1,16 +1,16 @@
 <?php
 require 'libs/vendor/autoload.php';
 
-Braintree_Configuration::environment('production');
-Braintree_Configuration::merchantId('kgdnzq9qjfmp3b8n');
-Braintree_Configuration::publicKey('jpxkycs5254tpbdf');
-Braintree_Configuration::privateKey('bb3334c7fefb53446753c002f2db50c6');
+// Braintree_Configuration::environment('production');
+// Braintree_Configuration::merchantId('kgdnzq9qjfmp3b8n');
+// Braintree_Configuration::publicKey('jpxkycs5254tpbdf');
+// Braintree_Configuration::privateKey('bb3334c7fefb53446753c002f2db50c6');
 
 //setting up braintree credentials
-// Braintree_Configuration::environment('sandbox');
-// Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
-// Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
-// Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
+Braintree_Configuration::environment('sandbox');
+Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
+Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
+Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
 
 /**
  * Class to handle all db operations

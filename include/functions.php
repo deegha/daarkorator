@@ -281,10 +281,10 @@ function getNotificationUrl($notificationType, $projectId=null) {
 
 function getBaseUrl() {
     //production
-    return "https://platform.daakor.com/#/";
+    //return "https://platform.daakor.com/#/";
 
     //test
-    //return "http://18.218.149.78/#/";
+    return "http://18.218.149.78/#/";
 }
 
 function sendEmailsToDaakors ($daa, $url) {
