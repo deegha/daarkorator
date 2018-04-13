@@ -80,6 +80,8 @@ function send_email ($template, $message=null) {
             $message_subtotal = $message['sub_total'];
         if(isset($message['tax']))
             $message_tax = $message['tax'];
+        if(isset($message['discount']))
+            $message_tax = $message['discount'];
         if(isset($message['project_name']))
             $message_tax = $message['project_name'];
 
@@ -97,8 +99,12 @@ function send_email ($template, $message=null) {
 
      if(isset($message['sub_total']))
         $messagebody = str_replace('%sub_total%', $message['sub_total'], $messagebody);
-     if(isset($message['discount']))
+     if(isset($message['discount'])){
         $messagebody = str_replace('%discount%', $message['discount'], $messagebody);
+     }else{
+         $messagebody = str_replace('<p>Discount <span style="float: right">%discount%</span></p>', ' ', $messagebody);
+     }
+
      if(isset($message['tax']))
         $messagebody = str_replace('%tax%', $message['tax'], $messagebody);
      if(isset($message['total_paid']))
@@ -297,6 +303,12 @@ function sendEmailsToDaakors ($daa, $url) {
         send_email ('new_project_daakor', $message);
     }
     return true;
+}
+
+function is_multi($a) {
+    $rv = array_filter($a,'is_array');
+    if(count($rv)>0) return true;
+    return false;
 }
 
 ?>

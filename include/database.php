@@ -8,8 +8,8 @@ class database{
 
 private $db_host = "localhost:3306";
 private $db_user = "root";
-private $db_pass = "oYLF2Ph7Ecut";
-private $db_name = "tmp";
+private $db_pass = "";
+private $db_name = "daakor";
 
 //require_once 'Config.php';
 

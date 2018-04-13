@@ -1035,8 +1035,9 @@ try{
     $message['subject'] = 'Thanks for your order #'.$transactionId ;
 
     $message['sub_total'] = $DbHandler->getPackage(1)['price'];
-    $message['discount'] = "0";
+    //$message['discount'] = "0";
     $message['tax']	= $params['tax'];
+    $message['discount']	= $params['discount_amount'];
     $message['total_paid'] = $params['amount'];
     $message['transaction_number'] = $transactionId;
     $message['project_name'] = $params["project_name"];
@@ -2548,12 +2549,214 @@ $app->post('/taxRate', 'authenticate', function() use ($app){
 		echoRespnse(200	, $response);
 	}else{
 		$response["error"] = true;
-		$response["message"] = "Something went wrong. Pease try again.";
+		$response["message"] = "Something went wrong. Please try again.";
 		echoRespnse(500, $response);
 	}
 });
 
 
+/**
+ * Create promo code
+ * url - /promo_code
+ * method - POST
+ * params -promo code object
+ */
+$app->post('/promo_code', 'authenticate', function() use ($app){
+  global $features;
+  $capabilities = json_decode($features);
+
+	if(!$capabilities->manageUsers->remove) {
+		$response["error"] = true;
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
+        echoRespnse(401, $response);
+	}
+
+  $response 	= array();
+
+  if($app->request() && $app->request()->getBody()){
+		$params 	=  $app->request()->getBody();
+    $DbHandler 	= new DbHandler();
+    $chkCode = $DbHandler->getPromoCodeChk($params['promo_code'], $params['start_date'], $params['end_date']);
+    if($chkCode){
+      $response["error"] = true;
+  		$response["message"] = "Promo code already exist, Please check the details!";
+  		echoRespnse(400, $response);
+    }else{
+      $results = $DbHandler->createPromoCode($params);
+      if($results){
+        $response["error"] = false;
+        $response['message'] = "Promo code created!. ";
+        echoRespnse(200	, $response);
+      }else{
+        $response["error"] = true;
+        $response["message"] = "Something went wrong. Please try again.";
+        echoRespnse(400, $response);
+      }
+    }
+  }else{
+    $response["error"] = true;
+		$response["message"] = "An error occurred. No request body";
+		echoRespnse(400, $response);
+  }
+});
+
+/**
+ * Delete promo_code
+ * url - /promo_code/:promo_id
+ * method - DELETE
+ * params -
+ */
+$app->delete('/promo_code/:promo_id', 'authenticate', function($promo_id) use ($app){
+	global $features;
+	$capabilities = json_decode($features);
+	if(!$capabilities->manageUsers->remove) {
+		$response["error"] = true;
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
+        echoRespnse(401, $response);
+	}
+	$response 	= array();
+	if($app->request()){
+
+		$DbHandler 	= new DbHandler();
+		$result = $DbHandler->deletePromoCode($promo_id);
+
+		if(!$result) {
+			$response["error"] = true;
+			$response["message"] = "Something went wrong. Pease try again.";
+			echoRespnse(500, $response);
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Promo code has been deleted.";
+		echoRespnse(200	, $response);
+	}
+});
+
+
+/**
+ * update promo_code
+ * url - /promo_code
+ * method - PUT
+ * params - object
+ */
+ $app->put('/promo_code/:id', 'authenticate', function($id) use ($app){
+	global $features;
+
+	$capabilities = json_decode($features);
+
+	if(!$capabilities->manageUsers->update) {
+		$response["error"] = true;
+        $response["message"] = "Sorry! It looks like you don't have access to this page.";
+        echoRespnse(401, $response);
+	}
+  if($app->request() && $app->request()->getBody()){
+		$params 	= $app->request()->getBody();
+    //print_r($params);
+    $response 	= array();
+
+  	$DbHandler 	= new DbHandler();
+
+  	$result = $DbHandler->updatePromoCode($params, $id);
+  	if($result) {
+  		$response["error"] = false;
+  		$response['message'] = "Promo code has been updated. ";
+  		echoRespnse(200	, $response);
+  	}else{
+  		$response["error"] = true;
+  		$response["message"] = "Something went wrong. Please try again.";
+  		echoRespnse(500, $response);
+  	}
+  }else{
+    $response["error"] = true;
+		$response["taxdetails"] = "An error occurred. No request body";
+		echoRespnse(400, $response);
+  }
+
+});
+
+/**
+    *Get list of promo codes
+    *url - /promo_code
+    *method - GET
+    *params -
+
+**/
+$app->get('/promo_code', 'authenticate', function() use ($app){
+
+    $dbHandler = new DbHandler();
+    $result = $dbHandler->getPromoCodeList();
+    //print_r($result);
+
+    if(empty($result)) {
+        $response["error"] = true;
+        $response["promo_codes"] = [];
+        echoRespnse(200, $response);
+    }
+    if(!$result) {
+        $response["error"] = true;
+        $response["message"] = "An error occurred while retrieving data";
+        echoRespnse(500, $response);
+    }
+    $response["error"] = false;
+    $response["promo_codes"] = $result;
+    echoRespnse(200	, $response);
+});
+
+/**
+    *Get spesific promo code by id
+    *url - /promo_code:id
+    *method - GET
+    *params -
+
+**/
+$app->get('/promo_code/:promo_id', 'authenticate', function($promo_id) use ($app){
+
+    $dbHandler = new DbHandler();
+    $result = $dbHandler->getPromoCodeByID($promo_id);
+    //print_r($result);
+
+    if(empty($result)) {
+        $response["error"] = true;
+        $response["message"] = "An error occurred while retrieving data";
+        echoRespnse(500, $response);
+    }
+    if(!$result) {
+        $response["error"] = true;
+        $response["message"] = "An error occurred while retrieving data";
+        echoRespnse(500, $response);
+    }
+    $response["error"] = false;
+    $response["promo_code"] = $result;
+    echoRespnse(200	, $response);
+});
+
+/**
+    *Get spesific promo code by code
+    *url - /promo/:code
+    *method - GET
+    *params -
+
+**/
+$app->get('/promo/:code', 'authenticate', function($code) use ($app){
+
+    $dbHandler = new DbHandler();
+    $result = $dbHandler->getPromoCodeByCode($code);
+    //print_r($result);
+
+    if(empty($result)) {
+        $response["error"] = true;
+        $response["message"] = "You have entered an invalid promo code!";
+        echoRespnse(400, $response);
+    }
+    if(!$result) {
+        $response["error"] = true;
+        $response["message"] = "You have entered an invalid promo code!";
+        echoRespnse(400, $response);
+    }
+    $response["error"] = false;
+    $response["promo_code"] = $result;
+    echoRespnse(200	, $response);
+});
 
 $app->run();
 

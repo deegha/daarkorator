@@ -592,6 +592,10 @@ class DbHandler {
             $table        = "payment_table";
             $rows         = "user_id,
                             project_id, amount,
+                            sub_total,
+                            promo_code_id,
+                            promo_percentage,
+                            discount_amount,
                             transaction_id,
                             first_name,
                             last_name,
@@ -616,6 +620,10 @@ class DbHandler {
             $values       =  "'".$user_id."',
                              '".$params['project_id']."',
                              '".$params['amount']."',
+                             '".$params['subTotal']."',
+                             '".$params['promo_code_id']."',
+                             '".$params['promo_percentage']."',
+                             '".$params['discount_amount']."',
                              '".$transaction_id."',
                              '".$params['first_name']."',
                              '".$params['last_name']."',
@@ -1662,6 +1670,139 @@ class DbHandler {
             return false;
         }
       }else{
+        return false;
+      }
+
+    }
+
+    public function createPromoCode($params){
+      if(!empty($params)){
+        try{
+          $db = new database();
+          $table = "promo_codes";
+          $rows = "promo_code, promo_percentage, start_date, end_date";
+          $values = "'".$params['promo_code']."',
+                    '".$params['promo_percentage']."',
+                    '".$params['start_date']."',
+                    '".$params['end_date']."'";
+
+          if($db->insert($table, $values, $rows)){
+            return true;
+          }else{
+            return false;
+          }
+        }catch(Exception $e){
+          $this->callErrorLog($e);
+          return false;
+        }
+      }else{
+        return false;
+      }
+    }
+
+    public function deletePromoCode($promo_id){
+      try{
+        $table = "promo_codes";
+        $where = 'promo_code_id="'.$promo_id.'"';
+        $db = new database();
+        if($db->delete($table, $where)){
+          return true;
+        }else{
+          return false;
+        }
+
+      }catch(Exception $e){
+        $this->callErrorLog($e);
+        return false;
+      }
+    }
+
+    public function updatePromoCode($params, $id){
+      try{
+          $db           = new database();
+          $table        = "promo_codes";
+          $where        = "promo_code_id=".$id;
+          if(!$db->update($table,$params,$where)){
+              return false;
+          }
+          return true;
+
+      }catch(Exception $e){
+           $this->callErrorLog($e);
+           return false;
+      }
+    }
+
+    public function getPromoCodeList(){
+      try{
+        $db           = new database();
+        $table        = "promo_codes";
+        $rows         = "*, if(status = 1, 'Active', 'Inactive') as status_title";
+        $where        = '';
+        $db->selectJson($table,$rows,$where);
+        $results = $db->getJson();
+
+        return json_decode($results);
+      }catch(Exception $e){
+           $this->callErrorLog($e);
+           return false;
+      }
+    }
+
+    public function getPromoCodeByID($promo_id){
+      try{
+        $db           = new database();
+        $table        = "promo_codes";
+        $rows         = "*";
+        $where        = 'promo_code_id = '.$promo_id;
+        $db->select($table,$rows,$where);
+        $results = $db->getResults();
+
+        return $results;
+      }catch(Exception $e){
+        $this->callErrorLog($e);
+        return false;
+      }
+
+    }
+
+    public function getPromoCodeByCode($code){
+      try{
+        $db           = new database();
+        $table        = "promo_codes";
+        $rows         = "promo_code_id, promo_code, promo_percentage";
+        $where        = "promo_code = '".$code."' and status != 0 and start_date < CURDATE() and end_date > CURDATE()";
+        $db->select($table,$rows,$where);
+        $results = $db->getResults();
+
+        if(!empty($results)){
+          return $results;
+        }else{
+          return false;
+        }
+      }catch(Exception $e){
+        $this->callErrorLog($e);
+        return false;
+      }
+
+    }
+
+    public function getPromoCodeChk($code, $start_date, $end_date){
+      try{
+        $db           = new database();
+        $table        = "promo_codes";
+        $rows         = "promo_code_id, promo_code";
+        $where        = "(promo_code = '".$code."' and (start_date BETWEEN '".$start_date."' and '".$end_date."')) or (promo_code = '".$code."' and (end_date BETWEEN '".$start_date."' and '".$end_date."')) or (promo_code = '".$code."' and (start_date < '".$start_date."' and end_date > '".$end_date."'))";
+        $db->select($table,$rows,$where);
+        $results = $db->getResults();
+
+        if(!empty($results)){
+          return $results;
+        }else{
+          return false;
+        }
+      }catch(Exception $e){
+        $this->callErrorLog($e);
         return false;
       }
 
