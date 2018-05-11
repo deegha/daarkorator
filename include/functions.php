@@ -99,10 +99,12 @@ function send_email ($template, $message=null) {
 
      if(isset($message['sub_total']))
         $messagebody = str_replace('%sub_total%', $message['sub_total'], $messagebody);
+    if(isset($message['discountCode']))
+    $messagebody = str_replace('%discountCode%', $message['discountCode'], $messagebody);
      if(isset($message['discount'])){
         $messagebody = str_replace('%discount%', $message['discount'], $messagebody);
      }else{
-         $messagebody = str_replace('<p>Discount <span style="float: right">%discount%</span></p>', ' ', $messagebody);
+         $messagebody = str_replace('<p>Discount ( Promo code %discountCode% )<span style="float: right">%discount%</span></p>', ' ', $messagebody);
      }
 
      if(isset($message['tax']))

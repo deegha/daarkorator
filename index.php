@@ -1001,6 +1001,11 @@ $app->post('/payment','authenticate', function() use ($app) {
 	        $response["message"] = "Validation faild, all feilds are required";
 	        echoRespnse(400, $response);
 		}
+		if($params["promo_code_id"] != ""){
+			$dbHandler = new DbHandler();
+			$result = $dbHandler->getPromoCodeByID($params["promo_code_id"]);
+			$message['discountCode'] = $result['promo_code'];
+		}
 
 		$transactionId = gnerateTransactionId($user_id);
 
