@@ -2763,6 +2763,115 @@ $app->get('/promo/:code', 'authenticate', function($code) use ($app){
     echoRespnse(200	, $response);
 });
 
+/**
+ * Create Project as draft witout login
+ * url - /project
+ * method - post
+ **/
+$app->post('/project/draft', function() use ($app) {
+	//global $features;
+	//global $user_id;
+	$has_room_images = false;
+	$has_furniture_images = false;
+	$draft  = false;
+
+	// $capabilities = json_decode($features);
+	// if(!$capabilities->manageProjects->create) {
+	// 	$response["error"] = true;
+  //       $response["message"] = "Sorry! It looks like you don't have access to this page.";
+  //       echoRespnse(401, $response);
+	// }
+
+
+	/*if(isset($_FILES['room_images']) && $_FILES['room_images'] != null && $_FILES['room_images'] != ""){
+		$room_images = $_FILES['room_images'];
+		$has_room_images = true;
+	}
+
+	if(isset($_FILES['furniture_images']) && $_FILES['furniture_images'] != null && $_FILES['furniture_images'] != "")	{
+		$furniture_images = $_FILES['furniture_images'];
+		$has_furniture_images = true;
+	}*/
+
+	//if(isset($_POST['draft']) && $_POST['draft'] == true)
+  $draft = true;
+
+	$response 	= array();
+	$DbHandler 	= new DbHandler();
+	$params 	= json_decode($_POST['project'] , True);
+  $email = json_decode($_POST['email'] , True);
+  $db = new DbHandler();
+  $user_id = $db->getUserByEmail($email);
+	$result 	= false;
+	$result = $DbHandler->createProject($params, $user_id['id'], $draft);
+	if(! empty($_FILES['room_images'])) {
+		foreach ($_FILES['room_images']['tmp_name'] as $key => $tmp_name) {
+			$file['name'] = $_FILES['room_images']['name'][$key];
+			$file['type'] = $_FILES['room_images']['type'][$key];
+			$file['tmp_name'] = $_FILES['room_images']['tmp_name'][$key];
+			$file['error'] = $_FILES['room_images']['error'][$key];
+			$file['size'] = $_FILES['room_images']['size'][$key];
+
+			$generated_name = uploadProjectImages($file);
+
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "Something went wrong. Pease try again.";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,3)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+		}
+	}
+
+	if(! empty($_FILES['furniture_images'])) {
+		foreach ($_FILES['furniture_images']['tmp_name'] as $key => $tmp_name) {
+			$file['name'] = $_FILES['furniture_images']['name'][$key];
+            $file['type'] = $_FILES['furniture_images']['type'][$key];
+            $file['tmp_name'] = $_FILES['furniture_images']['tmp_name'][$key];
+            $file['error'] = $_FILES['furniture_images']['error'][$key];
+            $file['size'] = $_FILES['furniture_images']['size'][$key];
+
+			$generated_name = uploadProjectImages($file);
+
+			if($generated_name == "") {
+				$response["error"] = true;
+				$response["message"] = "Something went wrong. Pease try again.";
+				echoRespnse(500, $response);
+			}
+
+			if(!$DbHandler->saveImageName($result,$generated_name,4)){
+				$response["error"] = true;
+				$response["message"] = "An error occurred while saving images";
+				echoRespnse(500, $response);
+			}
+		}
+	}
+	if (!$result) {
+		$response["error"] = true;
+		$response["message"] = "An error occurred while create the project";
+		echoRespnse(500, $response);
+	} else {
+
+		$payment = $DbHandler->getPackage(1);
+		if(!$payment) {
+			$response["error"] = true;
+			$response["message"] = "An error occurred Couldn't get the package";
+			echoRespnse(500, $response);
+		}
+
+		$response["error"] = false;
+		$response["message"] = "Please verify your email address before you submit this project. Don’t worry, we will save your work so when you log back in, all you need to do is hit submit!";
+		$response["project_id"] = $result;
+		$response["price"] = $payment['price'];
+		echoRespnse(200	, $response);
+	}
+});
+
 $app->run();
 
 ?>
