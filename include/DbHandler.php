@@ -1,16 +1,16 @@
 <?php
 require 'libs/vendor/autoload.php';
 
-// Braintree_Configuration::environment('production');
-// Braintree_Configuration::merchantId('kgdnzq9qjfmp3b8n');
-// Braintree_Configuration::publicKey('jpxkycs5254tpbdf');
-// Braintree_Configuration::privateKey('bb3334c7fefb53446753c002f2db50c6');
+Braintree_Configuration::environment('production');
+Braintree_Configuration::merchantId('kgdnzq9qjfmp3b8n');
+Braintree_Configuration::publicKey('jpxkycs5254tpbdf');
+Braintree_Configuration::privateKey('bb3334c7fefb53446753c002f2db50c6');
 
 //setting up braintree credentials
-Braintree_Configuration::environment('sandbox');
-Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
-Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
-Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
+//Braintree_Configuration::environment('sandbox');
+//Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
+//Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
+//Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
 
 /**
  * Class to handle all db operations
@@ -23,14 +23,13 @@ class DbHandler {
             $db = new database();
             $table = 'user';
             $rows = '*';
-            $where = 'email= "' . $email . '" AND status = 1  AND password="'.$password.'"';
+            $where = 'email= "' . $email . '" AND (status = 1 or status=0) AND password="'.$password.'"';
 
             $db->select($table, $rows, $where, '', '');
 
             $logged_User = $db->getResults();
-
-            if ($logged_User != NULL) {
-               return true;
+            if ($logged_User != Null) {
+               return $logged_User;
             } else {
                 return false;
             }
@@ -466,6 +465,7 @@ class DbHandler {
 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
                 $insert_params['room_types']     = $params['room'];
+                $insert_params['roomDescription'] =addcslashes( $params['inspirations']['roomDescription'],"'");
                 $insert_params['desing_styles']  = json_encode($params['designStyle']);
                 $insert_params['color_palettes'] = json_encode($params['colorChoice']['likeColors']);
                 $insert_params['color_exceptions'] = $params['colorChoice']['dislikeColors'];
@@ -475,7 +475,7 @@ class DbHandler {
                     "height" => $params['roomDetails']['height'],
                     "unit"   => $params['roomDetails']['unit']
                 ));
-                $insert_params['description']        = $params['inspirations']['description'];
+                $insert_params['description']        = addcslashes($params['inspirations']['description'],"'");
                 $insert_params['social_media_links'] = json_encode($params['inspirations']['urls']);
                 $insert_params['budget']        = $params['roomDetails']['budget'];
                 $result = $this->getInsertSting($insert_params);
@@ -485,17 +485,30 @@ class DbHandler {
                 $values_details = '"'.$result['values'].'"';
                 $project_table  = "project_details";
 
-                $values_details = "'".$insert_params['title'] ."',".
-                                "'".$insert_params['room_types'] ."',".
-                                "'".$insert_params['desing_styles'] ."',".
-                                "'".$insert_params['color_palettes'] ."',".
-                                "'".$insert_params['color_exceptions'] ."',".
-                                "'".$insert_params['dimensions'] ."',".
-                                "'".$insert_params['description'] ."',".
-                                "'".$insert_params['social_media_links'] ."',".
-                                "'".$insert_params['budget'] ."', ".
-                                "'".$project_id."'";
 
+                $values_details = "'".$insert_params['title'] ."',
+                                '".$insert_params['room_types'] ."',
+                                '".$insert_params['roomDescription'] ."',
+                                '".$insert_params['desing_styles'] ."',
+                                '".$insert_params['color_palettes'] ."',
+                                '".$insert_params['color_exceptions'] ."',
+                                '".$insert_params['dimensions'] ."',
+                                '".$insert_params['description'] ."',
+                                '".$insert_params['social_media_links'] ."',
+                                '".$insert_params['budget'] ."',
+                                '".$project_id."'";
+/*
+				$values_details = '"'.$insert_params['title'] .'",
+                                "'.$insert_params['room_types'] .'",
+                                "'.$insert_params['roomDescription'] .'",
+                                "'.$insert_params['desing_styles'] .'",
+                                "'.$insert_params['color_palettes'] .'",
+                                "'.$insert_params['color_exceptions'] .'",
+                                "'.$insert_params['dimensions'] .'",
+                                "'.$insert_params['description'] .'",
+                                "'.$insert_params['social_media_links'] .'",
+                                "'.$insert_params['budget'] .'",
+                                "'.$project_id.'"';*/
                 //print_r( $insert_params);
                 //print_r($params['roomDetails']['budget']);
 
@@ -870,7 +883,7 @@ class DbHandler {
             //$table     .= " left outer join project_styleboard psb on psb.project_id = p.id";
             $table     .= " left outer join room_types rty on rty.id = pd.room_types";
             $rows       = " p.id,	p.status as project_status,";
-            $rows      .= "MAX(pd.title) as title, MAX(pd.room_types) as room_types, MAX(rty.title) as room_type_name, MAX(pd.desing_styles) as design_styles, MAX(pd.color_palettes) as color_palettes, MAX(pd.color_exceptions) as color_excemption, MAX(pd.dimensions) as dimensions, MAX(pd.description) as description, MAX(pd.social_media_links) as social_media_links, MAX(pd.budget) as budget, ";
+            $rows      .= "MAX(pd.title) as title, MAX(pd.room_types) as room_types, MAX(rty.title) as room_type_name,MAX(pd.roomDescription) as roomDescription, MAX(pd.desing_styles) as design_styles, MAX(pd.color_palettes) as color_palettes, MAX(pd.color_exceptions) as color_excemption, MAX(pd.dimensions) as dimensions, MAX(pd.description) as description, MAX(pd.social_media_links) as social_media_links, MAX(pd.budget) as budget, ";
             $rows      .= "group_concat(if(rt.recource_type = '3', rt.image_url, null)) as room_images, group_concat(if(rt.recource_type = '4', rt.image_url, null)) as furniture_images";
             //$rows      .= "group_concat(distinct psb.styleboard) as style_boards";
             $where      = "p.id = ".$project_id;
@@ -898,6 +911,7 @@ class DbHandler {
                 $title              = $tmp->title;
                 $room_types         = ($tmp->room_types);
                 $room_type_name     = ($tmp->room_type_name);
+                $room_description   = ($tmp->roomDescription);
                 $design_styles      = json_decode($tmp->design_styles, true);
                 $color_palettes     = json_decode($tmp->color_palettes, true);
                 $color_excemption   = $tmp->color_excemption;
@@ -932,7 +946,7 @@ class DbHandler {
             $response['status'] = $tmp->project_status;
             $response['about'] = array('room_types'=>$room_types, 'room_type_name'=>$room_type_name, 'design_styles'=>$tmpStyles, 'color_palettes'=>$tmpPalattes, 'color_excemption'=>$color_excemption);
             $response['details'] = array('dimensions'=>$dimensions, 'room_images'=>$room_images, 'budget'=>$budget, 'furniture_images'=>$furniture_images);
-            $response['inspire'] = array('social_media_links'=>$social_media_links, 'description'=>$description);
+            $response['inspire'] = array('social_media_links'=>$social_media_links, 'description'=>$description, 'roomDescription'=>$room_description);
             $response['style_boards'] = json_decode($styleBoards);
 
             return $response;
@@ -1048,11 +1062,17 @@ class DbHandler {
             if(isset($params['note']))
                 $note = $params['note'];
 
-            $values = "'".$params['project_id']."',
+	    $values = '"'.$params['project_id'].'",
+                        "'.$generated_name.'",
+                        "'.$user_id.'",
+                        "'.$note.'",
+                        "'.$params['style_board_name'].'"';
+
+           /* $values = "'".$params['project_id']."',
                         '".$generated_name."',
                         '".$user_id."',
                         '".$note."',
-                        '".$params['style_board_name']."'";
+                        '".$params['style_board_name']."'";*/
 
             if($db->insert($table, $values, $rows)){
                 return  true;
@@ -1120,8 +1140,9 @@ class DbHandler {
                                DATE_FORMAT(m.date_time, '%Y-%m-%d') as date_time,
                                m.status as status,
                                if(m.reciever_id = $user_id, 'received', 'sent') as class";
-            $where  = "(m.reciever_id = $user_id or m.sender_id = $user_id) and m.styleboard_id = $styleboard_id";
+           // $where  = "(m.reciever_id = $user_id or m.sender_id = $user_id) and m.styleboard_id = $styleboard_id";
 
+            $where = "m.styleboard_id = $styleboard_id";
             $order = 'date_time ASC';
 
             $db->selectJson($table, $rows, $where, $order);
@@ -1170,28 +1191,36 @@ class DbHandler {
                 if($project_id != null)
                     $where = $where." and ";
 
-                $where = $where."  sb.daarkorator_id=".$user_id;
+                $where = $where."  sb.daarkorator_id=".$user_id." and ";
             }
             if($userType == 2) {
                 if($project_id != null)
                     $where = $where." and ";
 
-                $where = $where."  p.customer_id=".$user_id;
+                $where = $where."  p.customer_id=".$user_id." and ";
             }
 
+            if($userType == 1) {
+                if($project_id != null){
+                $where = $where." and ";
+
+                $customer = $this->getCustomerByProject($project_id);
+                $where = $where."  p.customer_id=".$customer['customer_id']." and ";
+              }
+            }
             if($id != null) {
                 if($project_id != null)
                     $where = $where." and ";
 
-                $where = $where." and sb.status <> 3 and sb.id=".$id;
-
+                $where = $where." sb.status <> 3 and sb.id=".$id;
+//print_r($where);
                 $db->select($table, $rows, $where, $order);
                 $results = $db->getResults();
                 return $results;
             }
 
 
-            $where = $where." and sb.status <> 3 ";
+            $where = $where." sb.status <> 3 ";
 
             $db->selectJson($table, $rows, $where, $order);
             $results = $db->getJson();
@@ -1366,6 +1395,7 @@ class DbHandler {
         try{
             $insert_params['title']          = $params['roomDetails']['projectName'];
             $insert_params['room_types']     = $params['room'];
+            $insert_params['roomDescription']= $params['inspirations']['roomDescription'];
             $insert_params['desing_styles']  = json_encode($params['designStyle']);
             $insert_params['color_palettes'] = json_encode($params['colorChoice']['likeColors']);
             $insert_params['color_exceptions'] = $params['colorChoice']['dislikeColors'];
@@ -1571,8 +1601,12 @@ class DbHandler {
         $db = new database();
         $table = "messages m inner join user u on u.id = m.reciever_id inner join user uu on uu.id = m.sender_id";
         $rows  = ' m.id, m.message_reff, m.project_id, m.sender_id, m.message_subject, m.message_text, DATE_FORMAT(m.date_time, "%b %d, %Y") as date_time, if(m.sender_id = '.$user_id.', u.first_name, uu.first_name ) as sender, if(m.sender_id = '.$user_id.', m.reciever_id, m.sender_id ) as sender_id';
-
+        if($user_type == '1'){
+	$where = 'message_reff = 1 and project_id = '.$project_id;
+	}else{
         $where = 'message_reff = 1 and project_id = '.$project_id.' and (reciever_id = '.$user_id.' or sender_id = '.$user_id.')';
+        }
+       // $where = 'message_reff = 1 and project_id ='.$project_id;
         $where .= ' group by sender  order by date_time desc';
 
         $db->selectJson($table,$rows,$where);
@@ -1593,8 +1627,12 @@ class DbHandler {
                     if(reciever_id = $user_id, 'received', 'sent') as class";
 
             //$where = '(message_reff = 1 and project_id = '.$project_id.') and ((sender_id = '.$sender_id.' and reciever_id = '.$user_id.') or (sender_id = '.$user_id.' or reciever_id = '.$sender_id.'))';
-        $where = '(message_reff = 1 and project_id = '.$project_id.') and (sender_id in ('.$sender_id.', '.$user_id.') and reciever_id in ('.$sender_id.','.$user_id.'))';
-
+	if($user_type == '1'){
+        $where = '(message_reff = 1 and project_id = '.$project_id.') and (sender_id in( '.$sender_id.') or reciever_id in ('.$sender_id.'))';
+	}else{
+		$where = '(message_reff = 1 and project_id = '.$project_id.') and (sender_id in ('.$sender_id.', '.$user_id.') and reciever_id in ('.$sender_id.','.$user_id.'))';
+	}
+       // $where = '(message_reff = 1 and project_id = '.$project_id.')';
         $db->selectJson($table,$rows,$where);
         $results = $db->getJson();
 

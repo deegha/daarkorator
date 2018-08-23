@@ -118,8 +118,11 @@ $app->post('/login', function() use ($app){
 			$params = $app->request()->getBody();
 			$email= $params['email'];
 			$password = $params['password'];
+                        $tmp = $db->checkLogin($email, $password);
+//print_r($tmp);
+			if ($tmp) {
 
-			if ($db->checkLogin($email, $password)) {
+                            if($tmp['status']==1){
 
 				$logged_User = $db->getUserByEmail($email);
 				if ($logged_User != NULL) {
@@ -139,6 +142,11 @@ $app->post('/login', function() use ($app){
 					$response['message'] = "Something went wrong. Pease try again.";
 					echoRespnse(400, $response);
 				}
+                            }else{
+                                 $response['error'] = true;
+                                 $response['message'] = "Please check your email and verify  your account. We can't wait to get started on your project too!";
+                                 echoRespnse(400, $response);
+                            }
 			} else {
 				$response['error'] = true;
 				$response['message'] = 'Oops! It looks like your login or password was entered incorrectly. Please try again.';
