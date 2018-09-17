@@ -2751,15 +2751,19 @@ $app->get('/promo_code/:promo_id', 'authenticate', function($promo_id) use ($app
 
 **/
 $app->get('/promo/:code', 'authenticate', function($code) use ($app){
-
+    global $user_id;
     $dbHandler = new DbHandler();
-    $result = $dbHandler->getPromoCodeByCode($code);
+    $result = $dbHandler->getPromoCodeByCode($code, $user_id);
     //print_r($result);
 
     if(empty($result)) {
         $response["error"] = true;
         $response["message"] = "You have entered an invalid promo code!";
         echoRespnse(400, $response);
+    }elseif($result=="Used"){
+      $response["error"] = true;
+      $response["message"] = "Sorry! Looks like you've already used that promo code!";
+      echoRespnse(400, $response);
     }
     if(!$result) {
         $response["error"] = true;

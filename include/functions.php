@@ -21,7 +21,7 @@ function echoRespnse($status_code, $response) {
 }
 
 function callErrorLog($e){
-    error_log($e->getMessage(). "\n", 3, "./error.log");
+    error_log($e->getMessage()."on Line \n".getLine()."Detail \n".getTrace(). "\n", 3, "./error.log");
 }
 
 

@@ -1,16 +1,16 @@
 <?php
 require 'libs/vendor/autoload.php';
 
-Braintree_Configuration::environment('production');
-Braintree_Configuration::merchantId('kgdnzq9qjfmp3b8n');
-Braintree_Configuration::publicKey('jpxkycs5254tpbdf');
-Braintree_Configuration::privateKey('bb3334c7fefb53446753c002f2db50c6');
+// Braintree_Configuration::environment('production');
+// Braintree_Configuration::merchantId('kgdnzq9qjfmp3b8n');
+// Braintree_Configuration::publicKey('jpxkycs5254tpbdf');
+// Braintree_Configuration::privateKey('bb3334c7fefb53446753c002f2db50c6');
 
 //setting up braintree credentials
-//Braintree_Configuration::environment('sandbox');
-//Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
-//Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
-//Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
+Braintree_Configuration::environment('sandbox');
+Braintree_Configuration::merchantId('w3hzrzq84x6f2dmy');
+Braintree_Configuration::publicKey('5pbn8wrm8scdpgwy');
+Braintree_Configuration::privateKey('68c4222613b1ad435b216b4a2f6813da');
 
 /**
  * Class to handle all db operations
@@ -39,7 +39,7 @@ class DbHandler {
     }
 
     public function callErrorLog($e){
-        error_log(date('Y-M-D  h:i A')." - ".$e->getMessage(). "\n", 3, "./error.log");
+        error_log(date('Y-M-d  h:i A')." - ".$e->getMessage()." on Line ".$e->getLine(). "\n", 3, "./error.log");
     }
 
     public function getAccessToken($user_id) {
@@ -461,12 +461,13 @@ class DbHandler {
 
             if($project_id = $db->getInsertId()) {
 
-            //print_r('start');
+           // print_r($params['inspirations']);
 
                 $insert_params['title']          = $params['roomDetails']['projectName'];
                 $insert_params['room_types']     = $params['room'];
-                $insert_params['roomDescription'] =addcslashes( $params['inspirations']['roomDescription'],"'");
-                $insert_params['desing_styles']  = json_encode($params['designStyle']);
+                if(isset($params['inspirations']['roomDescription'])){ $insert_params['roomDescription'] = addcslashes( $params['inspirations']['roomDescription'],"'");}else{$insert_params['roomDescription']='';}
+//$insert_params['roomDescription']='';
+ $insert_params['desing_styles']  = json_encode($params['designStyle']);
                 $insert_params['color_palettes'] = json_encode($params['colorChoice']['likeColors']);
                 $insert_params['color_exceptions'] = $params['colorChoice']['dislikeColors'];
                 $insert_params['dimensions']     = json_encode( array(
@@ -608,6 +609,7 @@ class DbHandler {
                             sub_total,
                             promo_code_id,
                             promo_percentage,
+                            promo_value,
                             discount_amount,
                             transaction_id,
                             first_name,
@@ -636,6 +638,7 @@ class DbHandler {
                              '".$params['subTotal']."',
                              '".$params['promo_code_id']."',
                              '".$params['promo_percentage']."',
+                             '".$params['promo_value']."',
                              '".$params['discount_amount']."',
                              '".$transaction_id."',
                              '".$params['first_name']."',
@@ -749,9 +752,9 @@ class DbHandler {
                     $where      = "p.customer_id =".$user_id;
                 }else{
 
-                    $table      = "project p join project_details pd on p.id = pd.project_id join room_types rt on pd.room_types = rt.id";
+                    $table      = "project p join project_details pd on p.id = pd.project_id join room_types rt on pd.room_types = rt.id join user u on p.customer_id = u.id";
                     $rows       = "p.*, DATE_FORMAT(p.published_date, '%Y-%m-%d') as published_date , rt.image, rt.title room_type, pd.budget as budget,
-                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In Progress' WHEN 2 then 'Winner Selected' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, pd.title";
+                                    case p.status WHEN 0 then 'Draft' WHEN 1 then 'In Progress' WHEN 2 then 'Winner Selected' WHEN 3 then 'Completed' WHEN 4 then 'Cancelled' END AS status_title, pd.title, u.first_name AS customer_name";
                     $where      = "";
                 }
             }
@@ -1718,9 +1721,16 @@ class DbHandler {
         try{
           $db = new database();
           $table = "promo_codes";
-          $rows = "promo_code, promo_percentage, start_date, end_date";
+          $rows = "promo_code, promo_percentage, promo_value, start_date, end_date";
+          if($params['promo_percentage']===NULL){
+            $params['promo_percentage'] = 'NULL';
+          }
+          if($params['promo_value']===NULL){
+            $params['promo_value'] = 'NULL';
+          }
           $values = "'".$params['promo_code']."',
                     '".$params['promo_percentage']."',
+                    '".$params['promo_value']."',
                     '".$params['start_date']."',
                     '".$params['end_date']."'";
 
@@ -1804,20 +1814,32 @@ class DbHandler {
 
     }
 
-    public function getPromoCodeByCode($code){
+    public function getPromoCodeByCode($code, $user_id){
       try{
         $db           = new database();
-        $table        = "promo_codes";
-        $rows         = "promo_code_id, promo_code, promo_percentage";
-        $where        = "promo_code = '".$code."' and status != 0 and start_date < CURDATE() and end_date > CURDATE()";
-        $db->select($table,$rows,$where);
-        $results = $db->getResults();
+        $tmpTbl       = "promo_codes pc join payment_table pt on pc.promo_code_id = pt.promo_code_id";
+        $tmpRow       = "promo_code";
+        $tmpWhere     = "promo_code = '".$code."' and pt.user_id = '".$user_id."' and status != 0 and start_date < CURDATE() and end_date > CURDATE()" ;
+        $db->select($tmpTbl,$tmpRow,$tmpWhere);
+        $tmpResults = $db->getResults();
 
-        if(!empty($results)){
-          return $results;
+        if(empty($tmpResults)){
+          $table        = "promo_codes";
+          $rows         = "promo_code_id, promo_code, promo_percentage, promo_value";
+          $where        = "promo_code = '".$code."' and status != 0 and start_date < CURDATE() and end_date > CURDATE()";
+          $db->select($table,$rows,$where);
+          $results = $db->getResults();
+
+          if(!empty($results)){
+            return $results;
+          }else{
+            return false;
+          }
         }else{
-          return false;
+          return "Used";
         }
+
+
       }catch(Exception $e){
         $this->callErrorLog($e);
         return false;
